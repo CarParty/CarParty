@@ -12,21 +12,30 @@ guesses a game code that the players will type in, will connect to the relay and
 message
 
 	{
-		"me": "server",
-		"code" "SNEK"
+		"action": "login_server",
+		"server_code" "SNEK"
 	}
 
 If there is no server running on this code, the relay will not close the connection. Now clients can
 log in by connecting and sending the first message
 
 	{
-		"me": "client",
-		"code" "SNEK"
+		"action": "login_client",
+		"server_code" "SNEK",
+		"client_id": "467123746"
 	}
 
 Now the relay just relays WebSocket messages: all messages from the server are broadcasted to the
-clients and all messages from the clients are sent to the server. The rest of the protocol is
-handled in the game, the relay does not need to bother.
+clients and all messages from the clients are sent to the server. Aditionally, the server is
+informed about connecting and disconnecting clients with this message:
+
+	{
+		"action": "connect / disconnect"
+		"client_id": <id of client>
+	}
+
+The server always equips incoming messages from clients with a "client" field that is the id of
+the client. This means messages from clients must always be in JSON format.
 
 ## Installation / Running
 [Install Rust](https://www.rust-lang.org/tools/install). Run

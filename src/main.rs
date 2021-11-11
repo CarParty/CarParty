@@ -3,9 +3,10 @@ mod relay;
 use clap::Parser;
 use eyre::Result;
 
-/// This is the router for carparty. It is simple and nice. It routes the websockets.
+/// This is the router for carparty. It routes the websockets and gives the server information
+/// about what is happening.
 #[derive(Parser)]
-#[clap(version = "0.1", author = "CarParty Development Team")]
+#[clap(version = "0.2", author = "CarParty Development Team")]
 struct Opts {
     /// The port on which the server will run.
     #[clap(short, long, default_value = "8080")]
