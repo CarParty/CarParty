@@ -27,3 +27,12 @@ log in by connecting and sending the first message
 Now the relay just relays WebSocket messages: all messages from the server are broadcasted to the
 clients and all messages from the clients are sent to the server. The rest of the protocol is
 handled in the game, the relay does not need to bother.
+
+## Installation / Running
+[Install Rust](https://www.rust-lang.org/tools/install). Run
+	
+	cargo build --release
+
+Now you can use the help with
+
+	./target/release/carparty-relay -h
