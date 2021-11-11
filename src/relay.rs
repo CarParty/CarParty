@@ -89,8 +89,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                 tokio::select! {
                     Some(message) = read.next() => {
                         match message {
-                            // Just accept disconnects, but don't relay to server because it needs to
-                            // stay online
+                            // Handle disconnect gracefully
                             Ok(Message::Close(_close_frame)) => {
                                 return Ok(());
                             },
