@@ -55,12 +55,10 @@ async fn accept_connection_with_print(stream: TcpStream) {
 }
 
 async fn accept_connection(stream: TcpStream) -> Result<()> {
-    let addr = stream.peer_addr().expect("connected streams should have a peer address");
+    let addr = stream.peer_addr()?;
     println!("Peer address: {}", addr);
 
-    let ws_stream = tokio_tungstenite::accept_async(stream)
-        .await
-        .expect("Error during the websocket handshake occurred");
+    let ws_stream = tokio_tungstenite::accept_async(stream).await?;
 
     println!("New WebSocket connection: {}", addr);
 
