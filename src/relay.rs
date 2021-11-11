@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-use tokio::net::{TcpListener, TcpStream};
-use futures_util::{StreamExt, SinkExt};
-use serde::{Serialize, Deserialize};
-use eyre::{Result, eyre};
+use core::ops::Deref;
+use eyre::{eyre, Result};
+use futures_util::{SinkExt, StreamExt};
 use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{mpsc, watch};
 use tokio_tungstenite::tungstenite::Message;
-use std::sync::{Arc, Mutex};
-use core::ops::Deref;
 
 // A channel message is sent from the server to the clients. It can either be a literal
 // message or a directive to disconnect the connection if the server disconnects.
@@ -18,12 +18,14 @@ enum ChannelMessage {
     // Disconnect the connection because server disconnected
     Disconnect,
     // Standard watch message
-    NoOp
+    NoOp,
 }
 
 lazy_static! {
-    static ref CLIENT_SENDERS: Arc<Mutex<HashMap<String, mpsc::Sender<Message>>>> = Arc::new(Mutex::new(HashMap::new()));
-    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, watch::Receiver<ChannelMessage>>>> = Arc::new(Mutex::new(HashMap::new()));
+    static ref CLIENT_SENDERS: Arc<Mutex<HashMap<String, mpsc::Sender<Message>>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, watch::Receiver<ChannelMessage>>>> =
+        Arc::new(Mutex::new(HashMap::new()));
 }
 
 pub async fn run_relay(ip: &str, port: u32) -> Result<()> {
@@ -40,12 +42,12 @@ enum ServerOrClient {
     #[serde(rename = "server")]
     Server,
     #[serde(rename = "client")]
-    Client
+    Client,
 }
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct LoginMessage {
     me: ServerOrClient,
-    code: String
+    code: String,
 }
 
 async fn accept_connection_with_print(stream: TcpStream) {
@@ -69,7 +71,10 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
     //  "me": "server/client",
     //  "code": "ABCD"
     // }
-    let login_message = read.next().await.ok_or_else(|| eyre!("login message not recieved"))??;
+    let login_message = read
+        .next()
+        .await
+        .ok_or_else(|| eyre!("login message not recieved"))??;
     let login_message: LoginMessage = serde_json::from_str(&login_message.into_text()?)?;
     println!("{:?}", login_message);
 
@@ -81,7 +86,9 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
         {
             let mut senders_map = CLIENT_SENDERS.lock().unwrap();
             let mut recievers_map = CLIENT_RECEIVERS.lock().unwrap();
-            if senders_map.contains_key(&login_message.code) || recievers_map.contains_key(&login_message.code) {
+            if senders_map.contains_key(&login_message.code)
+                || recievers_map.contains_key(&login_message.code)
+            {
                 return Err(eyre!("code already exists: {}", login_message.code));
             }
             senders_map.insert(login_message.code.to_string(), mpsc_sender);
@@ -99,7 +106,8 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                     }
                 }
             }
-        }.await;
+        }
+        .await;
         // Remove this server from maps
         {
             let mut senders_map = CLIENT_SENDERS.lock().unwrap();
@@ -118,8 +126,14 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
         {
             let senders_map = CLIENT_SENDERS.lock().unwrap();
             let recievers_map = CLIENT_RECEIVERS.lock().unwrap();
-            sender = senders_map.get(&login_message.code).ok_or_else(|| eyre!("server with this code does not exist: {}"))?.clone();
-            receiver = recievers_map.get(&login_message.code).ok_or_else(|| eyre!("server with this code does not exist: {}"))?.clone();
+            sender = senders_map
+                .get(&login_message.code)
+                .ok_or_else(|| eyre!("server with this code does not exist: {}"))?
+                .clone();
+            receiver = recievers_map
+                .get(&login_message.code)
+                .ok_or_else(|| eyre!("server with this code does not exist: {}"))?
+                .clone();
         }
         loop {
             tokio::select! {

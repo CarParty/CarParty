@@ -1,7 +1,7 @@
 mod relay;
 
-use eyre::{Result};
-use clap::{Parser};
+use clap::Parser;
+use eyre::Result;
 
 /// This is the router for carparty. It is simple and nice. It routes the websockets.
 #[derive(Parser)]
@@ -14,7 +14,7 @@ struct Opts {
     #[clap(short, long, default_value = "127.0.0.1")]
     ip: String,
 }
- 
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
