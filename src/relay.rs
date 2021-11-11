@@ -9,22 +9,10 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{mpsc, watch};
 use tokio_tungstenite::tungstenite::Message;
 
-// A channel message is sent from the server to the clients. It can either be a literal
-// message or a directive to disconnect the connection if the server disconnects.
-// From the clients to the server, only literal messages are sent.
-#[derive(Debug, PartialEq, Clone)]
-enum ChannelMessage {
-    Message(Message),
-    // Disconnect the connection because server disconnected
-    Disconnect,
-    // Standard watch message
-    NoOp,
-}
-
 lazy_static! {
     static ref CLIENT_SENDERS: Arc<Mutex<HashMap<String, mpsc::Sender<Message>>>> =
         Arc::new(Mutex::new(HashMap::new()));
-    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, watch::Receiver<ChannelMessage>>>> =
+    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, watch::Receiver<Message>>>> =
         Arc::new(Mutex::new(HashMap::new()));
 }
 
@@ -53,12 +41,13 @@ struct LoginMessage {
 async fn accept_connection_with_print(stream: TcpStream) {
     let handle = accept_connection(stream);
     let out = handle.await;
-    println!("Handle had result {:?}", out);
+    if let Err(err) = out {
+        println!("Handle had result: {}", err);
+    }
 }
 
 async fn accept_connection(stream: TcpStream) -> Result<()> {
     let addr = stream.peer_addr()?;
-    println!("Peer address: {}", addr);
 
     let ws_stream = tokio_tungstenite::accept_async(stream).await?;
 
@@ -81,7 +70,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
     if login_message.me == ServerOrClient::Server {
         // Create new channels for this sender
         let (mpsc_sender, mut mpsc_reciever) = mpsc::channel(32);
-        let (watch_sender, watch_reciever) = watch::channel(ChannelMessage::NoOp);
+        let (watch_sender, watch_reciever) = watch::channel(Message::Text("".to_string()));
         // Update channels
         {
             let mut senders_map = CLIENT_SENDERS.lock().unwrap();
@@ -99,7 +88,16 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             loop {
                 tokio::select! {
                     Some(message) = read.next() => {
-                        watch_sender.send(ChannelMessage::Message(message?))?;
+                        match message {
+                            // Just accept disconnects, but don't relay to server because it needs to
+                            // stay online
+                            Ok(Message::Close(_close_frame)) => {
+                                return Ok(());
+                            },
+                            message => {
+                                watch_sender.send(message?)?;
+                            }
+                        }
                     }
                     Some(message) = mpsc_reciever.recv() => {
                         write.send(message).await?;
@@ -108,6 +106,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             }
         }
         .await;
+        println!("Server is finished listening with result {:?}", select_result);
         // Remove this server from maps
         {
             let mut senders_map = CLIENT_SENDERS.lock().unwrap();
@@ -116,13 +115,13 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             recievers_map.remove(&login_message.code);
         }
         // Disconnect clients
-        watch_sender.send(ChannelMessage::Disconnect)?;
+        watch_sender.send(Message::Close(None))?;
 
         select_result?;
         // Done :)
     } else if login_message.me == ServerOrClient::Client {
         let sender: mpsc::Sender<Message>;
-        let mut receiver: watch::Receiver<ChannelMessage>;
+        let mut receiver: watch::Receiver<Message>;
         {
             let senders_map = CLIENT_SENDERS.lock().unwrap();
             let recievers_map = CLIENT_RECEIVERS.lock().unwrap();
@@ -138,24 +137,27 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
         loop {
             tokio::select! {
                 Some(message) = read.next() => {
-                    sender.send(message?).await?;
+                    match message {
+                        // Just accept disconnects, but don't relay to server because it needs to
+                        // stay online
+                        Ok(Message::Close(_close_frame)) => {
+                            break;
+                        },
+                        message => {
+                            sender.send(message?).await?;
+                        }
+                    }
                 }
                 Ok(_) = receiver.changed() => {
-                    let message: ChannelMessage;
+                    let message: Message;
                     {
                         let borrow = receiver.borrow_and_update();
                         message = borrow.deref().clone();
                     }
                     match message {
                         // Relay literal messages from server
-                        ChannelMessage::Message(message) => {
+                        message => {
                             write.send(message).await?;
-                        },
-                        // Disconnect if server disconnects
-                        ChannelMessage::Disconnect => {
-                            break;
-                        },
-                        ChannelMessage::NoOp => {
                         },
                     }
                 }
