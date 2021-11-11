@@ -34,8 +34,9 @@ informed about connecting and disconnecting clients with this message:
 		"client_id": <id of client>
 	}
 
-The server always equips incoming messages from clients with a "client" field that is the id of
-the client. This means messages from clients must always be in JSON format.
+The server always equips incoming messages from clients with a `client_id` field that is the id of
+the client that has sent the message. This means messages from clients must always be in JSON
+format.
 
 ## Installation / Running
 [Install Rust](https://www.rust-lang.org/tools/install). Run
