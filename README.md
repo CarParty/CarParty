@@ -34,7 +34,7 @@ informed about connecting and disconnecting clients with this message:
 		"client_id": <id of client>
 	}
 
-The server always equips incoming messages from clients with a `client_id` field that is the id of
+The relay always equips incoming messages from clients with a `client_id` field that is the id of
 the client that has sent the message. This means messages from clients must always be in JSON
 format.
 
