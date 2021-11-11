@@ -52,7 +52,7 @@ struct LoginMessage {
 
 async fn accept_connection_with_print(stream: TcpStream) {
     let handle = accept_connection(stream);
-    let out = handle.await.unwrap();
+    let out = handle.await?;
     println!("Handle had result {:?}", out);
 }
 
