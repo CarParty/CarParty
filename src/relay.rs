@@ -205,11 +205,32 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                             let borrow = receiver.borrow_and_update();
                             message = borrow.deref().clone();
                         }
+                        // The server can basically send anything and the clients will get it.
+                        // But if it specifically sends a json map with the field "receiver_id",
+                        // then it is not broadcasted but sent to that specific receiver. This
+                        // cursed code sees if this is the case and if so, if this receiver is
+                        // meant.
                         match message {
-                            // Message sanity is checked in server loop
-                            message => {
-                                write.send(message).await?;
+                            Message::Text(text) => {
+                                match serde_json::from_str(&text) {
+                                    Ok(Value::Object(map)) => {
+                                        let map = map.clone();
+                                        if map.contains_key("receiver_id") {
+                                            if map["receiver_id"] == client_id {
+                                                write.send(Message::Text(text)).await?;
+                                            }
+                                        } else {
+                                            write.send(Message::Text(text)).await?;
+                                        }
+                                    }
+                                    _ => {
+                                        write.send(Message::Text(text)).await?;
+                                    }
+                                }
                             },
+                            _ => {
+                                write.send(message).await?;
+                            }
                         }
                     }
                 }
