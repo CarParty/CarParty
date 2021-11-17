@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="Game" type="Spatial"]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 4.07045, 0 )
