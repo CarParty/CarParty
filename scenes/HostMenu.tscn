@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scenes/HostMenu.gd" type="Script" id=2]
+[ext_resource path="res://icon.png" type="Texture" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 70
@@ -47,19 +48,19 @@ margin_right = 1280.0
 margin_bottom = 657.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/separation = 150
+custom_constants/separation = 100
 
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer2/VBoxContainer"]
 margin_right = 1280.0
-margin_bottom = 152.0
+margin_bottom = 196.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="HostLabel" type="Label" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer"]
 margin_left = 357.0
-margin_top = 30.0
+margin_top = 52.0
 margin_right = 923.0
-margin_bottom = 122.0
+margin_bottom = 144.0
 custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
 custom_constants/shadow_offset_x = 5
 custom_constants/shadow_offset_y = 5
@@ -67,19 +68,34 @@ custom_fonts/font = SubResource( 1 )
 text = "Hosting Game"
 
 [node name="CenterContainer2" type="CenterContainer" parent="MarginContainer/VBoxContainer2/VBoxContainer"]
-margin_top = 302.0
+margin_top = 296.0
 margin_right = 1280.0
-margin_bottom = 355.0
+margin_bottom = 360.0
 
-[node name="Gamecode" type="Label" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2"]
-margin_left = 553.0
-margin_right = 727.0
-margin_bottom = 53.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2"]
+margin_left = 421.0
+margin_right = 859.0
+margin_bottom = 64.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 200
+
+[node name="Gamecode" type="Label" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer"]
+margin_top = 5.0
+margin_right = 174.0
+margin_bottom = 58.0
 custom_fonts/font = SubResource( 2 )
 text = "ABCD123"
 
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer"]
+margin_left = 374.0
+margin_right = 438.0
+margin_bottom = 64.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+
 [node name="CenterContainer3" type="CenterContainer" parent="MarginContainer/VBoxContainer2/VBoxContainer"]
-margin_top = 505.0
+margin_top = 460.0
 margin_right = 1280.0
 margin_bottom = 657.0
 size_flags_horizontal = 3
@@ -87,9 +103,9 @@ size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer3"]
 margin_left = 347.0
-margin_top = 46.0
+margin_top = 69.0
 margin_right = 932.0
-margin_bottom = 105.0
+margin_bottom = 128.0
 custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
 custom_constants/shadow_offset_x = 5
 custom_constants/shadow_offset_y = 5
