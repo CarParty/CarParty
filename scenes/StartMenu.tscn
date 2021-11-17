@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://resources/images/logo.png" type="Texture" id=1]
+[ext_resource path="res://scenes/buttons/HostGameButton.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/utility/FadeIn.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/StartMenu.gd" type="Script" id=4]
+[ext_resource path="res://scenes/buttons/ExitButton.tscn" type="PackedScene" id=5]
+
+[node name="StartMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Menu" type="VBoxContainer" parent="."]
+margin_left = 120.0
+margin_top = 80.0
+margin_right = 1160.0
+margin_bottom = 640.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Logo" type="TextureRect" parent="Menu"]
+margin_right = 1040.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 100, 200 )
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterRow" type="HBoxContainer" parent="Menu"]
+margin_top = 204.0
+margin_right = 1040.0
+margin_bottom = 560.0
+size_flags_vertical = 3
+
+[node name="Buttons" type="VBoxContainer" parent="Menu/CenterRow"]
+margin_right = 600.0
+margin_bottom = 356.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 20
+alignment = 1
+
+[node name="HostGameButton" parent="Menu/CenterRow/Buttons" instance=ExtResource( 2 )]
+margin_top = 88.0
+margin_right = 600.0
+margin_bottom = 168.0
+rect_min_size = Vector2( 370, 80 )
+
+[node name="ExitButton" parent="Menu/CenterRow/Buttons" instance=ExtResource( 5 )]
+margin_top = 188.0
+margin_right = 600.0
+margin_bottom = 268.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Menu/CenterRow"]
+margin_left = 604.0
+margin_right = 1040.0
+margin_bottom = 356.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="FadeIn" parent="." instance=ExtResource( 3 )]
+visible = false
+
+[connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]
