@@ -13,12 +13,19 @@ func _ready():
 	var key = gen_unique_string(6)
 	# TODO: connect to websocket and stuff with the key
 	
-	$MarginContainer/VBoxContainer/CenterContainer2/Gamecode.text = key
+	$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/Gamecode.text = key
 
 func _on_BackButton_pressed():
 	get_tree().change_scene("res://scenes/StartMenu.tscn")
+	
+func _on_StartButton_pressed():
+	get_tree().change_scene("res://scenes/Game.tscn")
 
 
 func _on_HostMenu_tree_exited():
 	# TODO: on exit close websocket and stuff
 	pass
+
+# TODO: check for player connections and set number of players connected
+
+
