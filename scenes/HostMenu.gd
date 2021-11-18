@@ -12,8 +12,10 @@ const ZINT_BINARY_OS = "resources\\qrcode\\zint"
 
 func gen_unique_string(length: int) -> String:
 	var result = ""
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
 	for _i in range(length):
-		result += ascii_letters[randi() % ascii_letters.length()]
+		result += ascii_letters[rng.randi_range(0, ascii_letters.length()-1)]
 	return result
 
 func _ready():
