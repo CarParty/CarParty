@@ -9,10 +9,13 @@ const QR_CODE_PATH_GODOT = "res://resources/qrcode/code.png"
 const QR_CODE_FOLDER_GODOT = "res://resources/qrcode"
 const ZINT_BINARY_OS = "resources\\qrcode\\zint"
 
-export var websocket_url = "wss://xn--bci0938m.ml/ws"
-var _client = WebSocketClient.new()
+export var websocket_url = "wss://cp.linus.space/ws"
+var _server = WebSocketClient.new()
+# test client for debugging
+#var _test_client = WebSocketClient.new()
 
 var key
+var clients = []
 
 func gen_unique_string(length: int) -> String:
 	var result = ""
@@ -29,22 +32,34 @@ func _ready():
 	# QR Code
 	load_qr_code()
 	$HTTPRequest.connect("request_completed", self, "_qrcode_request_completed")
-	$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = key
+	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = key
 	
 	# Connect base signals to get notified of connection open, close, and errors.
-	_client.connect("connection_closed", self, "_closed")
-	_client.connect("connection_error", self, "_closed")
-	_client.connect("connection_established", self, "_connected")
+	_server.connect("connection_closed", self, "_closed")
+	_server.connect("connection_error", self, "_closed")
+	_server.connect("connection_established", self, "_connected")
 	# This signal is emitted when not using the Multiplayer API every time
 	# a full packet is received.
 	# Alternatively, you could check get_peer(1).get_available_packets() in a loop.
-	_client.connect("data_received", self, "_on_data")
+	_server.connect("data_received", self, "_on_data")
 
 	# Initiate connection to the given URL.
-	var err = _client.connect_to_url(websocket_url)
+	var err = _server.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
+		
+	# Test client for debugging
+#	var time_in_seconds = 1
+#	yield(get_tree().create_timer(time_in_seconds), "timeout")
+#	_test_client.connect("connection_closed", self, "_closed_client")
+#	_test_client.connect("connection_error", self, "_closed_client")
+#	_test_client.connect("connection_established", self, "_connected_client")
+#	_test_client.connect("data_received", self, "_on_data_client")
+#	var err_test = _test_client.connect_to_url(websocket_url)
+#	if err_test != OK:
+#		print("Unable to connect")
+#		set_process(false)
 		
 	
 func load_qr_code():
@@ -59,7 +74,7 @@ func _qrcode_request_completed(result, response_code, headers, body):
 			print("Error in image download:", result, response_code)
 		var texture = ImageTexture.new()
 		texture.create_from_image(image)
-		$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/TextureRect.texture = texture
+		$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/TextureRect.texture = texture
 	else:
 		print("Error in HTTP Request:", result, response_code)
 
@@ -98,26 +113,53 @@ func _connected(proto = ""):
 	# and not put_packet directly when not using the MultiplayerAPI.
 	var message: Dictionary = {"action": "login_server","server_code": key}
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_client.get_peer(1).put_packet(packet)
+	_server.get_peer(1).put_packet(packet)
 	print("Sent message: "+packet.get_string_from_utf8())
-	
-	var message2: Dictionary = {"action": "login_client","server_code": key,"client_id": "467123746"}
-	var packet2: PoolByteArray = JSON.print(message2).to_utf8()
-	_client.get_peer(1).put_packet(packet2)
-	print("Sent message: "+packet2.get_string_from_utf8())
-	
-	var message3: Dictionary = {"receiver_id": "467123746",	"any_json_here": "dont_care"}
-	var packet3: PoolByteArray = JSON.print(message3).to_utf8()
-	_client.get_peer(1).put_packet(packet3)
-	print("Sent message: "+packet3.get_string_from_utf8())
 
 func _on_data():
 	# Print the received packet, you MUST always use get_peer(1).get_packet
 	# to receive data from server, and not get_packet directly when not
 	# using the MultiplayerAPI.
-	print("Got data from server: ", _client.get_peer(1).get_packet().get_string_from_utf8())
+	var data = _server.get_peer(1).get_packet()
+	print("Got data from server: ", data.get_string_from_utf8())
+	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
+	
+	if parsed_data.action == "connect":
+		clients.append(parsed_data.client_id)
+		print("Client connected "+parsed_data.client_id)
+	elif parsed_data.action == "disconnect":
+		clients.erase(parsed_data.client_id)
+		print("Client disconnected "+parsed_data.client_id)
+	else:
+		print(parsed_data)
+	
+	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(clients.size())
+	
+	
+# Additional functions for testing client
+#func _closed_client(was_clean = false):
+#	# was_clean will tell you if the disconnection was correctly notified
+#	# by the remote peer before closing the socket.
+#	print("Closed client, clean: ", was_clean)
+#	set_process(false)
+#
+#func _connected_client(proto = ""):
+#	# This is called on connection, "proto" will be the selected WebSocket
+#	# sub-protocol (which is optional)
+#	print("Client Connected with protocol: ", proto)
+#	var message: Dictionary = {"action": "login_client","server_code": key,"client_id": "467123746"}
+#	var packet: PoolByteArray = JSON.print(message).to_utf8()
+#	_test_client.get_peer(1).put_packet(packet)
+#	print("Sent message: "+packet.get_string_from_utf8())
+#
+#func _on_data_client():
+#	# Print the received packet, you MUST always use get_peer(1).get_packet
+#	# to receive data from server, and not get_packet directly when not
+#	# using the MultiplayerAPI.
+#	print("Got data from server client: ", _test_client.get_peer(1).get_packet().get_string_from_utf8())
 
 func _process(delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
 	# emission will only happen when calling this function.
-	_client.poll()
+	_server.poll()
+	#_test_client.poll()
