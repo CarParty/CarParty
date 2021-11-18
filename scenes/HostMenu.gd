@@ -28,7 +28,7 @@ func _ready():
 	$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = key
 	
 func load_qr_code():
-	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://google.com")
+	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://xn--bci0938m.ml/")
 	#var texture = get_resized_texture(image, 200, 200)
 
 
