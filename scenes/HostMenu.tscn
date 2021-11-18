@@ -132,6 +132,8 @@ size_flags_horizontal = 3
 custom_fonts/font = SubResource( 5 )
 text = "Start ->"
 
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
 [connection signal="tree_exited" from="." to="." method="_on_HostMenu_tree_exited"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]

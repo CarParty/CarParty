@@ -1,7 +1,7 @@
 extends Control
 
 # Code creation
-const ascii_letters_and_digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const ascii_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 # QR-Code
 const QR_CODE_PATH_OS = "resources\\qrcode\\code.png"
@@ -13,33 +13,37 @@ const ZINT_BINARY_OS = "resources\\qrcode\\zint"
 func gen_unique_string(length: int) -> String:
 	var result = ""
 	for _i in range(length):
-		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+		result += ascii_letters[randi() % ascii_letters.length()]
 	return result
 
 func _ready():
+	randomize()
 	# guess key until we have a valid one
-	var key = gen_unique_string(6)
+	var key = gen_unique_string(4)
 	# TODO: connect to websocket and stuff with the key
 	load_qr_code()
+	
+	$HTTPRequest.connect("request_completed", self, "_qrcode_request_completed")
 	
 	$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = key
 	
 func load_qr_code():
-	OS.execute(ZINT_BINARY_OS, ["-d", "https://www.google.com", "-b", "58", "-o", QR_CODE_PATH_OS, "--scale", "4"], false)
-	var image
-	var importer = Directory.new()
-	while image == null:
-		if importer.open(QR_CODE_FOLDER_GODOT) == OK:
-			importer.list_dir_begin()
-			var file_name = importer.get_next()
-			while(file_name != ""):
-				if file_name.ends_with(".png"):
-					image = load(QR_CODE_PATH_GODOT)
-				file_name = importer.get_next()
-			importer.list_dir_end()
+	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://google.com")
 	#var texture = get_resized_texture(image, 200, 200)
-	$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/TextureRect.texture = image
-	
+
+
+func _qrcode_request_completed(result, response_code, headers, body):
+	if response_code == 200:
+		var image = Image.new()
+		var image_error = image.load_png_from_buffer(body)
+		if image_error != OK:
+			print("Error in image download:", result, response_code)
+		var texture = ImageTexture.new()
+		texture.create_from_image(image)
+		$MarginContainer/VBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/TextureRect.texture = texture
+	else:
+		print("Error in HTTP Request:", result, response_code)
+
 func get_resized_texture(t: Texture, width: int = 0, height: int = 0):
 	var image = t.get_data()
 	if width > 0 && height > 0:
