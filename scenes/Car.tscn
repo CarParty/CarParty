@@ -222,9 +222,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
 mass = 30.0
 steering = 0.5
 script = ExtResource( 7 )
-MAX_ENGINE_FORCE = 100.0
-MAX_BRAKE_FORCE = 2.0
-MAX_STEER_ANGLE = 0.7
 
 [node name="CarBody1" type="Spatial" parent="."]
 transform = Transform( 20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0 )
