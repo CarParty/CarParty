@@ -32,7 +32,7 @@ _data = {
 environment = SubResource( 10 )
 
 [node name="Camera" type="Camera" parent="WorldEnvironment"]
-transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 0, 21.188, 0 )
+transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -4.4054e-07, 21.188, -10.0784 )
 current = true
 fov = 50.0
 size = 15.0
@@ -61,8 +61,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.294985, -7.49144 )
 transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car"]
-transform = Transform( -0.551385, 0.389428, -0.737781, -0.00366616, 0.883224, 0.468938, 0.834243, 0.26127, -0.485569, -2.09116, 1.88855, -1.29433 )
-current = true
+transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
 fov = 85.7
 
 [node name="Path" type="Path" parent="WorldEnvironment"]
