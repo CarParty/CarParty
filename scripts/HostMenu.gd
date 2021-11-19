@@ -56,7 +56,7 @@ func load_qr_code():
 	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&color=263138&data=https://xn--bci0938m.ml/")
 
 
-func _qrcode_request_completed(result, response_code, headers, body):
+func _qrcode_request_completed(result, response_code, _headers, body):
 	if response_code == 200:
 		var image = Image.new()
 		var image_error = image.load_png_from_buffer(body)
@@ -77,9 +77,7 @@ func get_resized_texture(t: Texture, width: int = 0, height: int = 0):
 	return itex
 
 func _on_BackButton_pressed():
-	scene_path_to_load = "res://scenes/StartMenu.tscn"
-	$FadeIn.show()
-	$FadeIn.fade_in()
+	get_tree().change_scene("res://scenes/StartMenu.tscn")
 	
 	
 func _on_StartButton_pressed():
@@ -88,14 +86,12 @@ func _on_StartButton_pressed():
 	$FadeIn.fade_in()
 	
 func _on_FadeIn_fade_finished():
-	get_tree().change_scene(scene_path_to_load)
 	if scene_path_to_load == "res://scenes/Game.tscn":
 		print("Racing phase started.")
-		var time_in_seconds = 3
-		yield(get_tree().create_timer(time_in_seconds), "timeout")
 		var message: Dictionary = {"action": "phase_change","phase": "racing"}
 		var packet: PoolByteArray = JSON.print(message).to_utf8()
 		_server.get_peer(1).put_packet(packet)
+	get_tree().change_scene(scene_path_to_load)
 
 
 func _on_HostMenu_tree_exited():
@@ -166,7 +162,7 @@ func _on_data():
 	
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(clients.size())
 	
-func _process(delta):
+func _process(_delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
 	# emission will only happen when calling this function.
 	_server.poll()
