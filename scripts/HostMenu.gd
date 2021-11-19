@@ -14,6 +14,7 @@ var _server = WebSocketClient.new()
 
 var key
 var clients = []
+var player_names = {}
 
 func gen_unique_string(length: int) -> String:
 	var result = ""
@@ -110,14 +111,29 @@ func _on_data():
 	print("Got data from server: ", data.get_string_from_utf8())
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
 	
-	if parsed_data.action == "connect":
-		clients.append(parsed_data.client_id)
-		print("Client connected "+parsed_data.client_id)
-	elif parsed_data.action == "disconnect":
-		clients.erase(parsed_data.client_id)
-		print("Client disconnected "+parsed_data.client_id)
+	if parsed_data.has("action"):
+		match parsed_data.action:
+			"connect":
+				print("Client connected "+parsed_data.client_id)
+				clients.append(parsed_data.client_id)
+				var time_in_seconds = 1
+				yield(get_tree().create_timer(time_in_seconds), "timeout")
+				var message: Dictionary = {"action": "phase_change","phase": "naming_phase"}
+				var packet: PoolByteArray = JSON.print(message).to_utf8()
+				_server.get_peer(1).put_packet(packet)
+				print("Sent message: "+packet.get_string_from_utf8())
+			"disconnect":
+				clients.erase(parsed_data.client_id)
+				print("Client disconnected "+parsed_data.client_id)
+			"player_name":
+				player_names[parsed_data.client_id] = parsed_data.name
+				print("Player connected: "+player_names[parsed_data.client_id])
+			"speed_change":
+				print("NOT IMPLEMENTED! Player speed change: "+str(parsed_data.value))
+			_:
+				print("Action not implemented: "+str(parsed_data))
 	else:
-		print(parsed_data)
+		print("Error: received packet had no action field!")
 	
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(clients.size())
 	
