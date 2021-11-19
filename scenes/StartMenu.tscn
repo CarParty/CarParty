@@ -69,4 +69,5 @@ size_flags_vertical = 3
 [node name="FadeIn" parent="." instance=ExtResource( 3 )]
 visible = false
 
+[connection signal="pressed" from="Menu/CenterRow/Buttons/HostGameButton" to="." method="_on_HostGameButton_pressed"]
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]

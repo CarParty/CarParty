@@ -16,6 +16,8 @@ var key
 var clients = []
 var player_names = {}
 
+var scene_path_to_load
+
 func gen_unique_string(length: int) -> String:
 	var result = ""
 	var rng = RandomNumberGenerator.new()
@@ -74,10 +76,25 @@ func get_resized_texture(t: Texture, width: int = 0, height: int = 0):
 	return itex
 
 func _on_BackButton_pressed():
-	get_tree().change_scene("res://scenes/StartMenu.tscn")
+	scene_path_to_load = "res://scenes/StartMenu.tscn"
+	$FadeIn.show()
+	$FadeIn.fade_in()
+	
 	
 func _on_StartButton_pressed():
-	get_tree().change_scene("res://scenes/Game.tscn")
+	scene_path_to_load = "res://scenes/Game.tscn"
+	$FadeIn.show()
+	$FadeIn.fade_in()
+	
+func _on_FadeIn_fade_finished():
+	get_tree().change_scene(scene_path_to_load)
+	if scene_path_to_load == "res://scenes/Game.tscn":
+		print("Racing phase started.")
+		var time_in_seconds = 3
+		yield(get_tree().create_timer(time_in_seconds), "timeout")
+		var message: Dictionary = {"action": "phase_change","phase": "racing"}
+		var packet: PoolByteArray = JSON.print(message).to_utf8()
+		_server.get_peer(1).put_packet(packet)
 
 
 func _on_HostMenu_tree_exited():
@@ -102,6 +119,7 @@ func _connected(proto = ""):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).put_packet(packet)
 	print("Sent message: "+packet.get_string_from_utf8())
+	
 
 func _on_data():
 	# Print the received packet, you MUST always use get_peer(1).get_packet
@@ -116,9 +134,7 @@ func _on_data():
 			"connect":
 				print("Client connected "+parsed_data.client_id)
 				clients.append(parsed_data.client_id)
-				var time_in_seconds = 1
-				yield(get_tree().create_timer(time_in_seconds), "timeout")
-				var message: Dictionary = {"action": "phase_change","phase": "naming_phase"}
+				var message: Dictionary = {"receiver_id": parsed_data.client_id,"action": "phase_change","phase": "naming"}
 				var packet: PoolByteArray = JSON.print(message).to_utf8()
 				_server.get_peer(1).put_packet(packet)
 				print("Sent message: "+packet.get_string_from_utf8())
@@ -127,6 +143,9 @@ func _on_data():
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				player_names[parsed_data.client_id] = parsed_data.name
+				var message: Dictionary = {"receiver_id": parsed_data.client_id,"action": "phase_change","phase": "waiting"}
+				var packet: PoolByteArray = JSON.print(message).to_utf8()
+				_server.get_peer(1).put_packet(packet)
 				print("Player connected: "+player_names[parsed_data.client_id])
 			"speed_change":
 				print("NOT IMPLEMENTED! Player speed change: "+str(parsed_data.value))
@@ -141,3 +160,6 @@ func _process(delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
 	# emission will only happen when calling this function.
 	_server.poll()
+
+
+
