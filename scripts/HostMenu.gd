@@ -44,6 +44,7 @@ func _ready():
 	# Alternatively, you could check get_peer(1).get_available_packets() in a loop.
 	_server.connect("data_received", self, "_on_data")
 
+
 	# Initiate connection to the given URL.
 	var err = _server.connect_to_url(websocket_url)
 	if err != OK:
@@ -117,8 +118,15 @@ func _connected(proto = ""):
 	# and not put_packet directly when not using the MultiplayerAPI.
 	var message: Dictionary = {"action": "login_server","server_code": key}
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
+	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
 	print("Sent message: "+packet.get_string_from_utf8())
+	
+
+	var message2: Dictionary = {"abc": "def"}
+	var packet2: PoolByteArray = JSON.print(message2).to_utf8()
+	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+	_server.get_peer(1).put_packet(packet2)
 	
 
 func _on_data():
@@ -136,6 +144,7 @@ func _on_data():
 				clients.append(parsed_data.client_id)
 				var message: Dictionary = {"receiver_id": parsed_data.client_id,"action": "phase_change","phase": "naming"}
 				var packet: PoolByteArray = JSON.print(message).to_utf8()
+				_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 				_server.get_peer(1).put_packet(packet)
 				print("Sent message: "+packet.get_string_from_utf8())
 			"disconnect":
@@ -145,6 +154,7 @@ func _on_data():
 				player_names[parsed_data.client_id] = parsed_data.name
 				var message: Dictionary = {"receiver_id": parsed_data.client_id,"action": "phase_change","phase": "waiting"}
 				var packet: PoolByteArray = JSON.print(message).to_utf8()
+				_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 				_server.get_peer(1).put_packet(packet)
 				print("Player connected: "+player_names[parsed_data.client_id])
 			"speed_change":
