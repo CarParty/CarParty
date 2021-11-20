@@ -14,3 +14,6 @@ transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="RootNode/Track/StaticBody" index="0"]
 shape = SubResource( 1 )
+
+[node name="Plane" parent="RootNode" index="5"]
+visible = false
