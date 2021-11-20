@@ -22,8 +22,8 @@ albedo_texture = ExtResource( 2 )
 
 [sub_resource type="Curve3D" id=11]
 _data = {
-"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 2.39829, 0.148764, -0.748777, 0, 0, 0, 0, 0, 0, 2.93595, 0.131661, -4.98417, 0, 0, 0, 0, 0, 0, 4.414, 0.185392, -9.59579, 0, 0, 0, 0, 0, 0, 3.80492, 0.147191, -13.6421, 0, 0, 0, 0, 0, 0, 0.419098, 0.226768, -13.7009, 0, 0, 0, 0, 0, 0, -1.45732, 0.561764, -10.0258, 0, 0, 0, 0, 0, 0, -0.225445, 1.10448, -6.67887, 0, 0, 0, 0, 0, 0, -0.251444, 1.08914, -5.92418, 0, 0, 0, 0, 0, 0, -0.50906, 1.02264, -4.73319, 0, 0, 0, 0, 0, 0, -1.14941, 0.349931, -1.76556, 0, 0, 0, 0, 0, 0, 0.030841, 0.274298, 0.143125, 0, 0, 0, 0, 0, 0, 2.39829, 0.148764, -0.748777 ),
-"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 2.39829, 0.148764, -0.748777, 0, 0, 0, 0, 0, 0, 2.93595, 0.131661, -4.98417, 0, 0, 0, 0, 0, 0, 4.414, 0.185392, -9.59579, 0, 0, 0, 0, 0, 0, 5.12457, -0.127471, -11.1141, 0, 0, 0, 0, 0, 0, 3.80492, 0.147191, -13.6421, 0, 0, 0, 0, 0, 0, 0.419098, 0.226768, -13.7009, 0, 0, 0, 0, 0, 0, -1.45732, 0.561764, -10.0258, 0, 0, 0, 0, 0, 0, -0.225445, 1.10448, -6.67887, 0, 0, 0, 0, 0, 0, -0.251444, 1.08914, -5.92418, 0, 0, 0, 0, 0, 0, -0.50906, 1.02264, -4.73319, 0, 0, 0, 0, 0, 0, -1.14941, 0.349931, -1.76556, 0, 0, 0, 0, 0, 0, 0.030841, 0.274298, 0.143125, 0, 0, 0, 0, 0, 0, 2.39829, 0.148764, -0.748777 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
 }
 
 [node name="Game" type="Spatial"]
@@ -32,9 +32,9 @@ _data = {
 environment = SubResource( 10 )
 
 [node name="Camera" type="Camera" parent="WorldEnvironment"]
-transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -4.4054e-07, 21.188, -10.0784 )
+transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 25, -12 )
 current = true
-fov = 50.0
+fov = 52.3
 size = 15.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="WorldEnvironment"]
@@ -55,71 +55,36 @@ mesh = SubResource( 6 )
 material/0 = null
 
 [node name="Track" parent="WorldEnvironment" instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.294985, -7.49144 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.951986, -7.49144 )
 
 [node name="Car" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
+transform = Transform( -0.804915, 0, 0.593391, 0, 1, 0, -0.593391, 0, -0.804915, -0.0280406, 1.15295, -1.03511 )
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car"]
 transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
 fov = 85.7
 
 [node name="Path" type="Path" parent="WorldEnvironment"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.84217, 0.596224, -3.3632 )
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, -4.84943, 0.957179, 0.373512 )
 curve = SubResource( 11 )
 
 [node name="Car2" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
+transform = Transform( -0.804915, 0, 0.593391, 0, 1, 0, -0.593391, 0, -0.804915, -0.0280406, 1.15295, -1.03511 )
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car2"]
 transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
 fov = 85.7
 
 [node name="Car3" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
+transform = Transform( -0.804915, 0, 0.593391, 0, 1, 0, -0.593391, 0, -0.804915, -0.0280406, 1.15295, -1.03511 )
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car3"]
 transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
 fov = 85.7
 
 [node name="Car4" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
+transform = Transform( -0.804915, 0, 0.593391, 0, 1, 0, -0.593391, 0, -0.804915, -0.0280406, 1.15295, -1.03511 )
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car4"]
-transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
-fov = 85.7
-
-[node name="Car5" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
-
-[node name="Camera2" type="Camera" parent="WorldEnvironment/Car5"]
-transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
-fov = 85.7
-
-[node name="Car6" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, -0.123, 1.15295, -2.6129 )
-
-[node name="Camera2" type="Camera" parent="WorldEnvironment/Car6"]
-transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
-fov = 85.7
-
-[node name="Car7" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, 1.1615, 1.15295, -3.78667 )
-
-[node name="Camera2" type="Camera" parent="WorldEnvironment/Car7"]
-transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
-fov = 85.7
-
-[node name="Car8" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, 1.1615, 1.15295, -3.78667 )
-
-[node name="Camera2" type="Camera" parent="WorldEnvironment/Car8"]
-transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
-fov = 85.7
-
-[node name="Car9" parent="WorldEnvironment" instance=ExtResource( 3 )]
-transform = Transform( -0.674573, 0, 0.738208, 0, 1, 0, -0.738208, 0, -0.674573, 1.1615, 1.15295, -3.78667 )
-
-[node name="Camera2" type="Camera" parent="WorldEnvironment/Car9"]
 transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
 fov = 85.7

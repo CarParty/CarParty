@@ -219,8 +219,7 @@ extents = Vector3( 0.301983, 0.304054, 0.753898 )
 
 [node name="Car" type="VehicleBody"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
-mass = 30.0
-steering = 0.5
+mass = 35.0
 script = ExtResource( 7 )
 
 [node name="CarBody1" type="Spatial" parent="."]
@@ -239,11 +238,10 @@ material/4 = null
 
 [node name="Wheel1" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0, 0.35 )
-steering = 0.5
 use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
-wheel_friction_slip = 2.0
+wheel_friction_slip = 3.0
 suspension_travel = 0.07
 suspension_stiffness = 200.0
 suspension_max_force = 2000.0
@@ -260,7 +258,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0, -0.45 )
 use_as_traction = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
-wheel_friction_slip = 2.0
+wheel_friction_slip = 3.0
 suspension_travel = 0.07
 suspension_stiffness = 200.0
 suspension_max_force = 2000.0
@@ -280,7 +278,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0, -0.45 )
 use_as_traction = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
-wheel_friction_slip = 2.0
+wheel_friction_slip = 3.0
 suspension_travel = 0.07
 suspension_stiffness = 200.0
 suspension_max_force = 2000.0
@@ -297,11 +295,10 @@ material/1 = null
 
 [node name="Wheel4" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0, 0.35 )
-steering = 0.5
 use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
-wheel_friction_slip = 2.0
+wheel_friction_slip = 3.0
 suspension_travel = 0.07
 suspension_stiffness = 200.0
 suspension_max_force = 2000.0
