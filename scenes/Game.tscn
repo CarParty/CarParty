@@ -62,6 +62,7 @@ transform = Transform( -0.804915, 0, 0.593391, 0, 1, 0, -0.593391, 0, -0.804915,
 
 [node name="Camera2" type="Camera" parent="WorldEnvironment/Car"]
 transform = Transform( -1, 1.04308e-07, -1.49012e-07, 0, 0.868329, 0.495989, 1.78814e-07, 0.495989, -0.868328, -4.76837e-07, 2.81994, -2.69836 )
+current = true
 fov = 85.7
 
 [node name="Path" type="Path" parent="WorldEnvironment"]
