@@ -118,7 +118,6 @@ func _on_data():
 				print("Player connected: "+Global.player_names[parsed_data.client_id])
 			"speed_change":
 				Global.player_speed[parsed_data.client_id] = parsed_data.value
-				print("NOT IMPLEMENTED! Player speed change: "+str(parsed_data.value))
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:
