@@ -1,10 +1,13 @@
 extends Node
 
+const epsilon = 0.001
+
 var current_scene = null
 
 var key
 var clients = []
 var player_names = {}
+var player_speed = {}
 
 
 func _ready():

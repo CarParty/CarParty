@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/tracks/Track01.tscn" type="PackedScene" id=1]
+
+[node name="TrackWithStuff" type="Spatial"]
+
+[node name="Track" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.951986, -7.49144 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 25, -12 )
+current = true
+fov = 52.3
+size = 15.0
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 6.64482, 24.5967, -0.61457 )
+light_energy = 1.514
+
+[node name="CarPositions" type="Spatial" parent="."]
+transform = Transform( -0.993572, 0, 0.113203, 0, 1, 0, -0.113203, 0, -0.993572, 0, 1.38798, -1.70758 )
+
+[node name="Position1" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.999413, 0, -0.0342542, 0, 1, 0, 0.0342542, 0, -0.999413, 0, 0, 0 )
+
+[node name="Position2" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.997184, 0, -0.0749962, 0, 1, 0, 0.0749962, 0, -0.997184, -1.11877, 0, 0.127468 )
+
+[node name="Position3" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.99398, 0, -0.109561, 0, 1, 0, 0.109561, 0, -0.99398, -2.12798, 0, 0.242453 )
+
+[node name="Position4" type="Position3D" parent="CarPositions"]
+transform = Transform( 0.157831, 0, -0.987466, 0, 1, 0, 0.987466, 0, 0.157831, -3.1422, 0, 0.358008 )

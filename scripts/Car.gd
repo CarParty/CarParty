@@ -18,9 +18,9 @@ var steer_target = 0.0
 #export var joy_steering = JOY_ANALOG_LX
 #export var steering_mult = -1.0
 export var joy_throttle = JOY_ANALOG_R2
-export var throttle_mult = 1.0
+export var throttle_mult = 0
 export var joy_brake = JOY_ANALOG_L2
-export var brake_mult = 1.0
+export var brake_mult = 0
 
 export var follow_length = 1.5
 
@@ -34,23 +34,23 @@ func _ready():
 	path_follow.offset = 0.0
 	path_follow.loop = true
 	path_follow.add_child(debug_sphere)
+	
+func change_speed(value):
+	if value+Global.epsilon >= throttle_mult:
+		throttle_mult = value
+		brake_mult = 0
+	else:
+		brake_mult = 1.0
+		if (self.transform.basis * self.linear_velocity).z < 0.5:
+			brake_mult = 0.0
+			throttle_mult = -0.5
+		else:
+			brake_mult = 1.0
 
 func _physics_process(delta):
-	var throttle_val = 0.0
-	var brake_val = 0.0
-	var reverse_val = 0.0
-	if Input.is_action_pressed("ui_up"):
-		throttle_val = 1.0
-	if Input.is_action_pressed("ui_down"):
-		brake_val = 1.0
-		if (self.transform.basis * self.linear_velocity).z < 0.5:
-			brake_val = 0.0
-			throttle_val = -0.5
-		else:
-			brake_val = 1.0
 		
-	engine_force = throttle_val * MAX_ENGINE_FORCE
-	brake = brake_val * MAX_BRAKE_FORCE
+	engine_force = throttle_mult * MAX_ENGINE_FORCE
+	brake = brake_mult * MAX_BRAKE_FORCE
 	
 	# compute distance between pathfollow and this
 	var projected_translation = Vector2(self.get_global_transform().origin.x, self.get_global_transform().origin.z)

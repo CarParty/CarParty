@@ -3,6 +3,7 @@ extends Node
 export var websocket_url = "wss://cp.linus.space/ws"
 var _server = WebSocketClient.new()
 
+
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -105,6 +106,7 @@ func _on_data():
 		match parsed_data.action:
 			"connect":
 				Global.clients.append(parsed_data.client_id)
+				Global.player_speed[parsed_data.client_id] = 0
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
@@ -115,11 +117,14 @@ func _on_data():
 				start_phase_player("waiting", parsed_data.client_id)
 				print("Player connected: "+Global.player_names[parsed_data.client_id])
 			"speed_change":
+				Global.player_speed[parsed_data.client_id] = parsed_data.value
 				print("NOT IMPLEMENTED! Player speed change: "+str(parsed_data.value))
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:
 		print("Error: received packet had no action field!")
+		
+	
 	
 	
 	
