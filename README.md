@@ -13,7 +13,7 @@ message
 
 	{
 		"action": "login_server",
-		"server_code" "SNEK"
+		"server_code": "SNEK"
 	}
 
 If there is no server running on this code, the relay will not close the connection. Now clients can
@@ -21,7 +21,7 @@ log in by connecting and sending the first message
 
 	{
 		"action": "login_client",
-		"server_code" "SNEK",
+		"server_code": "SNEK",
 		"client_id": "467123746"
 	}
 
