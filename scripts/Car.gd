@@ -3,7 +3,7 @@ extends VehicleBody
 ############################################################
 # behaviour values
 
-export var MAX_ENGINE_FORCE = 150.0
+export var MAX_ENGINE_FORCE = 250.0
 export var MAX_BRAKE_FORCE = 5.0
 export var MAX_STEER_ANGLE = 0.6
 
@@ -59,7 +59,11 @@ func _physics_process(delta):
 	#print(path_follow_translation)
 	
 	var closest_offset = path.curve.get_closest_offset(path.to_local(self.get_global_transform().origin))
-	path_follow.offset = closest_offset + follow_length
+	
+	if engine_force >= -0.5:
+		path_follow.offset = closest_offset + follow_length
+	else:
+		path_follow.offset = closest_offset - follow_length
 	
 	# move ahead the pathfollow
 	#while (path_follow_translation - projected_translation).length() < follow_length:
@@ -73,7 +77,7 @@ func _physics_process(delta):
 	#print("path follow - own", delta_vec)
 	var angle = -own_normal.angle_to(delta_vec)
 	
-	
+
 	
 	#print("angle", angle)
 	steer_target = angle
