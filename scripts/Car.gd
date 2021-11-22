@@ -40,11 +40,11 @@ func change_speed(value):
 		throttle_mult = value
 		brake_mult = 0
 	else:
-		brake_mult = 1.0
-		if (self.transform.basis * self.linear_velocity).z < 0.5:
+		if (self.transform.basis * self.linear_velocity).z < 0.7:
 			brake_mult = 0.0
 			throttle_mult = -0.5
 		else:
+			print((self.transform.basis * self.linear_velocity).z)
 			brake_mult = 1.0
 
 func _physics_process(delta):
