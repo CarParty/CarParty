@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{mpsc, watch};
+use tokio::time::{interval, Duration};
 use tokio_tungstenite::tungstenite::Message;
 
 lazy_static! {
@@ -100,6 +101,9 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             senders_map.insert(login_message.server_code.to_string(), mpsc_sender);
             recievers_map.insert(login_message.server_code.to_string(), watch_reciever);
         }
+        // Create a timer for pings and pongs
+        let mut ping_timer = interval(Duration::from_secs(1));
+
         // Put this into closure to definitely close the map connection
         let select_result: Result<()> = async {
             loop {
@@ -113,6 +117,12 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                             Ok(Message::Text(text)) => {
                                 watch_sender.send(Message::Text(text))?;
                             }
+                            Ok(Message::Ping(data)) => {
+                                write.send(Message::Ping(data)).await?;
+                            }
+                            Ok(Message::Pong(_data)) => {
+                                // TODO: handle the pongs
+                            }
                             message => {
                                 message?;
                             }
@@ -121,6 +131,9 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                     // Message sanity is checked in client loop
                     Some(message) = mpsc_reciever.recv() => {
                         write.send(message).await?;
+                    }
+                    _tick = ping_timer.tick() => {
+                        write.send(Message::Ping(Vec::new())).await?;
                     }
                 }
             }
@@ -168,6 +181,8 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                 },
             )?))
             .await?;
+        // Create a timer for pings and pongs
+        let mut ping_timer = interval(Duration::from_secs(1));
         // Put this into closure to definitely send the disconnect message
         let select_result: Result<()> = async {
             loop {
@@ -188,11 +203,16 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                                         let data = Value::Object(map);
                                         sender.send(Message::Text(serde_json::to_string(&data)?)).await?;
                                     }
-                                    other => {
+                                    _other => {
                                         // >:( you need to send objects!
-                                        return Err(eyre!("{} sent some other value than an object: {}", client_id, other));
                                     }
                                 }
+                            }
+                            Ok(Message::Ping(data)) => {
+                                write.send(Message::Ping(data)).await?;
+                            }
+                            Ok(Message::Pong(_data)) => {
+                                // TODO: handle the pongs
                             }
                             message => {
                                 message?;
@@ -232,6 +252,9 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                                 write.send(message).await?;
                             }
                         }
+                    }
+                    _tick = ping_timer.tick() => {
+                        write.send(Message::Ping(Vec::new())).await?;
                     }
                 }
             }
