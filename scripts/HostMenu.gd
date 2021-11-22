@@ -24,7 +24,7 @@ func _ready():
 	Client.connect_to_url()	
 	
 func load_qr_code():
-	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&color=263138&data=https://xn--bci0938m.ml/")
+	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&color=263138&data=https://xn--bci0938m.ml/?room=" + Global.key)
 
 
 func _qrcode_request_completed(result, response_code, _headers, body):
