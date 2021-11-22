@@ -1,3 +1,4 @@
+import { Connection } from '../connection';
 import css from './acceleration.component.css';
 import template from './acceleration.component.html';
 
@@ -13,6 +14,8 @@ export class AccelerationComponent extends HTMLElement {
   private root: HTMLElement | null;
 
   private controlEl: HTMLDivElement;
+
+  public connection?: Connection;
 
   static get observedAttributes(): string[] {
     return [];
@@ -46,7 +49,9 @@ export class AccelerationComponent extends HTMLElement {
   }
 
   private onThrottleMove(value: number): void {
-    this.controlEl.style.top = `${Math.max(5, Math.min(95, value / window.innerHeight * 100)) - 5}%`;
+    const throttle = value / window.innerHeight;
+    this.controlEl.style.top = `${Math.max(5, Math.min(95, throttle * 100)) - 5}%`;
+    this.connection?.send({ action: 'speed_change', value: throttle * -2 + 1 });
   }
 
   public connectedCallback(): void {
