@@ -230,7 +230,7 @@ transform = Transform( 20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0 )
 [node name="Body1" type="MeshInstance" parent="CarBody1/CarBody"]
 transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
 mesh = SubResource( 1 )
-material/0 = null
+material/0 = ExtResource( 5 )
 material/1 = null
 material/2 = null
 material/3 = null

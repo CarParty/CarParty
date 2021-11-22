@@ -35,6 +35,12 @@ func _ready():
 	path_follow.loop = true
 	path_follow.add_child(debug_sphere)
 	
+	randomize()
+	var color = Color.from_hsv(randf(), .7, .79)
+	var material = $CarBody1/CarBody/Body1.get_surface_material(0).duplicate()
+	material.albedo_color = color
+	$CarBody1/CarBody/Body1.set_surface_material(0, material)
+
 func change_speed(value):
 	if value+Global.epsilon >= throttle_mult:
 		throttle_mult = value
