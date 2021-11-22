@@ -99,7 +99,6 @@ func _on_data():
 	# to receive data from server, and not get_packet directly when not
 	# using the MultiplayerAPI.
 	var data = _server.get_peer(1).get_packet()
-	print("Got data from server: ", data.get_string_from_utf8())
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
 	
 	if parsed_data.has("action"):
