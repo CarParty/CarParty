@@ -75,6 +75,10 @@ module.exports = env => {
               // Compile Sass to CSS
               loader: 'sass-loader'
             }]
+        },
+        {
+          test: /\.riv$/,
+          type: 'asset/resource'
         }
       ],
     },

@@ -11,6 +11,9 @@
   },
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "rive-js": "^0.7.33"
+  },
   "devDependencies": {
     "@types/css": "^0.0.33",
     "autoprefixer": "^10.4.0",

@@ -1,4 +1,6 @@
+import { Alignment, Fit, Layout, Rive } from 'rive-js';
 import { Connection } from '../connection';
+import Animation from './carjump.riv';
 import css from './waitingPhase.component.css';
 import template from './waitingPhase.component.html';
 
@@ -26,7 +28,7 @@ export class WaitingPhaseComponent extends HTMLElement {
     this.shadow = shadow;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `${(window as any).moodleOpaqueResourcePath ?? 'assets/'}styles.css`;
+    link.href = 'assets/styles.css';
     this.shadow.appendChild(link);
     shadow.appendChild(templateEl.content.cloneNode(true));
     shadow.appendChild(cssContainer.cloneNode(true));
@@ -36,6 +38,13 @@ export class WaitingPhaseComponent extends HTMLElement {
       console.error('root not found');
       return;
     }
+
+    const riveAnimation = new Rive({
+      src: Animation,
+      canvas: this.shadow.getElementById('canvas'),
+      autoplay: true
+    });
+    riveAnimation.layout = new Layout({ fit: Fit.Cover, alignment: Alignment.Center });
   }
 
   private appendTextNode(value: string): void {
