@@ -3,7 +3,7 @@ extends VehicleBody
 ############################################################
 # behaviour values
 
-export var MAX_ENGINE_FORCE = 250.0
+export var MAX_ENGINE_FORCE = 180.0
 export var MAX_BRAKE_FORCE = 5.0
 export var MAX_STEER_ANGLE = 0.6
 
@@ -29,7 +29,9 @@ onready var path_follow = PathFollow.new()
 
 onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
 
+
 func _ready():
+	
 	path.add_child(path_follow)
 	path_follow.offset = 0.0
 	path_follow.loop = true
@@ -46,9 +48,9 @@ func change_speed(value):
 		throttle_mult = value
 		brake_mult = 0
 	else:
-		if (self.transform.basis * self.linear_velocity).z < 0.7:
-			brake_mult = 0.0
-			throttle_mult = -0.5
+		if ((self.transform.basis * self.linear_velocity).z < 0.7):
+			brake_mult = 0.15
+			throttle_mult = value
 		else:
 			brake_mult = 1.0
 

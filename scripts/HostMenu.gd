@@ -14,6 +14,7 @@ func gen_unique_string(length: int) -> String:
 	return result
 
 func _ready():
+	
 	# guess key until we have a valid one
 	Global.key = gen_unique_string(4)
 	# QR Code
