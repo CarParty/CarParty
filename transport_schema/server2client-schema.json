@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string"
+    },
+    "receiver_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "action": {
+          "enum": [
+            "login_server"
+          ]
+        },
+        "server_code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_code"
+      ]
+    },
+    {
+      "properties": {
+        "action": {
+          "enum": [
+            "phase_change"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "naming",
+            "waiting",
+            "drawing",
+            "racing",
+            "ending"
+          ]
+        }
+      },
+      "required": [
+        "phase"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "action": {
+          "enum": [
+            "login_client"
+          ]
+        },
+        "server_code": {
+          "type": "string"
+        },
+        "client_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_code",
+        "client_id"
+      ]
+    },
+    {
+      "properties": {
+        "action": {
+          "enum": [
+            "speed_change"
+          ]
+        },
+        "value": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    {
+      "properties": {
+        "action": {
+          "enum": [
+            "player_name"
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  ]
+}
