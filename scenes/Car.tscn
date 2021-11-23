@@ -220,8 +220,8 @@ extents = Vector3( 0.301983, 0.304054, 0.753898 )
 [node name="Car" type="VehicleBody"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
 mass = 53.09
-gravity_scale = 1.5
 script = ExtResource( 7 )
+MAX_ENGINE_FORCE = 200.0
 
 [node name="CarBody1" type="Spatial" parent="."]
 transform = Transform( 20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0 )
