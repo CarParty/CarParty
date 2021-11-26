@@ -1,7 +1,5 @@
 extends Node
 
-
-
 var shapes = {}
 var path_segment = {}
 var path4test = []
@@ -14,8 +12,7 @@ func _area_to_aabb(area: Area):
 	var shape = collision_shape.shape as BoxShape
 	return AABB(collision_shape.to_global(-shape.extents), shape.extents*2)
 
-# 
-func intial_track_area(track_meshes: Dictionary, track_node: Spatial):
+func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
 	var draw_area_node = track_node.get_node("DrawAreas")
 	for area in draw_area_node.get_children():
 		shapes[area.name] = {}
@@ -93,5 +90,3 @@ func test_generate_path4area():
 		draw.add_vertex(x)
 	
 	draw.end()
-	
-	
