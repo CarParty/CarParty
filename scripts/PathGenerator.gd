@@ -1,7 +1,5 @@
 extends Node
 
-
-
 var shapes = {}
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -12,8 +10,7 @@ func _area_to_aabb(area: Area):
 	var shape = collision_shape.shape as BoxShape
 	return AABB(collision_shape.to_global(-shape.extents), shape.extents*2)
 
-# 
-func intial_track_area(track_meshes: Dictionary, track_node: Spatial):
+func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
 	var draw_area_node = track_node.get_node("DrawAreas")
 	for area in draw_area_node.get_children():
 		shapes[area.name] = {}
@@ -190,6 +187,7 @@ func test_generate_path4area():
 		x.y += 1
 		draw.add_vertex(x)
 	draw.end()
+<<<<<<< HEAD
 #
 #	draw.begin(Mesh.PRIMITIVE_LINE_STRIP)
 #	draw.set_color(Color( 0, 1, 1, 1 ))
@@ -198,3 +196,5 @@ func test_generate_path4area():
 #		draw.add_vertex(x)
 #	draw.end()
 
+=======
+>>>>>>> 4f33711d751c3513744ba3041c56e97c53797e42

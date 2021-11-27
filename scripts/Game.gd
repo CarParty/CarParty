@@ -31,8 +31,8 @@ func _ready():
 	$TrackTransformer.transform_track(track_meshes, track_node)
 	
 	# just for test
-	$PathGenerator.intial_track_area(track_meshes, track_node)
-	$PathGenerator.test_generate_path4area()
+	$PathGenerator.initialize_track_area(track_meshes, track_node)
+	# $PathGenerator.test_generate_path4area()
 
 func _process(_delta):
 	for client in Global.clients:
