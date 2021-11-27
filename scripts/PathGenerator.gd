@@ -3,8 +3,6 @@ extends Node
 
 
 var shapes = {}
-var path_segment = {}
-var path4test = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -33,8 +31,6 @@ func intial_track_area(track_meshes: Dictionary, track_node: Spatial):
 				var vertex_local_space = mdt.get_vertex(mdt.get_face_vertex(face_id, i))
 				vertices.append(track_meshes[tag].to_global(vertex_local_space))
 				
-				path4test.append(track_meshes[tag].to_global(vertex_local_space))
-				
 			# double for is not quadratic time becuase 3 vertices only
 			for area in draw_area_node.get_children():
 				for v in vertices:
@@ -47,17 +43,17 @@ func intial_track_area(track_meshes: Dictionary, track_node: Spatial):
 	for area in draw_area_node.get_children():
 		for child in area.get_children():
 			var aabb = _area_to_aabb(child)
-			shapes[area.name][child.name] = {
-				"position": aabb.position,
-				"size": aabb.size
-			}
+			shapes[area.name][child.name] = aabb
+			#print(area.name, child.name, aabb.position, aabb.size)
 	
 
-# path_2d: [[x,z], [x,z] ]
+# path_2d: [[x,z], [x,z]]
+# area_name should be same as the name of area in 'TrackWithStuff.tscn'
+# tag: see the key of track_meshes in 'WorldEnvironment'
 func generate_path4area(path_2d, area_name, tag):
 	var temp_area = shapes[area_name]['Area']
-	var max_y = temp_area['position'].y + temp_area['size'].y/2
-	var dir = Vector3(0, -temp_area['size'].y, 0)
+	var max_y = temp_area.position.y + temp_area.size.y
+	var dir = Vector3(0, -temp_area.size.y, 0)
 	var path_3d = []
 	
 	for point in path_2d:
@@ -65,10 +61,56 @@ func generate_path4area(path_2d, area_name, tag):
 		for triangle in shapes[area_name][tag]:
 			var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
 			if intersect_point is Vector3:
-				path_3d.append(intersect_point)
+				if temp_area.has_point(intersect_point):
+					path_3d.append(intersect_point)
+				else:
+					print(area_name,"  ",intersect_point)
 				break
-	path_segment[area_name] = path_3d
-	return path_3d
+#			point_from.y -= 1
+#			if temp_area.has_point(point_from):
+#				path_3d.append(point_from)
+#				break
+				
+	#{"Path": ..., "Path in FinishArea": ...}
+	var path_dict = {}
+	path_dict["Path"] = path_3d 
+	var aabb = null
+	for area in shapes[area_name]:
+		if area.find("Finish",0) != -1:
+			aabb = shapes[area_name][area]
+			break
+	var path_in_finish = []
+	for point in path_3d:
+		if aabb.has_point(point):
+			path_in_finish.append(point)
+	path_dict["PathInFinishArea"] = path_in_finish
+	return path_dict
+
+
+# merge path_segment
+# mode: "LOOP" or "STRIP" 
+# path_segment: {area_name: {"Path": [Vector3], "PathInFinishArea": [Vector3]}}
+# return Path Node
+func merge_path_to_node(mode, path_segment):
+	var curve = Curve3D.new()
+	var path_in_finish = null
+	for area_name in path_segment:
+		for points in path_segment[area_name]["Path"]:
+			if path_in_finish != null and points in path_in_finish:
+				continue
+			curve.add_point(points)
+		path_in_finish = path_segment[area_name]["PathInFinishArea"]
+	
+	# if the path is a loop, delete the points in the last finish area to avoid overlap.
+	if mode == "LOOP":
+		var curve_len = curve.get_point_count() 
+		for i in range(1, path_in_finish.size()+1):
+			curve.remove_point(curve_len-i)
+	var path_node = Path.new()
+	path_node.set_curve(curve)
+	return path_node
+
+
 
 func test_generate_path4area():
 	# use original path as the path got from client
@@ -79,19 +121,80 @@ func test_generate_path4area():
 		var p = path_origin.to_global(point)
 		path_2d.append([p.x, p.z])
 	
-	var path_3d = generate_path4area(path_2d, "Area1", "Road")
+	var path_2d_area1 = []
+	var path_2d_area2 = []
+	var aabb_area1 = shapes["Area1"]["Area"]
+	var aabb_area2 = shapes["Area2"]["Area"]
+	var area1_start = Vector3(aabb_area1.position.x-aabb_area1.size.x, aabb_area1.position.y, aabb_area1.position.z-aabb_area1.size.z)
+	var area1_end = Vector3(aabb_area1.position.x+aabb_area1.size.x, aabb_area1.position.y, aabb_area1.position.z-aabb_area1.size.z)
+	var area2_start = Vector3(aabb_area2.position.x+aabb_area2.size.x, aabb_area2.position.y, aabb_area2.position.z+aabb_area2.size.z)
+	var area2_end = Vector3(aabb_area2.position.x-aabb_area2.size.x, aabb_area2.position.y, aabb_area2.position.z+aabb_area2.size.z)
+	var curve = path_origin.get_curve()
+	var point1_start = curve.get_closest_point(path_origin.to_local(area1_start))
+	var point1_end = curve.get_closest_point(path_origin.to_local(area1_end))
+	var point2_start = curve.get_closest_point(path_origin.to_local(area2_start))
+	var point2_end = curve.get_closest_point(path_origin.to_local(area2_end))
+	var point1_start_index = 0
+	var point1_end_index = 0
+	var point2_start_index = 0
+	var point2_end_index = 0
+	for i in range(points_array.size()):
+		if point1_start == points_array[i]:
+			point1_start_index = i
+		if point1_end == points_array[i]:
+			point1_end_index = i
+		if point2_start == points_array[i]:
+			point2_start_index = i
+		if point2_end == points_array[i]:
+			point2_end_index = i
+	point1_start_index = point2_end_index
+	if point1_start_index < point1_end_index:
+		for i in range(point1_start_index, point1_end_index+1):
+			path_2d_area1.append(path_2d[i])
+	elif point1_start_index > point1_end_index:
+		for i in range(point1_start_index, points_array.size()):
+			path_2d_area1.append(path_2d[i])
+		for i in range(0, point1_end_index+1):
+			path_2d_area1.append(path_2d[i])
+	
+	if point2_start_index < point2_end_index:
+		for i in range(point2_start_index, point2_end_index+1):
+			path_2d_area2.append(path_2d[i])
+	elif point2_start_index > point2_end_index:
+		for i in range(point2_start_index, points_array.size()):
+			path_2d_area2.append(path_2d[i])
+		for i in range(0, point2_end_index+1):
+			path_2d_area2.append(path_2d[i])
+	
+	print(points_array.size())
+	print(path_2d_area1.size())
+	print(path_2d_area2.size())
+#	var path_dict = generate_path4area(path_2d, "Area2", "Road")
+#	var path_3d = path_dict["Path"]
+#	var path_in_finish = path_dict["PathInFinishArea"]
+	var path_segment = {}
+	path_segment["Area1"] = generate_path4area(path_2d_area1, "Area1", "Road")
+	path_segment["Area2"] = generate_path4area(path_2d_area2, "Area2", "Road")
+	var path_3d = merge_path_to_node("LOOP", path_segment).get_curve().get_baked_points()
+	
+	
 	var draw = ImmediateGeometry.new()
 	get_parent().get_node("WorldEnvironment").add_child(draw)
 	var m = SpatialMaterial.new()
 	m.vertex_color_use_as_albedo = true
 	draw.set_material_override(m)
 	draw.clear()
-	draw.begin(Mesh.PRIMITIVE_LINE_STRIP)
-	draw.set_color(Color( 0.55, 0, 0, 1 ))
+	draw.begin(Mesh.PRIMITIVE_LINE_LOOP)
+	draw.set_color(Color( 0, 0, 0, 0 ))
 	for x in path_3d:
 		x.y += 1
 		draw.add_vertex(x)
-	
 	draw.end()
-	
-	
+#
+#	draw.begin(Mesh.PRIMITIVE_LINE_STRIP)
+#	draw.set_color(Color( 0, 1, 1, 1 ))
+#	for x in path_in_finish:
+#		x.y += 1
+#		draw.add_vertex(x)
+#	draw.end()
+
