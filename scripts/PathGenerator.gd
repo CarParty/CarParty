@@ -187,7 +187,6 @@ func test_generate_path4area():
 		x.y += 1
 		draw.add_vertex(x)
 	draw.end()
-<<<<<<< HEAD
 #
 #	draw.begin(Mesh.PRIMITIVE_LINE_STRIP)
 #	draw.set_color(Color( 0, 1, 1, 1 ))
@@ -196,5 +195,4 @@ func test_generate_path4area():
 #		draw.add_vertex(x)
 #	draw.end()
 
-=======
->>>>>>> 4f33711d751c3513744ba3041c56e97c53797e42
+
