@@ -23,8 +23,19 @@ func _ready():
 		cars[client] = car
 		index += 1
 		cameras.append(car.get_node("InterpolatedCamera"))
-		
-		
+	
+	
+	var track_meshes = {
+		"Road": $WorldEnvironment/TrackWithStuff/Track/RootNode/Track
+	}
+	var track_node = $WorldEnvironment/TrackWithStuff
+	$TrackTransformer.transform_track(track_meshes, track_node)
+	
+	# just for test
+	$PathGenerator.initialize_track_area(track_meshes, track_node)
+	# $PathGenerator.test_generate_path4area()
+
+
 func _process(_delta):
 	for client in Global.clients:
 		cars[client].change_speed(float(Global.player_speed[client]))

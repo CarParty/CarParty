@@ -1,5 +1,6 @@
 extends Camera
 
+# this is not working and interpolatedCamera is used rn instead but this might be better if done correctly
 
 var target: Object
 export var smooth_speed: float
