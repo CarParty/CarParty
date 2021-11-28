@@ -343,12 +343,12 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.306824, 0.00258413 )
 shape = SubResource( 8 )
 
 [node name="CameraTarget" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.439217, -0.349795 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.324749, -0.415417 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( -1, -2.26267e-08, 8.44439e-08, 0, 0.965926, 0.258819, -8.74228e-08, 0.258819, -0.965926, 0, 1.62377, -2.89303 )
+transform = Transform( -1, -2.26267e-08, 8.44439e-08, 0, 0.965926, 0.258819, -8.74228e-08, 0.258819, -0.965926, 0, 3.53794, -5.9021 )
 script = ExtResource( 8 )
 
 [node name="InterpolatedCamera" type="InterpolatedCamera" parent="."]
 transform = Transform( -1, 2.26267e-08, -8.44439e-08, 0, 0.965926, 0.258819, 8.74228e-08, 0.258819, -0.965926, 0, 1.88939, -3.0589 )
-target = NodePath("../CameraTarget")
+target = NodePath("..")

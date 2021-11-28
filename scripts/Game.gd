@@ -22,7 +22,7 @@ func _ready():
 		car.global_transform = spawnPoints[index].global_transform
 		cars[client] = car
 		index += 1
-		cameras.append(car.get_node("InterpolatedCamera"))
+		cameras.append(car.get_node("Camera"))
 	
 	
 	var track_meshes = {

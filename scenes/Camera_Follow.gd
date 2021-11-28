@@ -1,21 +1,31 @@
 extends Camera
 
-# this is not working and interpolatedCamera is used rn instead but this might be better if done correctly
+# Controls how fast the camera moves
+export var lerp_speed = 0.5
 
-var target: Object
-export var smooth_speed: float
-export var offset: Vector3
+# Set the target node in the Inspector
+export (NodePath) var target_path = null
+# Desired position of camera, relative to target. (0, 5, 7), for example, would be behind and above.
+export (Vector3) var offset = Vector3(0, 0.8, -2)
+var target = null
 
 func _ready():
-	set_physics_process(true)
-	set_as_toplevel(true)
 	target = get_parent().get_node("CameraTarget")
-	smooth_speed = 7
-	offset = Vector3(0,1.5,-3)
-	
+	# If a target's been set, get a reference to the node
+	if target_path:
+		target = get_node(target_path)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta: float) -> void:
-	if(target != null):
-		self.transform.origin = lerp(self.transform.origin, target.transform.origin+offset, smooth_speed * delta)
-		self.rotation = target.rotation
+func _physics_process(delta):
+	# If there's no target, don't do anything
+	if !target:
+		return
+	# Find the destination - target's position + the offset
+	var target_pos = target.global_transform.translated(offset)
+	# Interpolate the current position with the destination
+	print(global_transform)
+	print(target_pos)
+	
+	global_transform = global_transform.interpolate_with(target_pos, lerp_speed * delta)
+	
+	# Always be pointing at the target
+	look_at(target.global_transform.origin, Vector3.UP)
