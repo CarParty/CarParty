@@ -9,7 +9,6 @@ templateEl.innerHTML = template;
 
 const cssContainer = document.createElement('style');
 cssContainer.textContent = css;
-cssContainer.id = 'transitionStyles';
 
 export class WaitingPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;

@@ -7,7 +7,6 @@ templateEl.innerHTML = template;
 
 const cssContainer = document.createElement('style');
 cssContainer.textContent = css;
-cssContainer.id = 'transitionStyles';
 
 export class JoinPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
