@@ -2,7 +2,6 @@ import { Tween, update } from '@tweenjs/tween.js';
 import { Connection } from '../connection';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
-import { TEST_TRACK } from './testTrack';
 import { Chunk, Point, Polygon, Rectangle, Track } from './track';
 import * as transportTrack from './transportTrack';
 
@@ -24,7 +23,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private currentPosMarkerEl: SVGCircleElement;
 
   public connection?: Connection;
-  private track: Track;
+  private track: Track | null = null;
   private trackBoundingBox: Rectangle | null = null;
   private isDrawing = false;
   private drawingEnabled = false;
@@ -50,7 +49,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     shadow.appendChild(templateEl.content.cloneNode(true));
     shadow.appendChild(cssContainer.cloneNode(true));
 
-    this.track = this.convertTransportTrack(TEST_TRACK);
+    // this.track = this.convertTransportTrack(TEST_TRACK);
 
     this.root = shadow.getElementById('root');
     this.svgRoot = shadow.getElementById('svgtrack') as any as SVGSVGElement;
@@ -79,6 +78,11 @@ export class DrawingPhaseComponent extends HTMLElement {
       update(time);
     }
     requestAnimationFrame(animate);
+
+    this.connection?.subscribe('track_transmission', (data) => {
+      this.setupTrack(data.track);
+    });
+    this.connection?.send({ action: 'ready_for_track_json' });
 
     console.log('t', this.svgRoot);
     /*for (const [key, chunk] of Object.entries(TEST_TRACK)) {
@@ -118,30 +122,6 @@ export class DrawingPhaseComponent extends HTMLElement {
         this.svgRoot.appendChild(finishMarker);
       }
     }*/
-
-    this.track.forEach(chunk => console.log(chunk.road.length));
-    this.optimizeTrack(this.track);
-    this.transformCoordinateSystem(this.track);
-    this.track.forEach(chunk => console.log(chunk.road.length));
-    console.log(this.track);
-
-    // compute initial view area fragment
-    const boundingBoxes: Rectangle[] = [];
-    this.track.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
-    this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => ({
-      x1: Math.min(r1.x1, r2.x1),
-      y1: Math.min(r1.y1, r2.y1),
-      x2: Math.max(r1.x2, r2.y2),
-      y2: Math.max(r1.y2, r2.y2)
-    }));
-    this.zoomToBox(this.trackBoundingBox);
-
-    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 4000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 8000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 12000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 16000);
-
-    this.drawTrack();
 
     this.svgRoot.addEventListener('mousedown', event => {
       if (this.drawingEnabled) {
@@ -216,6 +196,34 @@ export class DrawingPhaseComponent extends HTMLElement {
       console.log('touchcancel');
       this.isDrawing = false;
     });
+  }
+
+  private setupTrack(track: transportTrack.Track): void {
+    this.track = this.convertTransportTrack(track);
+
+    this.track.forEach(chunk => console.log(chunk.road.length));
+    this.optimizeTrack(this.track);
+    this.transformCoordinateSystem(this.track);
+    this.track.forEach(chunk => console.log(chunk.road.length));
+    console.log(this.track);
+
+    // compute initial view area fragment
+    const boundingBoxes: Rectangle[] = [];
+    this.track.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
+    this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => ({
+      x1: Math.min(r1.x1, r2.x1),
+      y1: Math.min(r1.y1, r2.y1),
+      x2: Math.max(r1.x2, r2.y2),
+      y2: Math.max(r1.y2, r2.y2)
+    }));
+    this.zoomToBox(this.trackBoundingBox);
+
+    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 4000);
+    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 8000);
+    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 12000);
+    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 16000);
+
+    this.drawTrack();
 
     setTimeout(() => this.startTrackDrawing(), 4000);
   }
@@ -291,6 +299,10 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private async startTrackDrawing(): Promise<void> {
+    if (!this.track) {
+      return;
+    }
+
     this.initialChunk = this.track.values().next().value;
     if (!this.initialChunk) {
       return;
@@ -320,6 +332,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     if (this.currentChunk === this.initialChunk) {
       // done, got full path
       this.complete = true;
+      this.currentChunk = null;
 
       /*// add first position to close loop (only visually? - check if the others want this position)
       const startBox = this.initialChunk.start?.finish.boundingBox ?? this.initialChunk.boundingBox;
@@ -331,8 +344,13 @@ export class DrawingPhaseComponent extends HTMLElement {
 
       // zoom out
       if (this.trackBoundingBox) {
-        await this.zoomToBox(this.trackBoundingBox);
+        this.zoomToBox(this.trackBoundingBox);
       }
+
+      this.connection?.send({
+        action: 'path_transmission',
+        path: this.convertPath(this.partialPaths)
+      });
     } else {
       await this.zoomToBox(this.currentChunk.boundingBox);
 
@@ -357,6 +375,10 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private drawTrack(): void {
+    if (!this.track) {
+      return;
+    }
+
     // figure out transformation function based on target view area - DEPRECATED
     let zoom = 1;
     let [offsetX, offsetY] = [0, 0];
@@ -452,6 +474,14 @@ export class DrawingPhaseComponent extends HTMLElement {
         .start()
         .onComplete(() => resolve());
     });
+  }
+
+  private convertPath(path: Map<string, Point[]>): Record<string, transportTrack.Point[]> {
+    const obj: Record<string, transportTrack.Point[]> = {};
+    path.forEach((fragment, key) => {
+      obj[key] = fragment.map(point => [point.x, point.y]);
+    });
+    return obj;
   }
 
   private convertTransportTrack(tTrack: transportTrack.Track): Track {

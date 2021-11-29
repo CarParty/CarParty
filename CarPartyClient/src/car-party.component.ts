@@ -44,9 +44,9 @@ export class CarPartyComponent extends HTMLElement {
       return;
     }
 
-    this.connection.subscribe('phase_change', phase => {
-      console.log('phase_change', phase);
-      this.switchPhase(phase);
+    this.connection.subscribe('phase_change', data => {
+      console.log('phase_change', data.phase);
+      this.switchPhase(data.phase);
     });
 
     this.switchPhase('join');

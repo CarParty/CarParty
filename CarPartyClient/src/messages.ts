@@ -1,4 +1,6 @@
-export type ClientMessage = LoginMessageI | SpeedChangeMessageI | SetPlayerNameMessageI;
+import { Point, Track } from './drawing-phase/transportTrack';
+
+export type ClientMessage = LoginMessageI | SpeedChangeMessageI | SetPlayerNameMessageI | ReadyForTrackMessageI | SendPathDataMessageI;
 
 export type LoginMessageI = {
   action: 'login_client';
@@ -16,12 +18,31 @@ export type SetPlayerNameMessageI = {
   name: string;
 };
 
-export type ServerMessage = PhaseChangeMessageI;
+export type ReadyForTrackMessageI = {
+  action: 'ready_for_track_json';
+};
+
+export type SendPathDataMessageI = {
+  action: 'path_transmission',
+  path: Record<string, Point[]>
+};
+
+
+export type ServerMessage = PhaseChangeMessageI | TrackDataMessageI;
 export type ServerActions = ServerMessage['action'];
+export interface ServerActionsMap { // I don't like this, there has to be a better way
+  'phase_change': PhaseChangeMessageI;
+  'track_transmission': TrackDataMessageI;
+}
 
 export type PhaseChangeMessageI = {
   action: 'phase_change';
   phase: Phase
+};
+
+export type TrackDataMessageI = {
+  action: 'track_transmission',
+  track: Track
 };
 
 export enum Phase {

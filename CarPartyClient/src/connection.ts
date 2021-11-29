@@ -1,11 +1,11 @@
-import { ClientMessage, Phase, ServerActions, ServerMessage } from './messages';
+import { ClientMessage, ServerActions, ServerActionsMap, ServerMessage } from './messages';
 
 export class Connection {
 
   private readonly URL = 'wss://cp.linus.space/ws';
   private ws?: WebSocket;
 
-  private listeners = new Map<ServerActions, ((phase: Phase) => void)[]>();
+  private listeners = new Map<ServerActions, ((data: any/*ServerMessage*/) => void)[]>();
 
   constructor() { }
 
@@ -35,10 +35,10 @@ export class Connection {
   private onMessage = (event: MessageEvent<any>) => {
     console.log(event);
     const message: ServerMessage = JSON.parse(event.data);
-    this.listeners.get(message.action)?.forEach(sub => sub(message.phase));
+    this.listeners.get(message.action)?.forEach(sub => sub(message));
   }
 
-  public subscribe(action: ServerActions, subscriber: (phase: Phase) => void): () => void {
+  public subscribe<K extends ServerActions>(action: K, subscriber: (data: ServerActionsMap[K]) => void): () => void {
     if (!this.listeners.has(action)) {
       this.listeners.set(action, []);
     }
