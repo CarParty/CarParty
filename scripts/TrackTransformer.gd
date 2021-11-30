@@ -62,4 +62,4 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 				"position": _vertex_to_2d(aabb.position),
 				"size": _vertex_to_2d(aabb.size)
 			}
-	#print(JSON.print(shapes))
+	return JSON.print(shapes)

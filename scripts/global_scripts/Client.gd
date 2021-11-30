@@ -32,6 +32,13 @@ func connect_to_url():
 func reset_connection():
 	_setup_client()
 	
+func send_json_global(json: String, action: String):
+	var message: Dictionary
+	message = {"action": action, "track": json}
+	var packet: PoolByteArray = JSON.print(message).to_utf8()
+	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+	_server.get_peer(1).put_packet(packet)
+	
 func start_phase_player(phase: String, player_id: String):
 	var message: Dictionary
 	match phase:
@@ -117,6 +124,10 @@ func _on_data():
 				print("Player connected: "+Global.player_names[parsed_data.client_id])
 			"speed_change":
 				Global.player_speed[parsed_data.client_id] = parsed_data.value
+			"ready_for_track_json":
+				Global.clients_ready_for_track_json.add(parsed_data.client_id)
+			"path_transmission":
+				Global.player_path[parsed_data.client_id] = parsed_data.path
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:

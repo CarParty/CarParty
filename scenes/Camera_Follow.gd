@@ -22,8 +22,6 @@ func _physics_process(delta):
 	# Find the destination - target's position + the offset
 	var target_pos = target.global_transform.translated(offset)
 	# Interpolate the current position with the destination
-	print(global_transform)
-	print(target_pos)
 	
 	global_transform = global_transform.interpolate_with(target_pos, lerp_speed * delta)
 	
