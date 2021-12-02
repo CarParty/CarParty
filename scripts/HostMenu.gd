@@ -60,8 +60,8 @@ func _on_StartButton_pressed():
 	
 func _on_FadeIn_fade_finished():
 	if scene_path_to_load == "res://scenes/Game.tscn":
-		print("Racing phase started.")
-		Client.start_phase_global("racing")
+		print("Drawing phase started.")
+		Client.start_phase_global("drawing")
 	Global.goto_scene(scene_path_to_load)
 
 
