@@ -15,7 +15,8 @@ onready var track = $WorldEnvironment/TrackWithStuff
 func _ready():
 	track.visible = true
 	spawnPoints = track.get_node("CarPositions").get_children()
-	cameras.append(get_node("WorldEnvironment/TrackWithStuff/Camera"))
+	cameras.append(track.get_node("Camera"))
+	cameras[0].make_current()
 	
 	print(cameras)
 	
