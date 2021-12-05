@@ -15,8 +15,6 @@ func _ready():
 	spawnPoints = $WorldEnvironment/TrackWithStuff/CarPositions.get_children()
 	cameras.append(get_node("WorldEnvironment/TrackWithStuff/Camera"))
 	
-	print(cameras)
-	
 	var index = 0
 	for client in Global.clients:
 		camera_counter = 1
@@ -29,6 +27,7 @@ func _ready():
 		cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
+	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):
 	for client in Global.clients:

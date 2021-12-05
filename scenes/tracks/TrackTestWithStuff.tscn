@@ -18,10 +18,12 @@ extents = Vector3( 2.38411, 1.76003, 1.2325 )
 
 [node name="Track" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.951986, -7.49144 )
+tags_to_meshes = {
+"Road": "RootNode/Track"
+}
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 25, -12 )
-current = true
 fov = 52.3
 size = 15.0
 
@@ -42,7 +44,19 @@ transform = Transform( -0.997184, 0, -0.0749962, 0, 1, 0, 0.0749962, 0, -0.99718
 transform = Transform( -0.99398, 0, -0.109561, 0, 1, 0, 0.109561, 0, -0.99398, -2.12798, 0, 0.242453 )
 
 [node name="Position4" type="Position3D" parent="CarPositions"]
-transform = Transform( 0.157831, 0, -0.987466, 0, 1, 0, 0.987466, 0, 0.157831, -3.1422, 0, 0.358008 )
+transform = Transform( -0.998841, 0, -0.0481354, 0, 1, 0, 0.0481354, 0, -0.998841, -3.1422, 0, 0.358008 )
+
+[node name="Position5" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.955438, 0, 0.295191, 0, 1, 0, -0.295191, 0, -0.955438, 1.01967, 0, -2.10532 )
+
+[node name="Position6" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.966685, 0, 0.255969, 0, 1, 0, -0.255969, 0, -0.966685, -0.0790794, 0, -2.35157 )
+
+[node name="Position7" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.974987, 0, 0.222263, 0, 1, 0, -0.222263, 0, -0.974987, -1.07023, 0, -2.5737 )
+
+[node name="Position8" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.959447, 0, 0.281889, 0, 1, 0, -0.281889, 0, -0.959447, -2.06631, 0, -2.79693 )
 
 [node name="DrawAreas" type="Spatial" parent="."]
 
