@@ -78,11 +78,13 @@ export class DrawingPhaseComponent extends HTMLElement {
       update(time);
     }
     requestAnimationFrame(animate);
-
-    this.connection?.subscribe('track_transmission', (data) => {
-      this.setupTrack(data.track);
+    
+    setTimeout(() => {
+      this.connection?.subscribe('track_transmission', (data) => {
+        this.setupTrack(data.track);
+      });
+      this.connection?.send({ action: 'ready_for_track_json' });
     });
-    this.connection?.send({ action: 'ready_for_track_json' });
 
     console.log('t', this.svgRoot);
     /*for (const [key, chunk] of Object.entries(TEST_TRACK)) {
@@ -486,6 +488,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private convertTransportTrack(tTrack: transportTrack.Track): Track {
     const track = new Map<string, Chunk>();
+    console.log(tTrack);
 
     // initial convert
     for (const [key, tChunk] of Object.entries(tTrack)) {
