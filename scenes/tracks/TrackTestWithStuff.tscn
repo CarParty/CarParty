@@ -30,6 +30,7 @@ tags_to_meshes = {
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 25, -12 )
+current = true
 fov = 52.3
 size = 15.0
 
@@ -63,6 +64,18 @@ transform = Transform( -0.974987, 0, 0.222263, 0, 1, 0, -0.222263, 0, -0.974987,
 
 [node name="Position8" type="Position3D" parent="CarPositions"]
 transform = Transform( -0.959447, 0, 0.281889, 0, 1, 0, -0.281889, 0, -0.959447, -2.06631, 0, -2.79693 )
+
+[node name="Position9" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.632867, 0, 0.77426, 0, 1, 0, -0.77426, 0, -0.632867, 1.60023, 0, -2.65481 )
+
+[node name="Position10" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.663926, 0, 0.747798, 0, 1, 0, -0.747798, 0, -0.663926, 0.820896, 0, -3.46754 )
+
+[node name="Position11" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.689481, 0, 0.724304, 0, 1, 0, -0.724304, 0, -0.689481, 0.117874, 0, -4.20067 )
+
+[node name="Position12" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.643563, 0, 0.765393, 0, 1, 0, -0.765393, 0, -0.643563, -0.588647, 0, -4.93744 )
 
 [node name="DrawAreas" type="Spatial" parent="."]
 

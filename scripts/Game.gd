@@ -85,11 +85,7 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		if track.get_node("Camera") == get_viewport().get_camera():
-			$WorldEnvironment/SplitScreen.setup_for_cars(cars)
-		else:
-			track.get_node("Camera").make_current()	
-		
+		$WorldEnvironment/SplitScreen/GridContainer.visible = not $WorldEnvironment/SplitScreen/GridContainer.visible
 		
 func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
