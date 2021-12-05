@@ -7,6 +7,9 @@ var cars = {}
 var cameras = []
 var camera_counter = 0
 
+var track_was_sent = false
+var player_track_initialized = {}
+
 func _ready():
 	spawnPoints = $WorldEnvironment/TrackWithStuff/CarPositions.get_children()
 	cameras.append(get_node("WorldEnvironment/TrackWithStuff/Camera"))
@@ -23,6 +26,8 @@ func _ready():
 		cars[client] = car
 		index += 1
 		cameras.append(car.get_node("Camera"))
+		player_track_initialized[client] = false
+		Global.clients_ready_for_track_json[client] = null
 	
 
 
@@ -31,12 +36,13 @@ func _process(_delta):
 	for client in Global.clients:
 		cars[client].change_speed(float(Global.player_speed[client]))
 		
-	var send_track = true
+	var send_track_now = true
 	for client in Global.clients:
+		if not player_track_initialized[client] and Global.player_path[client] != null:
+			pass
 		if not Global.clients_ready_for_track_json.has(client):
-			send_track = false
-	if send_track:
-		Global.clients_ready_for_track_json.clear()
+			send_track_now = false
+	if send_track_now and not track_was_sent:
 		var track_meshes = {
 		"Road": $WorldEnvironment/TrackWithStuff/Track/RootNode/Track
 		}
@@ -47,7 +53,7 @@ func _process(_delta):
 		# just for test
 		$PathGenerator.initialize_track_area(track_meshes, track_node)
 		# $PathGenerator.test_generate_path4area()
-		send_track = false
+		track_was_sent = true
 		
 	
 

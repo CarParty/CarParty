@@ -37,7 +37,6 @@ func send_global_message(action: String, data: Dictionary):
 	message = {"action": action}
 	for key in data:
 		message[key] = data[key]
-	print(message)
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
@@ -120,7 +119,6 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-				Global.clients.erase(parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
