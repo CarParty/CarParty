@@ -100,4 +100,6 @@ func _on_car_progress(point, car):
 func _respawn_car(car):
 	car.engine_force = 0
 	car.brake = 0
+	car.throttle_mult = 0
+	car.brake_mult = 0
 	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]]
