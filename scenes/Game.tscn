@@ -26,6 +26,7 @@ environment = SubResource( 2 )
 
 [node name="Path" type="Path" parent="WorldEnvironment"]
 transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, -4.84943, 0.957179, 0.373512 )
+visible = false
 curve = SubResource( 3 )
 
 [node name="TrackWithStuff" parent="WorldEnvironment" instance=ExtResource( 1 )]
@@ -33,7 +34,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.72017, 1.12456, -2.58861 )
 visible = false
 
 [node name="TrackWithStuff2" parent="WorldEnvironment" instance=ExtResource( 5 )]
-visible = false
 
 [node name="TrackTransformer" type="Node" parent="."]
 script = ExtResource( 3 )

@@ -1,5 +1,8 @@
 extends Node
 
+var TRISEARCHLENGTH = 100
+var SEARCHBASE = 100
+var SEARCHADDITION = 5000
 var shapes = {}
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -52,24 +55,68 @@ func generate_path4area(path_2d, area_name):
 	var max_y = temp_area.position.y + temp_area.size.y
 	var dir = Vector3(0, -temp_area.size.y, 0)
 	var path_3d = []
+	var tri_count = {}
+	for tag in shapes[area_name]:
+		if not shapes[area_name][tag] is Array:
+				continue
+		tri_count[tag] = shapes[area_name][tag].size()
+		print("tri_count   ",tri_count[tag],"  tag  ",tag )
+	var last_index = -1
+	var front = 0
+	var tail = tri_count["TrackObject"]
 	
 	for point in path_2d:
+		var is_find = false
 		var point_from = Vector3(point[0], max_y, point[1])
 		for tag in shapes[area_name]:
+			if tag != 'TrackObject':
+				continue
 			if not shapes[area_name][tag] is Array:
 				continue
-			for triangle in shapes[area_name][tag]:
-				var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
-				if intersect_point is Vector3:
-					if temp_area.has_point(intersect_point):
-						path_3d.append(intersect_point)
+				
+			var count = tri_count[tag]
+			if count < 2*TRISEARCHLENGTH:
+				if front < tail:
+					var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],front,tail,count,temp_area, last_index)
+					if res is Dictionary:
+						front = res["front"]
+						tail = res["tail"]
+#						TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
+						is_find = true
+						if "intersect_point" in res:
+							path_3d.append(res["intersect_point"])
+							
+						
+				else:
+					var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],front,count,count,temp_area, last_index)
+					if res is Dictionary:
+						front = res["front"]
+						tail = res["tail"]
+#						TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
+						is_find = true
+						if "intersect_point" in res:
+							path_3d.append(res["intersect_point"])
+							
 					else:
-						print(area_name,"  ",intersect_point)
-					break
-#			point_from.y -= 1
-#			if temp_area.has_point(point_from):
-#				path_3d.append(point_from)
-#				break
+						res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],0,tail,count,temp_area, last_index)
+						if res is Dictionary:
+							front = res["front"]
+							tail = res["tail"]
+#							TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
+							is_find = true
+							if "intersect_point" in res:
+								path_3d.append(res["intersect_point"])
+								
+							
+			if not is_find:		
+				var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],0,count,count,temp_area, last_index)
+				if res is Dictionary:
+					front = res["front"]
+					tail = res["tail"]
+#					TRISEARCHLENGTH = (front+TRISEARCHLENGTH-last_index)%count + SEARCHBASE
+					if "intersect_point" in res:
+						path_3d.append(res["intersect_point"])
+#				
 					
 	#{"Path": ..., "Path in FinishArea": ...}
 	var path_dict = {}
@@ -94,11 +141,13 @@ func generate_path4area(path_2d, area_name):
 func merge_path_to_node(mode, path_segment):
 	var curve = Curve3D.new()
 	var path_in_finish = null
+#	var path_3d = []
 	for area_name in path_segment:
 		for points in path_segment[area_name]["Path"]:
 			if path_in_finish != null and points in path_in_finish:
 				continue
 			curve.add_point(points)
+#			path_3d.append(points)
 		path_in_finish = path_segment[area_name]["PathInFinishArea"]
 	
 	# if the path is a loop, delete the points in the last finish area to avoid overlap.
@@ -108,9 +157,43 @@ func merge_path_to_node(mode, path_segment):
 			curve.remove_point(curve_len-i)
 	var path_node = Path.new()
 	path_node.set_curve(curve)
+#	test_by_draw(path_3d)
 	return path_node
 
 
+func test_by_draw(path_3d):
+	var draw = ImmediateGeometry.new()
+	get_parent().get_node("WorldEnvironment").add_child(draw)
+	var m = SpatialMaterial.new()
+	m.vertex_color_use_as_albedo = true
+	draw.set_material_override(m)
+	draw.clear()
+	draw.begin(Mesh.PRIMITIVE_LINE_LOOP)
+	draw.set_color(Color( 0, 0, 0, 0 ))
+	for x in path_3d:
+		x.y += 1
+		draw.add_vertex(x)
+	draw.end()
+	
+func search_intersect_by_index(point_from, dir, tri_list, front, tail, count, temp_area, last_index):
+	var res = {}
+	for i in range(front,tail):
+		var triangle = tri_list[i]
+		var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
+		if intersect_point is Vector3:
+			TRISEARCHLENGTH = (i-last_index+SEARCHBASE)%count
+			res["front"] = (i - TRISEARCHLENGTH)%count
+			res["tail"] = (i+TRISEARCHLENGTH)%count
+#			print("front:  ",front, "  tail:  ",tail)
+			if temp_area.has_point(intersect_point):
+				intersect_point.y += 0.1
+				res["intersect_point"] = intersect_point
+				
+	#		else:
+	#			print(area_name,"  ",intersect_point)
+			return res
+			break
+	pass
 
 # func test_generate_path4area():
 # 	# use original path as the path got from client

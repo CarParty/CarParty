@@ -10,7 +10,7 @@ var camera_counter = 0
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
-onready var track = $WorldEnvironment/TrackWithStuff
+onready var track = $WorldEnvironment/TrackWithStuff2
 
 func _ready():
 	track.visible = true
