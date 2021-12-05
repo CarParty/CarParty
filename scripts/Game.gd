@@ -16,7 +16,7 @@ var finished_tracks = []
 
 var time_start = 0
 
-onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
 
 func _ready():
@@ -43,7 +43,6 @@ func _ready():
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		index += 1
-		#cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
 	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
