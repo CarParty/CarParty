@@ -32,9 +32,9 @@ func connect_to_url():
 func reset_connection():
 	_setup_client()
 	
-func send_json_global(json: String, action: String):
+func send_json_global(json: String, json_name: String, action: String):
 	var message: Dictionary
-	message = {"action": action, "track": json}
+	message = {"action": action, json_name: json}
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
@@ -116,7 +116,6 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-				Global.clients.erase(parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
