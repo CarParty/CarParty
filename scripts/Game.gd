@@ -10,9 +10,11 @@ var camera_counter = 0
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
+onready var track = $WorldEnvironment/TrackWithStuff2
 
 func _ready():
-	spawnPoints = $WorldEnvironment/TrackWithStuff/CarPositions.get_children()
+	track.visible = true
+	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(get_node("WorldEnvironment/TrackWithStuff/Camera"))
 	
 	print(cameras)
@@ -42,14 +44,14 @@ func _process(_delta):
 			finished_tracks.append(client)
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
-	if finished_tracks.size() == cars.size():
+	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
 		Client.start_phase_global("racing")
 		finished_tracks.clear()
 	if send_track_now and not track_was_sent:
-		var track_meshes = $WorldEnvironment/TrackWithStuff/Track.tags_to_meshes
+		var track_meshes = track.get_node("Track").tags_to_meshes
 		for tag in track_meshes:
-			track_meshes[tag] = get_node("WorldEnvironment/TrackWithStuff/Track/" + track_meshes[tag])
-		var track_node = $WorldEnvironment/TrackWithStuff
+			track_meshes[tag] = track.get_node("Track/" + track_meshes[tag])
+		var track_node = track
 		var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
 	
 		Client.send_global_message("track_transmission", track_dict)
