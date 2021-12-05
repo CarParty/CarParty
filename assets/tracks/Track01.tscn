@@ -90,6 +90,28 @@ tags_to_meshes = {
 
 [node name="RootNode" parent="." index="0"]
 transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 )
+visible = false
+
+[node name="Light" parent="RootNode" index="0"]
+visible = false
+
+[node name="Track" parent="RootNode" index="1"]
+visible = false
+
+[node name="TrackProfile" parent="RootNode" index="2"]
+visible = false
+
+[node name="CarPath" parent="RootNode" index="3"]
+visible = false
+
+[node name="UnderTrack" parent="RootNode" index="4"]
+visible = false
+
+[node name="Plane" parent="RootNode" index="5"]
+visible = false
+
+[node name="UnderTrack001" parent="RootNode" index="6"]
+visible = false
 
 [node name="Light" type="Spatial" parent="." index="1"]
 transform = Transform( -30.742, -110.344, 163.949, -6.42033, 166.391, 110.783, -197.519, 11.7654, -29.1181, -21.465, 21.2304, -2.01091 )
