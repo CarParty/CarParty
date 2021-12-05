@@ -10,10 +10,13 @@ var camera_counter = 0
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
-onready var track = $WorldEnvironment/TrackWithStuff
+
+onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
+var track
 
 func _ready():
-	track.visible = true
+	track = load(track_path).instance()
+	$WorldEnvironment.add_child(track)
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
 	cameras[0].make_current()
