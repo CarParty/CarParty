@@ -76,4 +76,8 @@ shape = SubResource( 3 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13.8816, 2.24226, 5.59714 )
 shape = SubResource( 4 )
 
-[node name="first" parent="." instance=ExtResource( 1 )]
+[node name="Track" parent="." instance=ExtResource( 1 )]
+tags_to_meshes = {
+"Road": "Road",
+"TrackObject": "Track"
+}

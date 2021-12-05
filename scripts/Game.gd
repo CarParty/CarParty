@@ -46,10 +46,9 @@ func _process(_delta):
 		Client.start_phase_global("racing")
 		finished_tracks.clear()
 	if send_track_now and not track_was_sent:
-		var track_meshes = {
-		"Track": $WorldEnvironment/TrackWithStuff/first/Track,
-		"Road": $WorldEnvironment/TrackWithStuff/first/Road
-		}
+		var track_meshes = $WorldEnvironment/TrackWithStuff/Track.tags_to_meshes
+		for tag in track_meshes:
+			track_meshes[tag] = get_node("WorldEnvironment/TrackWithStuff/Track/" + track_meshes[tag])
 		var track_node = $WorldEnvironment/TrackWithStuff
 		var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
 	
