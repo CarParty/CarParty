@@ -89,3 +89,10 @@ shape = SubResource( 3 )
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Finish#Area2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.30057, 0.0823536, -12.2468 )
 shape = SubResource( 4 )
+
+[node name="ProgressNodes" type="Spatial" parent="."]
+
+[node name="Area" type="Area" parent="ProgressNodes"]
+transform = Transform( 2.89619, 0, 3.61561, 0, 6, 0, -0.782373, 0, 13.3842, -1.5104, 1.45934, 1.62091 )
+
+[node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/Area"]

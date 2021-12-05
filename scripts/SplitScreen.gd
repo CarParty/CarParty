@@ -31,6 +31,8 @@ func _ready():
 
 func setup_for_cars(players_cars_map):
 	var num_players = players_cars_map.size()
+	if num_players == 0:
+		return
 	var layout = layouts[num_players]
 	var split_width = self.get_node("GridContainer").rect_size.x / layout[0]
 	var split_height = self.get_node("GridContainer").rect_size.y / layout[1]
