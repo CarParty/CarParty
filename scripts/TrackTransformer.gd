@@ -60,6 +60,7 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 			var aabb = _area_to_aabb(child)
 			shapes[area.name][child.name] = {
 				"position": _vertex_to_2d(aabb.position),
-				"size": _vertex_to_2d(aabb.size)
+				"size": _vertex_to_2d(aabb.size),
+				"rotation": child.rotation
 			}
-	return JSON.print(shapes)
+	return shapes

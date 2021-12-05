@@ -28,11 +28,8 @@ func _ready():
 
 
 func _process(_delta):
-	
-	
 	for client in Global.clients:
 		cars[client].change_speed(float(Global.player_speed[client]))
-		
 		
 	var send_track = true
 	for client in Global.clients:
@@ -44,12 +41,13 @@ func _process(_delta):
 		"Road": $WorldEnvironment/TrackWithStuff/Track/RootNode/Track
 		}
 		var track_node = $WorldEnvironment/TrackWithStuff
-		var track_json = $TrackTransformer.transform_track(track_meshes, track_node)
+		var track_dict = $TrackTransformer.transform_track(track_meshes, track_node)
 	
-		Client.send_json_global(track_json, "track_transmission")
+		Client.send_global_message("track_transmission", track_dict)
 		# just for test
 		$PathGenerator.initialize_track_area(track_meshes, track_node)
 		# $PathGenerator.test_generate_path4area()
+		send_track = false
 		
 	
 

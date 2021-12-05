@@ -32,9 +32,12 @@ func connect_to_url():
 func reset_connection():
 	_setup_client()
 	
-func send_json_global(json: String, action: String):
+func send_global_message(action: String, data: Dictionary):
 	var message: Dictionary
-	message = {"action": action, "track": json}
+	message = {"action": action}
+	for key in data:
+		message[key] = data[key]
+	print(message)
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
@@ -109,6 +112,7 @@ func _on_data():
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
 	
 	if parsed_data.has("action"):
+		print("Received with action: ", parsed_data.action)
 		match parsed_data.action:
 			"connect":
 				Global.clients.append(parsed_data.client_id)
@@ -125,7 +129,8 @@ func _on_data():
 			"speed_change":
 				Global.player_speed[parsed_data.client_id] = parsed_data.value
 			"ready_for_track_json":
-				Global.clients_ready_for_track_json.add(parsed_data.client_id)
+				Global.clients_ready_for_track_json.append(parsed_data.client_id)
+				print("Client ready for track json:", Global.player_names[parsed_data.client_id])
 			"path_transmission":
 				Global.player_path[parsed_data.client_id] = parsed_data.path
 			_:
