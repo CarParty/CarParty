@@ -5,6 +5,7 @@ var spawnPoints
 var cars = {}
 var cars_to_client_id = {}
 var car_progress = {}
+var car_rounds_completed = {}
 var car_progress_global_transform = {}
 
 var cameras = []
@@ -16,7 +17,7 @@ var finished_tracks = []
 
 var time_start = 0
 
-onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
 var track
 
 func _ready():
@@ -40,6 +41,7 @@ func _ready():
 		cars[client] = car
 		cars_to_client_id[car] = client
 		car_progress[client] = -1
+		car_rounds_completed[client] = 0
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		index += 1
@@ -99,6 +101,8 @@ func _on_car_progress(point, car):
 		car_progress[id] = point
 		car_progress_global_transform[id][point] = car.global_transform
 	if point == track.get_node("ProgressNodes").get_children().size() - 1:
+		car_rounds_completed[id] += 1
+	if car_rounds_completed == 3:
 		Global.player_time_to_finish[id] = OS.get_unix_time()-time_start
 		Global.goto_scene("res://scenes/Scoreboard.tscn")
 	
