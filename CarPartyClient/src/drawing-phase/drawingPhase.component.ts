@@ -79,10 +79,12 @@ export class DrawingPhaseComponent extends HTMLElement {
     }
     requestAnimationFrame(animate);
 
-    this.connection?.subscribe('track_transmission', (data) => {
-      this.setupTrack(data.track);
+    setTimeout(() => {
+      this.connection?.subscribe('track_transmission', (data) => {
+        this.setupTrack(data.track);
+      });
+      this.connection?.send({ action: 'ready_for_track_json' });
     });
-    this.connection?.send({ action: 'ready_for_track_json' });
 
     console.log('t', this.svgRoot);
     /*for (const [key, chunk] of Object.entries(TEST_TRACK)) {
@@ -477,9 +479,13 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private convertPath(path: Map<string, Point[]>): Record<string, transportTrack.Point[]> {
+
+    const [scaleX, scaleY] = [50, 50];
+    const [translateX, translateY] = [0, 0];
+
     const obj: Record<string, transportTrack.Point[]> = {};
     path.forEach((fragment, key) => {
-      obj[key] = fragment.map(point => [point.x, point.y]);
+      obj[key] = fragment.map(point => [(point.x - translateX) / scaleX, (point.y - translateY) / scaleY]);
     });
     return obj;
   }
@@ -566,7 +572,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private transformCoordinateSystem(track: Track): Track {
     const [scaleX, scaleY] = [50, 50];
-    const [translateX, translateY] = [50, 50];
+    const [translateX, translateY] = [0, 0];
     track.forEach(chunk => {
       chunk.boundingBox.x1 = scaleX * chunk.boundingBox.x1 + translateX;
       chunk.boundingBox.y1 = scaleY * chunk.boundingBox.y1 + translateY;
