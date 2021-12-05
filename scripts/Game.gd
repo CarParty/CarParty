@@ -47,7 +47,8 @@ func _process(_delta):
 		finished_tracks.clear()
 	if send_track_now and not track_was_sent:
 		var track_meshes = {
-		"Road": $WorldEnvironment/TrackWithStuff/Track/RootNode/Track
+		"Track": $WorldEnvironment/TrackWithStuff/first/Track,
+		"Road": $WorldEnvironment/TrackWithStuff/first/Road
 		}
 		var track_node = $WorldEnvironment/TrackWithStuff
 		var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
