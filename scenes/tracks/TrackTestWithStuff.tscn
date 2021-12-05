@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/tracks/Track01.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/tracks/Finish.gd" type="Script" id=2]
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 11.2983, 2.41439, 10.4107 )
@@ -13,6 +14,11 @@ extents = Vector3( 10.9805, 3.13499, 10.4785 )
 
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 2.38411, 1.76003, 1.2325 )
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 1, 0.304988, 1 )
+
+[sub_resource type="CubeMesh" id=6]
 
 [node name="TrackWithStuff" type="Spatial"]
 
@@ -45,7 +51,31 @@ transform = Transform( -0.997184, 0, -0.0749962, 0, 1, 0, 0.0749962, 0, -0.99718
 transform = Transform( -0.99398, 0, -0.109561, 0, 1, 0, 0.109561, 0, -0.99398, -2.12798, 0, 0.242453 )
 
 [node name="Position4" type="Position3D" parent="CarPositions"]
-transform = Transform( 0.157831, 0, -0.987466, 0, 1, 0, 0.987466, 0, 0.157831, -3.1422, 0, 0.358008 )
+transform = Transform( -0.998841, 0, -0.0481354, 0, 1, 0, 0.0481354, 0, -0.998841, -3.1422, 0, 0.358008 )
+
+[node name="Position5" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.955438, 0, 0.295191, 0, 1, 0, -0.295191, 0, -0.955438, 1.01967, 0, -2.10532 )
+
+[node name="Position6" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.966685, 0, 0.255969, 0, 1, 0, -0.255969, 0, -0.966685, -0.0790794, 0, -2.35157 )
+
+[node name="Position7" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.974987, 0, 0.222263, 0, 1, 0, -0.222263, 0, -0.974987, -1.07023, 0, -2.5737 )
+
+[node name="Position8" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.959447, 0, 0.281889, 0, 1, 0, -0.281889, 0, -0.959447, -2.06631, 0, -2.79693 )
+
+[node name="Position9" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.632867, 0, 0.77426, 0, 1, 0, -0.77426, 0, -0.632867, 1.60023, 0, -2.65481 )
+
+[node name="Position10" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.663926, 0, 0.747798, 0, 1, 0, -0.747798, 0, -0.663926, 0.820896, 0, -3.46754 )
+
+[node name="Position11" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.689481, 0, 0.724304, 0, 1, 0, -0.724304, 0, -0.689481, 0.117874, 0, -4.20067 )
+
+[node name="Position12" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.643563, 0, 0.765393, 0, 1, 0, -0.765393, 0, -0.643563, -0.588647, 0, -4.93744 )
 
 [node name="DrawAreas" type="Spatial" parent="."]
 
@@ -78,3 +108,24 @@ shape = SubResource( 3 )
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Finish#Area2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.30057, 0.0823536, -12.2468 )
 shape = SubResource( 4 )
+
+[node name="ProgressNodes" type="Spatial" parent="."]
+
+[node name="Finish" type="Area" parent="ProgressNodes"]
+transform = Transform( 2.89619, 0, 3.61561, 0, 6, 0, -0.782373, 0, 13.3842, -1.5104, 1.45934, 1.62091 )
+collision_layer = 8
+collision_mask = 2
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/Finish"]
+transform = Transform( 0.239589, 0, 0, 0, 1.00259, 0, 9.31323e-10, 0, 0.215931, 0, 0, 0 )
+shape = SubResource( 5 )
+
+[node name="Texture" type="Spatial" parent="ProgressNodes/Finish"]
+
+[node name="MeshInstance" type="MeshInstance" parent="ProgressNodes/Finish/Texture"]
+transform = Transform( 0.232844, 0, 0, 0, 0.0020965, 0, 2.14204e-08, 0, 0.199664, 0, 0, 0 )
+mesh = SubResource( 6 )
+material/0 = null
+
+[connection signal="body_entered" from="ProgressNodes/Finish" to="ProgressNodes/Finish" method="_on_Finish_body_entered"]

@@ -3,6 +3,9 @@ extends Spatial
 
 var spawnPoints
 var cars = {}
+var cars_to_client_id = {}
+var car_progress = {}
+var car_progress_global_transform = {}
 
 var cameras = []
 var camera_counter = 0
@@ -10,15 +13,20 @@ var camera_counter = 0
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
-onready var track = $WorldEnvironment/TrackWithStuff2
+
+onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
+var track
 
 func _ready():
-	track.visible = true
+	track = load(track_path).instance()
+	$WorldEnvironment.add_child(track)
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
 	cameras[0].make_current()
 	
-	print(cameras)
+	for progress_node in track.get_node("ProgressNodes").get_children():
+		progress_node.connect("safepoint_reached", self, "_on_car_progress")
+	$WorldEnvironment.get_node("FellOffTrack").connect("fell_off_track", self, "_respawn_car")
 	
 	var index = 0
 	for client in Global.clients:
@@ -28,10 +36,15 @@ func _ready():
 		car.rotation = spawnPoints[index].rotation
 		car.global_transform = spawnPoints[index].global_transform
 		cars[client] = car
+		cars_to_client_id[car] = client
+		car_progress[client] = -1
+		car_progress_global_transform[client] = {}
+		car_progress_global_transform[client][-1] = car.global_transform
 		index += 1
 		cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
+	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):
 	for client in Global.clients:
@@ -72,5 +85,17 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		cameras[camera_counter].make_current()
-		camera_counter = (camera_counter+1)%cameras.size()
+		$WorldEnvironment/SplitScreen/GridContainer.visible = not $WorldEnvironment/SplitScreen/GridContainer.visible
+		
+func _on_car_progress(point, car):
+	var id = cars_to_client_id[car]
+	car_progress[id] = point
+	car_progress_global_transform[id][point] = car.global_transform
+	#Global.goto_scene("res://scenes/Scoreboard.tscn")
+	
+func _respawn_car(car):
+	car.engine_force = 0
+	car.brake = 0
+	car.throttle_mult = 0
+	car.brake_mult = 0
+	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]]
