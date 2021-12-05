@@ -1,7 +1,7 @@
 extends Camera
 
 # Controls how fast the camera moves
-export var lerp_speed = 2.5
+export var lerp_speed = 5
 
 # Set the target node in the Inspector
 export (NodePath) var target_path = null
