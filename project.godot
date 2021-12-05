@@ -58,6 +58,13 @@ ui_down={
  ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="environment"
+3d_physics/layer_2="cars"
+3d_physics/layer_3="pickups"
+3d_physics/layer_4="checkpoints"
+
 [physics]
 
 common/enable_pause_aware_picking=true
