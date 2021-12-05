@@ -1,7 +1,7 @@
 extends Camera
 
 # Controls how fast the camera moves
-export var lerp_speed = 0.5
+export var lerp_speed = 2.5
 
 # Set the target node in the Inspector
 export (NodePath) var target_path = null
@@ -10,10 +10,7 @@ export (Vector3) var offset = Vector3(0, 0.8, -2)
 var target = null
 
 func _ready():
-	target = get_parent().get_node("CameraTarget")
-	# If a target's been set, get a reference to the node
-	if target_path:
-		target = get_node(target_path)
+	pass
 
 func _physics_process(delta):
 	# If there's no target, don't do anything

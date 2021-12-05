@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://resources/cars/Plastic - Matte (Red).material" type="Material" id=1]
 [ext_resource path="res://resources/cars/Plastic - Matte (Black).material" type="Material" id=2]
@@ -7,7 +7,6 @@
 [ext_resource path="res://resources/cars/Aluminum - Anodized Rough (Grey).material" type="Material" id=5]
 [ext_resource path="res://resources/cars/A Type Bulb - Frosted - 1500lm.material" type="Material" id=6]
 [ext_resource path="res://scripts/Car.gd" type="Script" id=7]
-[ext_resource path="res://scenes/Camera_Follow.gd" type="Script" id=8]
 
 [sub_resource type="ArrayMesh" id=1]
 blend_shape_mode = 0
@@ -345,7 +344,3 @@ shape = SubResource( 8 )
 
 [node name="CameraTarget" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.324749, -0.415417 )
-
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( -1, -2.26267e-08, 8.44439e-08, 0, 0.965926, 0.258819, -8.74228e-08, 0.258819, -0.965926, 0, 3.53794, -5.9021 )
-script = ExtResource( 8 )

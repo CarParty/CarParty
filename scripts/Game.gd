@@ -23,7 +23,6 @@ func _ready():
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
 	cameras[0].make_current()
-	print(cameras)
 	
 	for progress_node in track.get_node("ProgressNodes").get_children():
 		progress_node.connect("safepoint_reached", self, "_on_car_progress")
@@ -45,6 +44,7 @@ func _ready():
 		cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
+	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):
 	for client in Global.clients:
@@ -85,8 +85,11 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		cameras[camera_counter].make_current()
-		camera_counter = (camera_counter+1)%cameras.size()
+		if track.get_node("Camera") == get_viewport().get_camera():
+			$WorldEnvironment/SplitScreen.setup_for_cars(cars)
+		else:
+			track.get_node("Camera").make_current()	
+		
 		
 func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
