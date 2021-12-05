@@ -10,6 +10,8 @@ var player_names = {}
 var player_speed = {}
 var clients_ready_for_track_json = []
 var player_path = {}
+var player_time_to_finish = {}
+
 
 
 func _ready():

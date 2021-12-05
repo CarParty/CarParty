@@ -11,7 +11,7 @@ func _ready():
 	for client in Global.clients:
 		var center = CenterContainer.new()
 		var label = Label.new()
-		label.text = Global.player_names[client]
+		label.text = Global.player_names[client] + ": " + str(Global.player_time_to_finish[client])
 		center.size_flags_vertical = 3
 		center.add_child(label)
 		$MarginContainer/VBoxContainer.add_child(center)

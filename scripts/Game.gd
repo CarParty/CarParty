@@ -14,6 +14,8 @@ var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
 
+var time_start = 0
+
 onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
 var track
 
@@ -41,7 +43,7 @@ func _ready():
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		index += 1
-		cameras.append(car.get_node("Camera"))
+		#cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
 	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
@@ -60,6 +62,7 @@ func _process(_delta):
 			send_track_now = false
 	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
 		Client.start_phase_global("racing")
+		time_start = OS.get_unix_time()
 		finished_tracks.clear()
 	if send_track_now and not track_was_sent:
 		var track_meshes = track.get_node("Track").tags_to_meshes
@@ -86,12 +89,19 @@ func generate_path_from_json(client, path):
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
 		$WorldEnvironment/SplitScreen/GridContainer.visible = not $WorldEnvironment/SplitScreen/GridContainer.visible
+	if event.is_action_pressed("ui_cancel"):
+		for car in cars.values():
+			_respawn_car(car)
 		
 func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
-	car_progress[id] = point
-	car_progress_global_transform[id][point] = car.global_transform
-	#Global.goto_scene("res://scenes/Scoreboard.tscn")
+	var compare_point = car_progress[id] + 1 % (track.get_node("ProgressNodes").get_children().size())
+	if point == compare_point:
+		car_progress[id] = point
+		car_progress_global_transform[id][point] = car.global_transform
+	if point == track.get_node("ProgressNodes").get_children().size() - 1:
+		Global.player_time_to_finish[id] = OS.get_unix_time()-time_start
+		Global.goto_scene("res://scenes/Scoreboard.tscn")
 	
 func _respawn_car(car):
 	car.engine_force = 0

@@ -16,5 +16,5 @@ func _ready():
 #	pass
 
 
-func _on_Finish_body_entered(body):
-	emit_signal("safepoint_reached", 1, body)
+func _on_MidPoint_body_entered(body):
+	emit_signal("safepoint_reached", 0, body)
