@@ -9,6 +9,7 @@ var camera_counter = 0
 
 var track_was_sent = false
 var player_track_initialized = {}
+var finished_tracks = []
 
 func _ready():
 	spawnPoints = $WorldEnvironment/TrackWithStuff/CarPositions.get_children()
@@ -27,10 +28,7 @@ func _ready():
 		index += 1
 		cameras.append(car.get_node("Camera"))
 		player_track_initialized[client] = false
-		Global.clients_ready_for_track_json[client] = null
-	
-
-
+	Global.clients_ready_for_track_json = []
 
 func _process(_delta):
 	for client in Global.clients:
@@ -38,16 +36,21 @@ func _process(_delta):
 		
 	var send_track_now = true
 	for client in Global.clients:
-		if not player_track_initialized[client] and Global.player_path[client] != null:
-			pass
+		if not player_track_initialized[client] and client in Global.player_path:
+			generate_path_from_json(client, Global.player_path[client])
+			Global.player_path.erase(client)
+			finished_tracks.append(client)
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
+	if finished_tracks.size() == cars.size():
+		Client.start_phase_global("racing")
+		finished_tracks.clear()
 	if send_track_now and not track_was_sent:
 		var track_meshes = {
 		"Road": $WorldEnvironment/TrackWithStuff/Track/RootNode/Track
 		}
 		var track_node = $WorldEnvironment/TrackWithStuff
-		var track_dict = $TrackTransformer.transform_track(track_meshes, track_node)
+		var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
 	
 		Client.send_global_message("track_transmission", track_dict)
 		# just for test
@@ -55,7 +58,14 @@ func _process(_delta):
 		# $PathGenerator.test_generate_path4area()
 		track_was_sent = true
 		
-	
+func generate_path_from_json(client, path):
+	var path_map = {}
+	for area in path:
+		path_map[area] = $PathGenerator.generate_path4area(path[area], area)
+	var path_node = $PathGenerator.merge_path_to_node("LOOP", path_map)
+	self.add_child(path_node)
+	print(path_node.curve.get_point_count())
+	cars[client].set_path(path_node)
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):

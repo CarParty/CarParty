@@ -24,18 +24,12 @@ export var brake_mult = 0
 
 export var follow_length = 1.5
 
-onready var path = get_parent().get_node("Path")
-onready var path_follow = PathFollow.new()
+var path: Path = null
+var path_follow: PathFollow = null
 
 onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
 
-
 func _ready():
-	
-	path.add_child(path_follow)
-	path_follow.offset = 0.0
-	path_follow.loop = true
-	path_follow.add_child(debug_sphere)
 	
 	randomize()
 	var color = Color.from_hsv(randf(), .7, .79)
@@ -43,6 +37,14 @@ func _ready():
 	material.albedo_color = color
 	$CarBody1/CarBody/Body1.set_surface_material(0, material)
 
+func set_path(new_path: Path):
+	self.path = new_path
+	path_follow = PathFollow.new()
+	path.add_child(path_follow)
+	path_follow.offset = 0.0
+	path_follow.loop = true
+	path_follow.add_child(debug_sphere)
+	
 func change_speed(value):
 	if value+Global.epsilon >= throttle_mult:
 		throttle_mult = value
@@ -55,6 +57,8 @@ func change_speed(value):
 			brake_mult = 1.0
 
 func _physics_process(delta):
+	if path_follow == null:
+		return
 		
 	engine_force = throttle_mult * MAX_ENGINE_FORCE
 	brake = brake_mult * MAX_BRAKE_FORCE
