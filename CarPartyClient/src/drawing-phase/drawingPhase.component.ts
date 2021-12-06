@@ -31,7 +31,6 @@ export class DrawingPhaseComponent extends HTMLElement {
   private partialPaths: Map<string, Point[]> = new Map<string, Point[]>();
   private currentPartialPath: Point[] = [];
   private currentChunk: Chunk | null = null;
-  private initialChunk: Chunk | null = null;
   private complete = false;
 
   static get observedAttributes(): string[] {
@@ -105,17 +104,18 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private setupTrack(track: transportTrack.Track): void {
+    console.log(track);
     this.track = this.convertTransportTrack(track);
 
-    this.track.forEach(chunk => console.log('#Triangles', chunk.road.length));
+    this.track.chunks.forEach(chunk => console.log('#Triangles', chunk.road.length));
     this.optimizeTrack(this.track);
     this.transformCoordinateSystem(this.track);
-    this.track.forEach(chunk => console.log('#Polygons', chunk.road.length));
+    this.track.chunks.forEach(chunk => console.log('#Polygons', chunk.road.length));
     console.log(this.track);
 
     // compute initial view area fragment
     const boundingBoxes: Rectangle[] = [];
-    this.track.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
+    this.track.chunks.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
     this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => ({
       x1: Math.min(r1.x1, r2.x1),
       y1: Math.min(r1.y1, r2.y1),
@@ -170,8 +170,8 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private resetCurrentPartialPath = () => {
     if (this.currentChunk) {
-      if (this.currentChunk === this.initialChunk) {
-        const startBox = this.initialChunk.start?.finish.boundingBox ?? this.initialChunk.boundingBox;
+      if (this.currentChunk === this.track?.start) {
+        const startBox = this.track.start.start?.finish.boundingBox ?? this.track.start.boundingBox;
         this.currentPartialPath = [{
           x: 0.5 * (startBox.x1 + startBox.x2),
           y: 0.5 * (startBox.y1 + startBox.y2)
@@ -259,11 +259,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
-    this.initialChunk = this.track.values().next().value;
-    if (!this.initialChunk) {
-      return;
-    }
-    this.currentChunk = this.initialChunk;
+    this.currentChunk = this.track.start;
     await this.zoomToBox(this.currentChunk.boundingBox);
 
     this.resetCurrentPartialPath();
@@ -282,7 +278,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.connection?.send({ action: 'path_progress_update', area: this.currentChunk.name });
 
-    if (this.currentChunk === this.initialChunk) {
+    if (this.currentChunk === this.track?.start) {
       // done, got full path
       this.complete = true;
       this.currentChunk = null;
@@ -356,7 +352,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     // draw track
     const colors = ['black', 'purple', 'orange', 'lime'];
     let colorIndex = -1;
-    this.track.forEach(chunk => {
+    this.track.chunks.forEach(chunk => {
       colorIndex++;
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       // group.style.transform = `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`;
@@ -440,13 +436,14 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private convertTransportTrack(tTrack: transportTrack.Track): Track {
-    const track = new Map<string, Chunk>();
+    const chunks = new Map<string, Chunk>();
+    let startChunk: Chunk | null = null;
 
     // initial convert
     for (const [key, tChunk] of Object.entries(tTrack)) {
       const finishKey = Object.keys(tChunk).filter(k => startsWith(k, 'Finish#'))[0];
       if (startsWith(finishKey, 'Finish#')) { // true by design, just for typecheck
-        track.set(key, {
+        const chunk = {
           name: key,
           road: tChunk.Road.map(triangle => triangle.map(([x, y]) => ({ x, y }))),
           boundingBox: {
@@ -464,26 +461,33 @@ export class DrawingPhaseComponent extends HTMLElement {
               y2: tChunk[finishKey].position[1] + tChunk[finishKey].size[1]
             }
           }
-        });
+        };
+        chunks.set(key, chunk);
+        if (tChunk.isFirst && !startChunk) {
+          startChunk = chunk;
+        }
       }
     }
 
     // set cross references
     // -> finish area ('next' chunk)
-    track.forEach(chunk => chunk.finish.from = track.get(chunk.finish.fromChunkName));
+    chunks.forEach(chunk => chunk.finish.from = chunks.get(chunk.finish.fromChunkName));
     // -> start area ('previous' chunk)
-    track.forEach(chunk => {
-      const nextChunk = track.get(chunk.finish.from?.name ?? '');
+    chunks.forEach(chunk => {
+      const nextChunk = chunks.get(chunk.finish.from?.name ?? '');
       if (nextChunk) {
         nextChunk.start = chunk;
       }
     });
 
-    return track;
+    return {
+      chunks,
+      start: startChunk ?? chunks.values().next().value // manually decide start chunk if unset
+    };
   }
 
   private optimizeTrack(track: Track): Track {
-    track.forEach(chunk => {
+    track.chunks.forEach(chunk => {
       for (let polygonIndex = 0; polygonIndex < chunk.road.length; polygonIndex++) {
         const polygon = chunk.road[polygonIndex];
         base: for (let lineIndex = 0; lineIndex < polygon.length; lineIndex++) {
@@ -522,7 +526,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private transformCoordinateSystem(track: Track): Track {
     const [scaleX, scaleY] = [50, 50];
     const [translateX, translateY] = [0, 0];
-    track.forEach(chunk => {
+    track.chunks.forEach(chunk => {
       chunk.boundingBox.x1 = scaleX * chunk.boundingBox.x1 + translateX;
       chunk.boundingBox.y1 = scaleY * chunk.boundingBox.y1 + translateY;
       chunk.boundingBox.x2 = scaleX * chunk.boundingBox.x2 + translateX;

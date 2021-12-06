@@ -1,6 +1,7 @@
 export type Track = Record<string, Chunk>;
 
 export type Chunk = {
+  isFirst?: boolean;
   Road: Road;
   Area: Area;
   [K: `Finish#${string}`]: Area;

@@ -1,4 +1,7 @@
-export type Track = Map<string, Chunk>;
+export type Track = {
+  chunks: Map<string, Chunk>;
+  start: Chunk;
+};
 
 export type Chunk = {
   name: string;
