@@ -31,6 +31,7 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 	var shapes = {}
 	for area in draw_area_node.get_children():
 		shapes[area.name] = {}
+		shapes[area.name]["isFirst"] = track_node.is_area_first(area.name)
 	# serialize meshes
 	for tag in track_meshes:
 		for area in draw_area_node.get_children():

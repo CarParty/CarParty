@@ -17,7 +17,7 @@ var finished_tracks = []
 
 var time_start = 0
 
-onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
 
 func _ready():
@@ -34,7 +34,8 @@ func _ready():
 	var index = 0
 	for client in Global.clients:
 		camera_counter = 1
-		var car = load("res://scenes/Car.tscn").instance()
+		var car = preload("res://scenes/Car.tscn").instance()
+		car.color = Global.player_color[client]
 		$WorldEnvironment.add_child(car)
 		car.rotation = spawnPoints[index].rotation
 		car.global_transform = spawnPoints[index].global_transform
@@ -110,6 +111,7 @@ func _on_car_progress(point, car):
 			all_have_completed = false
 	if all_have_completed:
 		Global.goto_scene("res://scenes/Scoreboard.tscn")
+		
 	
 func _respawn_car(car):
 	car.engine_force = 0

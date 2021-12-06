@@ -40,6 +40,17 @@ func send_global_message(action: String, data: Dictionary):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
+	print("Sent message: "+packet.get_string_from_utf8())
+	
+func send_client_message(action: String, data: Dictionary, client_id: String):
+	var message: Dictionary
+	message = {"action": action, "receiver_id": client_id}
+	for key in data:
+		message[key] = data[key]
+	var packet: PoolByteArray = JSON.print(message).to_utf8()
+	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+	_server.get_peer(1).put_packet(packet)
+	print("Sent message: "+packet.get_string_from_utf8())
 	
 func start_phase_player(phase: String, player_id: String):
 	var message: Dictionary
@@ -118,6 +129,11 @@ func _on_data():
 					return
 				Global.clients.append(parsed_data.client_id)
 				Global.player_speed[parsed_data.client_id] = 0
+				randomize()
+				Global.player_color[parsed_data.client_id] = Color.from_hsv(randf(), .7, .79)
+				var player_color = {}
+				player_color["color"] = "#"+Global.player_color[parsed_data.client_id].to_html(false)
+				send_client_message("color_transmission", player_color, parsed_data.client_id)
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":

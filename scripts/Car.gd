@@ -30,13 +30,13 @@ var path_follow: PathFollow = null
 onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
 onready var line_drawer = load("scenes/utility/LineDrawer.tscn").instance()
 
+var color: Color
+
 func _ready():
-	
-	randomize()
-	var color = Color.from_hsv(randf(), .7, .79)
 	var material = $CarBody1/CarBody/Body1.get_surface_material(0).duplicate()
 	material.albedo_color = color
 	$CarBody1/CarBody/Body1.set_surface_material(0, material)
+	brake = 1
 
 func set_path(new_path: Path):
 	self.path = new_path

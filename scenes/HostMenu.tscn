@@ -14,11 +14,11 @@ font_data = ExtResource( 1 )
 size = 54
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=6]
 size = 45
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=4]
 size = 45
 font_data = ExtResource( 1 )
 
@@ -64,15 +64,15 @@ custom_constants/separation = 60
 
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer"]
 margin_right = 1916.0
-margin_bottom = 338.0
+margin_bottom = 279.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="HostLabel" type="Label" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer"]
 margin_left = 675.0
-margin_top = 123.0
+margin_top = 93.0
 margin_right = 1241.0
-margin_bottom = 215.0
+margin_bottom = 185.0
 custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
 custom_constants/shadow_offset_x = 5
 custom_constants/shadow_offset_y = 5
@@ -80,9 +80,9 @@ custom_fonts/font = SubResource( 1 )
 text = "Hosting Game"
 
 [node name="CenterContainer2" type="CenterContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer"]
-margin_top = 398.0
+margin_top = 339.0
 margin_right = 1916.0
-margin_bottom = 618.0
+margin_bottom = 559.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer2"]
 margin_left = 672.0
@@ -107,8 +107,27 @@ rect_min_size = Vector2( 220, 220 )
 texture = ExtResource( 3 )
 stretch_mode = 4
 
+[node name="CenterContainer4" type="CenterContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer"]
+margin_top = 619.0
+margin_right = 1916.0
+margin_bottom = 678.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4"]
+margin_left = 519.0
+margin_right = 1397.0
+margin_bottom = 59.0
+
+[node name="Link" type="Label" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer"]
+margin_right = 878.0
+margin_bottom = 59.0
+custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
+custom_constants/shadow_offset_x = 5
+custom_constants/shadow_offset_y = 5
+custom_fonts/font = SubResource( 6 )
+text = "https://xn--bci0938m.ml/?room="
+
 [node name="CenterContainer3" type="CenterContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer"]
-margin_top = 678.0
+margin_top = 738.0
 margin_right = 1916.0
 margin_bottom = 1017.0
 size_flags_horizontal = 3
@@ -116,9 +135,9 @@ size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3"]
 margin_left = 652.0
-margin_top = 140.0
+margin_top = 110.0
 margin_right = 1264.0
-margin_bottom = 199.0
+margin_bottom = 169.0
 
 [node name="PlayerAmountNumber" type="Label" parent="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer"]
 margin_right = 35.0
