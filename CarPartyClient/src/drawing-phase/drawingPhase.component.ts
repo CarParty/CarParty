@@ -345,6 +345,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     if (!this.currentChunk) {
       return;
     }
+
+    this.connection?.send({ action: 'path_progress_update', area: this.currentChunk.name });
+
     if (this.currentChunk === this.initialChunk) {
       // done, got full path
       this.complete = true;

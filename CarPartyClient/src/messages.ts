@@ -1,6 +1,11 @@
 import { Point, Track } from './drawing-phase/transportTrack';
 
-export type ClientMessage = LoginMessageI | SpeedChangeMessageI | SetPlayerNameMessageI | ReadyForTrackMessageI | SendPathDataMessageI;
+export type ClientMessage = LoginMessageI
+  | SpeedChangeMessageI
+  | SetPlayerNameMessageI
+  | ReadyForTrackMessageI
+  | PathProgressUpdateMessageI
+  | SendPathDataMessageI;
 
 export type LoginMessageI = {
   action: 'login_client';
@@ -20,6 +25,11 @@ export type SetPlayerNameMessageI = {
 
 export type ReadyForTrackMessageI = {
   action: 'ready_for_track_json';
+};
+
+export type PathProgressUpdateMessageI = {
+  action: 'path_progress_update';
+  area: string;
 };
 
 export type SendPathDataMessageI = {
