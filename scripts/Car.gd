@@ -28,6 +28,7 @@ var path: Path = null
 var path_follow: PathFollow = null
 
 onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
+onready var line_drawer = load("scenes/utility/LineDrawer.tscn").instance()
 
 func _ready():
 	
@@ -44,6 +45,8 @@ func set_path(new_path: Path):
 	path_follow.offset = 0.0
 	path_follow.loop = true
 	path_follow.add_child(debug_sphere)
+	path.add_child(line_drawer)
+	line_drawer.draw_with_material($CarBody1/CarBody/Body1.get_surface_material(0).duplicate())
 	
 func change_speed(value):
 	if value+Global.epsilon >= throttle_mult:

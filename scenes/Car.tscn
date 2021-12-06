@@ -221,7 +221,7 @@ extents = Vector3( 0.301983, 0.304054, 0.753898 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
 collision_layer = 2
 collision_mask = 3
-mass = 53.09
+mass = 70.0
 script = ExtResource( 7 )
 MAX_ENGINE_FORCE = 200.0
 

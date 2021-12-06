@@ -55,69 +55,36 @@ func generate_path4area(path_2d, area_name):
 	var max_y = temp_area.position.y + temp_area.size.y
 	var dir = Vector3(0, -temp_area.size.y, 0)
 	var path_3d = []
-	var tri_count = {}
+	var all_shapes = []
 	for tag in shapes[area_name]:
 		if not shapes[area_name][tag] is Array:
-				continue
-		tri_count[tag] = shapes[area_name][tag].size()
-		print("tri_count   ",tri_count[tag],"  tag  ",tag )
+			continue
+		all_shapes += shapes[area_name][tag]
 	var last_index = -1
 	var front = 0
-	var tail = tri_count["TrackObject"]
+	var tail = all_shapes.size()
 	
 	for point in path_2d:
-		var is_find = false
 		var point_from = Vector3(point[0], max_y, point[1])
-		for tag in shapes[area_name]:
-			if tag != 'TrackObject':
-				continue
-			if not shapes[area_name][tag] is Array:
-				continue
-				
-			var count = tri_count[tag]
-			if count < 2*TRISEARCHLENGTH:
-				if front < tail:
-					var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],front,tail,count,temp_area, last_index)
-					if res is Dictionary:
-						front = res["front"]
-						tail = res["tail"]
-#						TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
-						is_find = true
-						if "intersect_point" in res:
-							path_3d.append(res["intersect_point"])
-							
-						
-				else:
-					var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],front,count,count,temp_area, last_index)
-					if res is Dictionary:
-						front = res["front"]
-						tail = res["tail"]
-#						TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
-						is_find = true
-						if "intersect_point" in res:
-							path_3d.append(res["intersect_point"])
-							
-					else:
-						res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],0,tail,count,temp_area, last_index)
-						if res is Dictionary:
-							front = res["front"]
-							tail = res["tail"]
-#							TRISEARCHLENGTH = (2*(front+TRISEARCHLENGTH-last_index))%count
-							is_find = true
-							if "intersect_point" in res:
-								path_3d.append(res["intersect_point"])
-								
-							
-			if not is_find:		
-				var res = search_intersect_by_index(point_from,dir,shapes[area_name][tag],0,count,count,temp_area, last_index)
-				if res is Dictionary:
-					front = res["front"]
-					tail = res["tail"]
+		var count = all_shapes.size()
+		var res = null
+		if count < 2*TRISEARCHLENGTH:
+			if front < tail:
+				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail,count,temp_area, last_index)
+			else:
+				res = search_intersect_by_index(point_from,dir,all_shapes,front,count,count,temp_area, last_index)
+				if not res is Dictionary:
+					res = search_intersect_by_index(point_from,dir,all_shapes,0,tail,count,temp_area, last_index)
+		if res == null or not res is Dictionary:
+			res = search_intersect_by_index(point_from,dir,all_shapes,0,count,count,temp_area, last_index)
+		
+		if res is Dictionary:
+			front = res["front"]
+			tail = res["tail"]
 #					TRISEARCHLENGTH = (front+TRISEARCHLENGTH-last_index)%count + SEARCHBASE
-					if "intersect_point" in res:
-						path_3d.append(res["intersect_point"])
-#				
-					
+			if "intersect_point" in res:
+				path_3d.append(res["intersect_point"])
+				
 	#{"Path": ..., "Path in FinishArea": ...}
 	var path_dict = {}
 	path_dict["Path"] = path_3d 
@@ -192,7 +159,6 @@ func search_intersect_by_index(point_from, dir, tri_list, front, tail, count, te
 	#		else:
 	#			print(area_name,"  ",intersect_point)
 			return res
-			break
 	pass
 
 # func test_generate_path4area():

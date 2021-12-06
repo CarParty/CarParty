@@ -102,7 +102,7 @@ func _on_car_progress(point, car):
 		car_progress_global_transform[id][point] = car.global_transform
 	if point == track.get_node("ProgressNodes").get_children().size() - 1:
 		car_rounds_completed[id] += 1
-	if car_rounds_completed == 3:
+	if car_rounds_completed[id] == 3:
 		Global.player_time_to_finish[id] = OS.get_unix_time()-time_start
 		Global.goto_scene("res://scenes/Scoreboard.tscn")
 	
