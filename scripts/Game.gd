@@ -104,6 +104,11 @@ func _on_car_progress(point, car):
 		car_rounds_completed[id] += 1
 	if car_rounds_completed[id] == 3:
 		Global.player_time_to_finish[id] = OS.get_unix_time()-time_start
+	var all_have_completed = true
+	for client in Global.clients:
+		if car_rounds_completed[client] < 3:
+			all_have_completed = false
+	if all_have_completed:
 		Global.goto_scene("res://scenes/Scoreboard.tscn")
 	
 func _respawn_car(car):

@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scripts/Scoreboard.gd" type="Script" id=1]
+[ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 70
+font_data = ExtResource( 2 )
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -28,8 +33,12 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_left = 879.0
-margin_top = 533.0
-margin_right = 1040.0
-margin_bottom = 547.0
-text = "ttrdedewdwedwedewdew"
+margin_left = 797.0
+margin_top = 494.0
+margin_right = 1122.0
+margin_bottom = 586.0
+custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
+custom_constants/shadow_offset_x = 5
+custom_constants/shadow_offset_y = 5
+custom_fonts/font = SubResource( 1 )
+text = "Results"
