@@ -464,8 +464,8 @@ export class DrawingPhaseComponent extends HTMLElement {
         x: box.x1,
         y: box.y1,
         width: box.x2 - box.x1,
-        height: box.y2 - box.y1
-      }, 2000)
+        height: box.y2 - box.y1,
+      }, 200)
         .onUpdate(upd => {
           console.log('tween update');
           this.svgRoot.viewBox.baseVal.x = upd.x;
