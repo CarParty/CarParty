@@ -114,6 +114,8 @@ func _on_data():
 		print("Received with action: ", parsed_data.action)
 		match parsed_data.action:
 			"connect":
+				if Global.current_scene.name != "HostMenu":
+					return
 				Global.clients.append(parsed_data.client_id)
 				Global.player_speed[parsed_data.client_id] = 0
 				start_phase_player("naming", parsed_data.client_id)

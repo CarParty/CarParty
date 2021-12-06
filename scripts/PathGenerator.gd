@@ -25,7 +25,6 @@ func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
 		var mdt = MeshDataTool.new()
 		mdt.create_from_surface(mesh, 0)
 		for face_id in mdt.get_face_count():
-			
 			var vertices = []
 			for i in [0, 1, 2]:
 				var vertex_local_space = mdt.get_vertex(mdt.get_face_vertex(face_id, i))
@@ -45,7 +44,9 @@ func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
 			var aabb = _area_to_aabb(child)
 			shapes[area.name][child.name] = aabb
 			#print(area.name, child.name, aabb.position, aabb.size)
-	
+
+# func sort_by_y(shape_a, shape_b):
+# 	return shape_a[0][1] > shape_b[0][1]
 
 # path_2d: [[x,z], [x,z]]
 # area_name should be same as the name of area in 'TrackWithStuff.tscn'
@@ -60,6 +61,8 @@ func generate_path4area(path_2d, area_name):
 		if not shapes[area_name][tag] is Array:
 			continue
 		all_shapes += shapes[area_name][tag]
+	
+	# all_shapes.sort_custom(self, "sort_by_y")
 	var last_index = -1
 	var front = 0
 	var tail = all_shapes.size()
