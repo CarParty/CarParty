@@ -50,8 +50,6 @@ export class DrawingPhaseComponent extends HTMLElement {
     shadow.appendChild(templateEl.content.cloneNode(true));
     shadow.appendChild(cssContainer.cloneNode(true));
 
-    // this.track = this.convertTransportTrack(TEST_TRACK);
-
     this.root = shadow.getElementById('root');
     this.svgRoot = shadow.getElementById('svgtrack') as any as SVGSVGElement;
 
@@ -76,141 +74,43 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
-    // get the current time point to our tweening library
+    // get the current time point to our tweening library (animation loop)
     function animate(time: number): void {
       requestAnimationFrame(animate);
       update(time);
     }
     requestAnimationFrame(animate);
 
+    // request and handle track data
     setTimeout(() => {
       this.connection?.subscribe('track_transmission', (data) => {
         this.setupTrack(data.track);
       });
       this.connection?.send({ action: 'ready_for_track_json' });
     });
+    // uncomment below for quicker testing
+    // this.setupTrack(TEST_TRACK);
 
-    console.log('t', this.svgRoot);
-    /*for (const [key, chunk] of Object.entries(TEST_TRACK)) {
-      console.log(key);
-      for (const triangle of chunk.Road) {
-        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        poly.style.fill = 'none';
-        poly.style.stroke = 'black';
-        poly.style.strokeWidth = '1';
-        triangle.forEach(([x, y]) => {
-          const svgPoint = this.svgRoot.createSVGPoint();
-          svgPoint.x = x * 20 + 500;
-          svgPoint.y = y * 20 + 500;
-          poly.points.appendItem(svgPoint);
-        });
-        this.svgRoot.appendChild(poly);
-      }
-      const areaMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      areaMarker.style.fill = 'none';
-      areaMarker.style.stroke = 'red';
-      areaMarker.style.strokeWidth = '1';
-      areaMarker.x.baseVal.value = chunk.Area.position[0] * 20 + 500;
-      areaMarker.y.baseVal.value = chunk.Area.position[1] * 20 + 500;
-      areaMarker.width.baseVal.value = chunk.Area.size[0] * 20;
-      areaMarker.height.baseVal.value = chunk.Area.size[1] * 20;
-      this.svgRoot.appendChild(areaMarker);
-      const finishKey = Object.keys(chunk).filter(k => startsWith(k, 'Finish#'))[0];
-      if (startsWith(finishKey, 'Finish#')) { // true by design, just for typecheck
-        const finishMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        finishMarker.style.fill = 'none';
-        finishMarker.style.stroke = 'blue';
-        finishMarker.style.strokeWidth = '1';
-        finishMarker.x.baseVal.value = chunk[finishKey].position[0] * 20 + 500;
-        finishMarker.y.baseVal.value = chunk[finishKey].position[1] * 20 + 500;
-        finishMarker.width.baseVal.value = chunk[finishKey].size[0] * 20;
-        finishMarker.height.baseVal.value = chunk[finishKey].size[1] * 20;
-        this.svgRoot.appendChild(finishMarker);
-      }
-    }*/
+    // setup mouse events
+    this.svgRoot.addEventListener('mousedown', this.startDraw);
+    this.svgRoot.addEventListener('mousemove', this.continueDraw);
+    this.svgRoot.addEventListener('mouseup', this.stopDraw);
+    this.svgRoot.addEventListener('mouseleave', this.abortDraw);
 
-    this.svgRoot.addEventListener('mousedown', event => {
-      if (this.drawingEnabled) {
-        console.log(event.clientX, event.clientY);
-        this.isDrawing = true;
-        const point = this.screenToSvg({ x: event.clientX, y: event.clientY });
-        if (this.pointInCurrentChunk(point)) {
-          this.currentPartialPath.push(point);
-          this.drawPath();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('mousemove', event => {
-      if (this.drawingEnabled && this.isDrawing) {
-        console.log(event.clientX, event.clientY);
-        const point = this.screenToSvg({ x: event.clientX, y: event.clientY });
-        if (this.pointInCurrentChunk(point)) {
-          this.currentPartialPath.push(point);
-          this.drawPath();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('mouseup', event => {
-      console.log('mouseup');
-      this.isDrawing = false;
-      const svg = this.screenToSvg({ x: event.clientX, y: event.clientY });
-      if (this.currentChunk?.finish.boundingBox) {
-        const box = this.currentChunk.finish.boundingBox;
-        if (box.x1 <= svg.x && svg.x <= box.x2 && box.y1 <= svg.y && svg.y <= box.y2) {
-          this.moveToNextChunk();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('mouseleave', event => {
-      console.log('mouseleave');
-      this.isDrawing = false;
-    });
-
-    this.svgRoot.addEventListener('touchstart', event => {
-      if (this.drawingEnabled) {
-        console.log(event.touches[0].clientX, event.touches[0].clientY);
-        this.isDrawing = true;
-        const point = this.screenToSvg({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-        if (this.pointInCurrentChunk(point)) {
-          this.currentPartialPath.push(point);
-          this.drawPath();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('touchmove', event => {
-      if (this.drawingEnabled && this.isDrawing) {
-        console.log(event.touches[0].clientX, event.touches[0].clientY);
-        const point = this.screenToSvg({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-        if (this.pointInCurrentChunk(point)) {
-          this.currentPartialPath.push(point);
-          this.drawPath();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('touchend', event => {
-      console.log('touchend');
-      this.isDrawing = false;
-      const svg = this.currentPartialPath[this.currentPartialPath.length - 1];
-      if (this.currentChunk?.finish.boundingBox) {
-        const box = this.currentChunk.finish.boundingBox;
-        if (box.x1 <= svg.x && svg.x <= box.x2 && box.y1 <= svg.y && svg.y <= box.x2) {
-          this.moveToNextChunk();
-        }
-      }
-    });
-    this.svgRoot.addEventListener('touchcancel', event => {
-      console.log('touchcancel');
-      this.isDrawing = false;
-    });
+    // setup touch events
+    this.svgRoot.addEventListener('touchstart', this.startDraw);
+    this.svgRoot.addEventListener('touchmove', this.continueDraw);
+    this.svgRoot.addEventListener('touchend', this.stopDraw);
+    this.svgRoot.addEventListener('touchcancel', this.abortDraw);
   }
 
   private setupTrack(track: transportTrack.Track): void {
     this.track = this.convertTransportTrack(track);
 
-    this.track.forEach(chunk => console.log(chunk.road.length));
+    this.track.forEach(chunk => console.log('#Triangles', chunk.road.length));
     this.optimizeTrack(this.track);
     this.transformCoordinateSystem(this.track);
-    this.track.forEach(chunk => console.log(chunk.road.length));
+    this.track.forEach(chunk => console.log('#Polygons', chunk.road.length));
     console.log(this.track);
 
     // compute initial view area fragment
@@ -224,14 +124,48 @@ export class DrawingPhaseComponent extends HTMLElement {
     }));
     this.zoomToBox(this.trackBoundingBox);
 
-    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 4000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 8000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area1')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 12000);
-    // setTimeout(() => this.zoomToBox(this.track.get('Area2')?.boundingBox ?? { x1: -500, y1: -1500, x2: 500, y2: 0 }), 16000);
-
     this.drawTrack();
 
     setTimeout(() => this.startTrackDrawing(), 4000);
+  }
+
+  private startDraw = (event: MouseEvent | TouchEvent) => {
+    if (this.drawingEnabled) {
+      this.isDrawing = true;
+      const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
+      const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
+      if (this.pointInCurrentChunk(point)) {
+        this.currentPartialPath.push(point);
+        this.drawPath();
+      }
+    }
+  }
+
+  private continueDraw = (event: MouseEvent | TouchEvent) => {
+    if (this.drawingEnabled && this.isDrawing) {
+      const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
+      const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
+      if (this.pointInCurrentChunk(point)) {
+        this.currentPartialPath.push(point);
+        this.drawPath();
+      }
+    }
+  }
+
+  private stopDraw = (event: MouseEvent | TouchEvent) => {
+    this.isDrawing = false;
+    const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
+    const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
+    if (this.currentChunk?.finish.boundingBox) {
+      const box = this.currentChunk.finish.boundingBox;
+      if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
+        this.moveToNextChunk();
+      }
+    }
+  }
+
+  private abortDraw = (event: MouseEvent | TouchEvent) => {
+    this.isDrawing = false;
   }
 
   private resetCurrentPartialPath = () => {
@@ -420,7 +354,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     }*/
 
     // draw track
-    const colors = ['black', 'yellow', 'grey', 'purple', 'orange', 'lime'];
+    const colors = ['black', 'purple', 'orange', 'lime'];
     let colorIndex = -1;
     this.track.forEach(chunk => {
       colorIndex++;
@@ -514,7 +448,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       if (startsWith(finishKey, 'Finish#')) { // true by design, just for typecheck
         track.set(key, {
           name: key,
-          road: tChunk.Road.map(triangle => triangle.map(point => ({ x: point[0], y: point[1] }))),
+          road: tChunk.Road.map(triangle => triangle.map(([x, y]) => ({ x, y }))),
           boundingBox: {
             x1: tChunk.Area.position[0],
             x2: tChunk.Area.position[0] + tChunk.Area.size[0],
@@ -603,12 +537,6 @@ export class DrawingPhaseComponent extends HTMLElement {
       }));
     });
     return track;
-  }
-
-  private appendTextNode(value: string): void {
-    const tag = document.createElement('p');
-    tag.textContent = value;
-    this.root?.appendChild(tag);
   }
 
   public connectedCallback(): void { }
