@@ -21,6 +21,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private svgRoot: SVGSVGElement;
   private pathEl: SVGPathElement;
   private currentPosMarkerEl: SVGCircleElement;
+  private redrawButtonEl: HTMLButtonElement;
 
   public connection?: Connection;
   private track: Track | null = null;
@@ -67,6 +68,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.currentPosMarkerEl.setAttribute('r', '15');
     this.svgRoot.appendChild(this.currentPosMarkerEl);
 
+    this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
+    this.redrawButtonEl.addEventListener('click', this.resetCurrentPartialPath);
+
     if (!this.svgRoot) {
       console.error('root not found');
       return;
@@ -78,7 +82,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       update(time);
     }
     requestAnimationFrame(animate);
-    
+
     setTimeout(() => {
       this.connection?.subscribe('track_transmission', (data) => {
         this.setupTrack(data.track);
@@ -230,6 +234,22 @@ export class DrawingPhaseComponent extends HTMLElement {
     setTimeout(() => this.startTrackDrawing(), 4000);
   }
 
+  private resetCurrentPartialPath = () => {
+    if (this.currentChunk) {
+      if (this.currentChunk === this.initialChunk) {
+        const startBox = this.initialChunk.start?.finish.boundingBox ?? this.initialChunk.boundingBox;
+        this.currentPartialPath = [{
+          x: 0.5 * (startBox.x1 + startBox.x2),
+          y: 0.5 * (startBox.y1 + startBox.y2)
+        }];
+      } else {
+        this.currentPartialPath = [];
+      }
+      this.partialPaths.set(this.currentChunk.name, this.currentPartialPath);
+      this.drawPath();
+    }
+  }
+
   private screenToSvg(screen: Point): Point {
     // ok, so in theory this *could* be simple
     // screen position is a value [0, MAX_SCREEN],
@@ -312,13 +332,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.currentChunk = this.initialChunk;
     await this.zoomToBox(this.currentChunk.boundingBox);
 
-    const startBox = this.initialChunk.start?.finish.boundingBox ?? this.initialChunk.boundingBox;
-    this.currentPartialPath = [{
-      x: 0.5 * (startBox.x1 + startBox.x2),
-      y: 0.5 * (startBox.y1 + startBox.y2)
-    }];
-    this.partialPaths.set(this.currentChunk.name, this.currentPartialPath);
-    this.drawPath();
+    this.resetCurrentPartialPath();
 
     this.drawingEnabled = true;
   }
@@ -356,9 +370,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     } else {
       await this.zoomToBox(this.currentChunk.boundingBox);
 
-      this.currentPartialPath = [];
-      this.partialPaths.set(this.currentChunk.name, this.currentPartialPath);
-      this.drawPath();
+      this.resetCurrentPartialPath();
 
       this.drawingEnabled = true;
     }
@@ -405,7 +417,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     }*/
 
     // draw track
-    const colors = ['black', 'yellow'];
+    const colors = ['black', 'yellow', 'grey', 'purple', 'orange', 'lime'];
     let colorIndex = -1;
     this.track.forEach(chunk => {
       colorIndex++;
@@ -416,7 +428,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       for (const polygon of chunk.road) {
         const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
         poly.style.fill = 'none';
-        poly.style.stroke = colors[colorIndex];
+        poly.style.stroke = colors[colorIndex % colors.length];
         poly.style.strokeWidth = '1';
         // scale(35) translate(15px,32px)
         // poly.style.transform = `scale(${zoom}) translate(${offsetX / zoom}px, ${offsetY / zoom}px)`;
@@ -492,7 +504,6 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private convertTransportTrack(tTrack: transportTrack.Track): Track {
     const track = new Map<string, Chunk>();
-    console.log(tTrack);
 
     // initial convert
     for (const [key, tChunk] of Object.entries(tTrack)) {
