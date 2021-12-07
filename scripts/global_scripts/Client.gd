@@ -40,7 +40,7 @@ func send_global_message(action: String, data: Dictionary):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
-	print("Sent message: "+packet.get_string_from_utf8())
+	# print("Sent message: "+packet.get_string_from_utf8())
 	
 func send_client_message(action: String, data: Dictionary, client_id: String):
 	var message: Dictionary
@@ -111,7 +111,7 @@ func _connected(proto = ""):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
-	print("Sent message: "+packet.get_string_from_utf8())
+	# print("Sent message: "+packet.get_string_from_utf8())
 
 
 func _on_data():
@@ -122,7 +122,7 @@ func _on_data():
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
 	
 	if parsed_data.has("action"):
-		print("Received with action: ", parsed_data.action)
+		# print("Received with action: ", parsed_data.action)
 		match parsed_data.action:
 			"connect":
 				if Global.current_scene.name != "HostMenu":

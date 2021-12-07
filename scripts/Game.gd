@@ -85,7 +85,6 @@ func generate_path_from_json(client, path):
 		path_map[area] = $PathGenerator.generate_path4area(path[area], area)
 	var path_node = $PathGenerator.merge_path_to_node("LOOP", path_map)
 	self.add_child(path_node)
-	print(path_node.curve.get_point_count())
 	cars[client].set_path(path_node)
 
 func _input(event):
