@@ -7,6 +7,7 @@ var cars_to_client_id = {}
 var car_progress = {}
 var car_rounds_completed = {}
 var car_progress_global_transform = {}
+var car_paths = {}
 
 var cameras = []
 var camera_counter = 0
@@ -30,6 +31,7 @@ func _ready():
 	for progress_node in track.get_node("ProgressNodes").get_children():
 		progress_node.connect("safepoint_reached", self, "_on_car_progress")
 	$WorldEnvironment.get_node("FellOffTrack").connect("fell_off_track", self, "_respawn_car")
+	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
 	
 	var index = 0
 	for client in Global.clients:
@@ -62,11 +64,8 @@ func _process(_delta):
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
 	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
-		for client in Global.clients:
-			generate_path_from_json(client, Global.player_path[client])
-		Client.start_phase_global("racing")
-		time_start = OS.get_unix_time()
-		finished_tracks.clear()
+		finished_tracks.clear()	
+		_start_racing_game_timer()
 	if send_track_now and not track_was_sent:
 		var track_meshes = track.get_node("Track").tags_to_meshes
 		for tag in track_meshes:
@@ -80,13 +79,24 @@ func _process(_delta):
 		# $PathGenerator.test_generate_path4area()
 		track_was_sent = true
 		
+func _start_racing_game_timer():
+	Client.start_phase_global("racing")
+	for client in Global.clients:
+		generate_path_from_json(client, Global.player_path[client])
+	$WorldEnvironment/SplitScreen.start_timer(cars)
+	
+func _start_racing_game():
+	for client in Global.clients:
+		cars[client].set_path(car_paths[client])
+	time_start = OS.get_unix_time()
+
 func generate_path_from_json(client, path):
 	var path_map = {}
 	for area in path:
 		path_map[area] = $PathGenerator.generate_path4area(path[area], area)
 	var path_node = $PathGenerator.merge_path_to_node("LOOP", path_map)
 	self.add_child(path_node)
-	cars[client].set_path(path_node)
+	car_paths[client] = path_node
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
