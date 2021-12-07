@@ -11,9 +11,10 @@ cssContainer.textContent = css;
 export class JoinPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
+  private inputEl: HTMLInputElement;
+  private buttonEl: HTMLButtonElement;
 
-  private roomIdInputEl: HTMLInputElement;
-  private roomId;
+  private roomId: string | null = null;
 
   public connection?: Connection;
 
@@ -33,9 +34,11 @@ export class JoinPhaseComponent extends HTMLElement {
     shadow.appendChild(templateEl.content.cloneNode(true));
     shadow.appendChild(cssContainer.cloneNode(true));
 
-    this.roomId = new URLSearchParams(window.location.search).get('room') ?? '????';
+    this.inputEl = this.shadow.getElementById('roomcode') as HTMLInputElement;
+    this.buttonEl = this.shadow.getElementById('submitButton') as HTMLButtonElement;
 
-    this.roomIdInputEl = this.shadow.getElementById('room-id') as HTMLInputElement;
+    this.roomId = new URLSearchParams(window.location.search).get('room');
+
 
     this.root = shadow.getElementById('root');
     if (!this.root) {
@@ -43,10 +46,17 @@ export class JoinPhaseComponent extends HTMLElement {
       return;
     }
 
-    console.log(this.roomId);
-    this.appendTextNode(`using room id ${this.roomId}`);
+    this.buttonEl.addEventListener('click', () => {
+      this.roomId = this.inputEl.value;
+      this.startConnection();
+    });
 
-    this.startConnection();
+    if (this.roomId) {
+      console.log(this.roomId);
+      this.appendTextNode(`using room id ${this.roomId}`);
+
+      this.startConnection();
+    }
   }
 
   private async startConnection(): Promise<void> {
@@ -56,6 +66,10 @@ export class JoinPhaseComponent extends HTMLElement {
   }
 
   private async enterRoom(): Promise<void> {
+    if (!this.roomId) {
+      this.appendTextNode('invalid roomid - aborting');
+      return;
+    }
     const client_id = this.generateClientId();
     this.appendTextNode(`we are client ${client_id}`);
     this.appendTextNode('attempt to join room');
