@@ -11,6 +11,8 @@ cssContainer.textContent = css;
 export class NamingPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
+  private inputEl: HTMLInputElement;
+  private buttonEl: HTMLButtonElement;
 
   public connection?: Connection;
 
@@ -30,19 +32,28 @@ export class NamingPhaseComponent extends HTMLElement {
     shadow.appendChild(templateEl.content.cloneNode(true));
     shadow.appendChild(cssContainer.cloneNode(true));
 
+    this.inputEl = this.shadow.getElementById('username') as HTMLInputElement;
+    this.buttonEl = this.shadow.getElementById('submitButton') as HTMLButtonElement;
+
     this.root = shadow.getElementById('root');
     if (!this.root) {
       console.error('root not found');
       return;
     }
 
-    setTimeout(() => this.sendName());
+    this.buttonEl.addEventListener('click', this.sendName);
+
+    // setTimeout(() => this.sendName()); // remove once godot prevents starting without everyone being ready
   }
 
-  private async sendName(): Promise<void> {
-    this.appendTextNode('sending player name');
+  private sendName = () => {
+    let name = this.inputEl.value;
+    if (!name || name.trim().length === 0) {
+      name = navigator.userAgent;
+    }
+    this.appendTextNode(`sending player name ${name}`);
     console.log('sending player name', this.connection);
-    this.connection?.send({ action: 'player_name', name: navigator.userAgent });
+    this.connection?.send({ action: 'player_name', name });
   }
 
   private appendTextNode(value: string): void {
