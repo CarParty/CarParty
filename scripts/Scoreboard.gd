@@ -8,6 +8,8 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	Client.start_phase_global("ending")
+	
 	var dynamic_font = DynamicFont.new()
 	dynamic_font.font_data = load("res://resources/fonts/Clickuper.ttf")
 	dynamic_font.size = 50
