@@ -53,6 +53,8 @@ export class AccelerationComponent extends HTMLElement {
     this.connection?.send({ action: 'speed_change', value: throttle * -2 + 1 });
   }
 
+  public attributeChangedCallback(name: string, oldValue: string, newValue: string): void { }
+
   public connectedCallback(): void {
   }
 

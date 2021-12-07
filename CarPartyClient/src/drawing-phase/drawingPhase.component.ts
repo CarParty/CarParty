@@ -34,7 +34,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private complete = false;
 
   static get observedAttributes(): string[] {
-    return [];
+    return ['color'];
   }
 
   constructor() {
@@ -541,6 +541,17 @@ export class DrawingPhaseComponent extends HTMLElement {
       }));
     });
     return track;
+  }
+
+  public attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+    console.log(name, oldValue, newValue);
+    switch (name) {
+      case 'color':
+        this.pathEl.style.stroke = newValue;
+        this.currentPosMarkerEl.style.stroke = newValue;
+        this.currentPosMarkerEl.style.fill = newValue;
+        break;
+    }
   }
 
   public connectedCallback(): void { }

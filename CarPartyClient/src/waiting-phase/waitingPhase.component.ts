@@ -17,7 +17,7 @@ export class WaitingPhaseComponent extends HTMLElement {
   public connection?: Connection;
 
   static get observedAttributes(): string[] {
-    return [];
+    return ['color'];
   }
 
   constructor() {
@@ -44,12 +44,24 @@ export class WaitingPhaseComponent extends HTMLElement {
       autoplay: true
     });
     riveAnimation.layout = new Layout({ fit: Fit.Cover, alignment: Alignment.Center });
+    console.log(riveAnimation);
   }
 
   private appendTextNode(value: string): void {
     const tag = document.createElement('p');
     tag.textContent = value;
     this.root?.appendChild(tag);
+  }
+
+  public attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+    console.log(name, oldValue, newValue);
+    switch (name) {
+      case 'color':
+        if (this.root) {
+          this.root.style.backgroundColor = newValue;
+        }
+        break;
+    }
   }
 
   public connectedCallback(): void { }

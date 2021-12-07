@@ -4,7 +4,7 @@ import template from './car-party.component.html';
 import { Connection } from './connection';
 import { DrawingPhaseComponent } from './drawing-phase/drawingPhase.component';
 import { JoinPhaseComponent } from './join-phase/joinPhase.component';
-import { Phase } from './messages';
+import { HexColor, Phase } from './messages';
 import { NamingPhaseComponent } from './naming-phase/namingPhase.component';
 import { WaitingPhaseComponent } from './waiting-phase/waitingPhase.component';
 
@@ -20,6 +20,8 @@ export class CarPartyComponent extends HTMLElement {
   private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | AccelerationComponent;
 
   private connection: Connection;
+
+  private carColor: HexColor | null = null;
 
   static get observedAttributes(): string[] {
     return [];
@@ -47,6 +49,13 @@ export class CarPartyComponent extends HTMLElement {
     this.connection.subscribe('phase_change', data => {
       console.log('phase_change', data.phase);
       this.switchPhase(data.phase);
+    });
+
+    this.connection.subscribe('color_transmission', data => {
+      this.carColor = data.color;
+      if (this.root) {
+        this.root.style.backgroundColor = this.carColor;
+      }
     });
 
     this.switchPhase('join');
@@ -80,6 +89,9 @@ export class CarPartyComponent extends HTMLElement {
     console.log(this.currentPhaseView);
     this.currentPhaseView.classList.add('full-height');
     this.currentPhaseView.connection = this.connection;
+    if (this.carColor) {
+      this.currentPhaseView.setAttribute('color', this.carColor);
+    }
     this.root?.appendChild(this.currentPhaseView);
   }
 
