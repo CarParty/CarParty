@@ -66,24 +66,25 @@ func generate_path4area(path_2d, area_name):
 	var last_index = -1
 	var front = 0
 	var tail = all_shapes.size()
+	var count = all_shapes.size()
 	
 	for point in path_2d:
 		var point_from = Vector3(point[0], max_y, point[1])
-		var count = all_shapes.size()
 		var res = null
 		if count < 2*TRISEARCHLENGTH:
 			if front < tail:
 				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail,count,temp_area, last_index)
 			else:
-				res = search_intersect_by_index(point_from,dir,all_shapes,front,count,count,temp_area, last_index)
-				if not res is Dictionary:
-					res = search_intersect_by_index(point_from,dir,all_shapes,0,tail,count,temp_area, last_index)
+				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail+count,count,temp_area, last_index)
+#				if not res is Dictionary:
+#					res = search_intersect_by_index(point_from,dir,all_shapes,0,tail,count,temp_area, last_index)
 		if res == null or not res is Dictionary:
 			res = search_intersect_by_index(point_from,dir,all_shapes,0,count,count,temp_area, last_index)
 		
 		if res is Dictionary:
 			front = res["front"]
 			tail = res["tail"]
+			last_index = front+TRISEARCHLENGTH
 #					TRISEARCHLENGTH = (front+TRISEARCHLENGTH-last_index)%count + SEARCHBASE
 			if "intersect_point" in res:
 				path_3d.append(res["intersect_point"])
@@ -98,6 +99,67 @@ func generate_path4area(path_2d, area_name):
 			break
 	var path_in_finish = []
 	for point in path_3d:
+		if aabb.has_point(point):
+			path_in_finish.append(point)
+	path_dict["PathInFinishArea"] = path_in_finish
+	return path_dict
+
+
+#  looping through all points for every triangle
+func generate_path4area1(path_2d, area_name):
+	var temp_area = shapes[area_name]['Area']
+	var max_y = temp_area.position.y + temp_area.size.y
+	var dir = Vector3(0, -temp_area.size.y, 0)
+	var path_3d = path_2d.duplicate()
+	var all_shapes = []
+	for tag in shapes[area_name]:
+		if not shapes[area_name][tag] is Array:
+			continue
+		all_shapes += shapes[area_name][tag]
+	var point_from = null
+	var intersect_point = null
+	for triangle in all_shapes:
+		var x_min = triangle[0].x
+		var z_min = triangle[0].z
+		var x_max = triangle[0].x
+		var z_max = triangle[0].z
+		for i in range(1,3):
+			if x_min > triangle[i].x:
+				x_min = triangle[i].x
+			if x_max < triangle[i].x:
+				x_max = triangle[i].x
+			if z_min > triangle[i].z:
+				z_min = triangle[i].z
+			if z_max < triangle[i].z:
+				z_max = triangle[i].z
+		
+		for point in path_3d:
+			if (point.size()==4||point[0]<x_min||point[0]>x_max||point[1]<z_min||point[1]>z_max):
+				continue
+			point_from = Vector3(point[0], max_y, point[1])
+			intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
+			if intersect_point is Vector3:
+				if point.size() == 2:
+					point.append(intersect_point.y)
+				else:
+					if point[2] < intersect_point.y:
+						point[2] = intersect_point.y
+					point.append(0)
+					
+	var path_3d_vector = []
+	for point in path_3d:
+		path_3d_vector.append(Vector3(point[0],point[2],point[1]))
+		
+	#{"Path": ..., "Path in FinishArea": ...}
+	var path_dict = {}
+	path_dict["Path"] = path_3d_vector 
+	var aabb = null
+	for area in shapes[area_name]:
+		if area.find("Finish",0) != -1:
+			aabb = shapes[area_name][area]
+			break
+	var path_in_finish = []
+	for point in path_3d_vector:
 		if aabb.has_point(point):
 			path_in_finish.append(point)
 	path_dict["PathInFinishArea"] = path_in_finish
@@ -147,21 +209,33 @@ func test_by_draw(path_3d):
 	
 func search_intersect_by_index(point_from, dir, tri_list, front, tail, count, temp_area, last_index):
 	var res = {}
+	var match_count = 0
 	for i in range(front,tail):
-		var triangle = tri_list[i]
+		var triangle = tri_list[i%count]		
 		var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
 		if intersect_point is Vector3:
 			TRISEARCHLENGTH = (i-last_index+SEARCHBASE)%count
-			res["front"] = (i - TRISEARCHLENGTH)%count
-			res["tail"] = (i+TRISEARCHLENGTH)%count
+			if match_count == 0:
+				res["front"] = (i - TRISEARCHLENGTH)%count
+				res["tail"] = (i+TRISEARCHLENGTH)%count
 #			print("front:  ",front, "  tail:  ",tail)
 			if temp_area.has_point(intersect_point):
 				intersect_point.y += 0.1
-				res["intersect_point"] = intersect_point
-				
-	#		else:
-	#			print(area_name,"  ",intersect_point)
-			return res
+				if match_count == 0:
+					res["intersect_point"] = intersect_point
+					match_count = 1
+#					return res
+				else:
+					if res["intersect_point"].y < intersect_point.y:
+						res["intersect_point"].y = intersect_point.y
+						res["front"] = (i - TRISEARCHLENGTH)%count
+						res["tail"] = (i+TRISEARCHLENGTH)%count
+					return res
+			else:
+				return res
+	if match_count == 1:
+		return res			
+		
 	pass
 
 # func test_generate_path4area():
