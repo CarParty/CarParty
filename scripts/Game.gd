@@ -110,7 +110,7 @@ func _on_car_progress(point, car):
 	var compare_point = car_progress[id] + 1 % (track.get_node("ProgressNodes").get_children().size())
 	if point == compare_point:
 		car_progress[id] = point
-		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,1,0))
+		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,0,0))
 	if point == track.get_node("ProgressNodes").get_children().size() - 1:
 		car_rounds_completed[id] += 1
 	if car_rounds_completed[id] == 3:
@@ -128,4 +128,5 @@ func _respawn_car(car):
 	car.brake = 0
 	car.throttle_mult = 0
 	car.brake_mult = 0
-	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]]
+	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))
+	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))

@@ -174,7 +174,7 @@ collision_mask = 2
 script = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/Finish"]
-transform = Transform( 0.105363, 0, -2.98023e-08, 0, 1.00259, 0, 9.31323e-10, 0, 0.215931, 0.0984132, 0, -1.49012e-08 )
+transform = Transform( 0.105363, 0, 0, 0, 1.00259, 0, 9.31323e-10, 0, 0.190059, 0.098413, 0.231799, -1.49012e-08 )
 shape = SubResource( 5 )
 
 [node name="Texture" type="Spatial" parent="ProgressNodes/Finish"]
@@ -191,7 +191,7 @@ collision_mask = 2
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/MidPoint"]
-transform = Transform( 0.812559, 0, 0, 0, 2.39684, 0, 0, 0, 3.28806, 0, 0, -0.311771 )
+transform = Transform( 0.812559, 0, -1.78814e-07, 0, 2.39684, 0, 0, 0, 2.59327, -4.76837e-07, 0, -0.573061 )
 shape = SubResource( 7 )
 
 [connection signal="body_entered" from="ProgressNodes/Finish" to="ProgressNodes/Finish" method="_on_Finish_body_entered"]
