@@ -3,6 +3,7 @@ import { AccelerationComponent } from './acceleration/acceleration.component';
 import template from './car-party.component.html';
 import { Connection } from './connection';
 import { DrawingPhaseComponent } from './drawing-phase/drawingPhase.component';
+import { EndingPhaseComponent } from './ending-phase/endingPhase.component';
 import { JoinPhaseComponent } from './join-phase/joinPhase.component';
 import { HexColor, Phase } from './messages';
 import { NamingPhaseComponent } from './naming-phase/namingPhase.component';
@@ -17,7 +18,7 @@ export class CarPartyComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
 
-  private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | AccelerationComponent;
+  private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | AccelerationComponent | EndingPhaseComponent;
 
   private connection: Connection;
 
@@ -80,7 +81,7 @@ export class CarPartyComponent extends HTMLElement {
         this.currentPhaseView = document.createElement('car-acceleration');
         break;
       case Phase.ending:
-        this.currentPhaseView = document.createElement('join-phase');
+        this.currentPhaseView = document.createElement('ending-phase');
         break;
       default:
         console.log('unmatched phase');

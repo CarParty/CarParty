@@ -126,7 +126,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.drawTrack();
 
-    setTimeout(() => this.startTrackDrawing(), 4000);
+    setTimeout(() => this.startTrackDrawing(), 2000);
   }
 
   private startDraw = (event: MouseEvent | TouchEvent) => {
@@ -410,7 +410,7 @@ export class DrawingPhaseComponent extends HTMLElement {
         y: box.y1,
         width: box.x2 - box.x1,
         height: box.y2 - box.y1,
-      }, 200)
+      }, 1000)
         .onUpdate(upd => {
           console.log('tween update');
           this.svgRoot.viewBox.baseVal.x = upd.x;
