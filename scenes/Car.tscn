@@ -221,7 +221,7 @@ extents = Vector3( 0.301983, 0.304054, 0.753898 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
 collision_layer = 2
 collision_mask = 3
-mass = 70.0
+mass = 100.0
 script = ExtResource( 7 )
 MAX_ENGINE_FORCE = 200.0
 
@@ -241,6 +241,7 @@ material/4 = null
 
 [node name="Wheel1" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0, 0.35 )
+use_as_traction = true
 use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
@@ -298,6 +299,7 @@ material/1 = null
 
 [node name="Wheel4" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0, 0.35 )
+use_as_traction = true
 use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05

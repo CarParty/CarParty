@@ -57,12 +57,13 @@ func _process(_delta):
 	var send_track_now = true
 	for client in Global.clients:
 		if not player_track_initialized[client] and client in Global.player_path:
-			generate_path_from_json(client, Global.player_path[client])
-			Global.player_path.erase(client)
+			player_track_initialized[client] = true
 			finished_tracks.append(client)
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
 	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
+		for client in Global.clients:
+			generate_path_from_json(client, Global.player_path[client])
 		Client.start_phase_global("racing")
 		time_start = OS.get_unix_time()
 		finished_tracks.clear()
@@ -99,7 +100,7 @@ func _on_car_progress(point, car):
 	var compare_point = car_progress[id] + 1 % (track.get_node("ProgressNodes").get_children().size())
 	if point == compare_point:
 		car_progress[id] = point
-		car_progress_global_transform[id][point] = car.global_transform
+		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,1,0))
 	if point == track.get_node("ProgressNodes").get_children().size() - 1:
 		car_rounds_completed[id] += 1
 	if car_rounds_completed[id] == 3:

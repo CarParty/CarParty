@@ -137,7 +137,7 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-				Global.clients.remove(parsed_data.client_id)
+				Global.clients.erase(parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
@@ -150,6 +150,7 @@ func _on_data():
 				print("Client ready for track json:", Global.player_names[parsed_data.client_id])
 			"path_transmission":
 				Global.player_path[parsed_data.client_id] = parsed_data.path
+				print("Client submited path: "+str(parsed_data.client_id))
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:
