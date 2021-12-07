@@ -44,7 +44,7 @@ margin_bottom = 324.0
 rect_min_size = Vector2( 500, 320 )
 texture = ExtResource( 1 )
 expand = true
-stretch_mode = 1
+stretch_mode = 4
 
 [node name="CenterRow" type="HBoxContainer" parent="MarginContainer/Menu"]
 margin_top = 328.0
