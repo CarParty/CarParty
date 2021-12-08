@@ -106,13 +106,15 @@ func _input(event):
 		
 func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
+	
+	# check whether we did not just drive backwards but passed all progressnodes
 	var compare_point = car_progress[id] + 1 % (track.get_node("ProgressNodes").get_children().size())
 	if point == compare_point:
 		car_progress[id] = point
 		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,0,0))
-	if point == track.get_node("ProgressNodes").get_children().size() - 1:
-		car_rounds_completed[id] += 1
-		$WorldEnvironment/SplitScreen._increase_round_count(id)
+		if point == track.get_node("ProgressNodes").get_children().size() - 1:
+			car_rounds_completed[id] += 1
+			$WorldEnvironment/SplitScreen._increase_round_count(id)
 	if car_rounds_completed[id] == 3 and Global.player_time_to_finish[id] == -1:
 		Global.player_time_to_finish[id] = Global.race_time
 	var all_have_completed = true
