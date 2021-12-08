@@ -129,6 +129,7 @@ func _on_data():
 					return
 				Global.clients.append(parsed_data.client_id)
 				Global.player_speed[parsed_data.client_id] = 0
+				Global.player_time_to_finish[parsed_data.client_id] = -1
 				randomize()
 				Global.player_color[parsed_data.client_id] = Color.from_hsv(randf(), .7, .79)
 				var player_color = {}
@@ -147,7 +148,7 @@ func _on_data():
 				Global.player_speed[parsed_data.client_id] = parsed_data.value
 			"ready_for_track_json":
 				Global.clients_ready_for_track_json.append(parsed_data.client_id)
-				print("Client ready for track json:", Global.player_names[parsed_data.client_id])
+				print("Client ready for track json:", parsed_data.client_id)
 			"path_transmission":
 				Global.player_path[parsed_data.client_id] = parsed_data.path
 				print("Client submited path: "+str(parsed_data.client_id))

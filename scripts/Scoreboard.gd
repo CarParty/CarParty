@@ -18,11 +18,18 @@ func _ready():
 	for client in Global.clients:
 		var center = CenterContainer.new()
 		var label = Label.new()
-		label.text = Global.player_names[client] + ": " + str(Global.player_time_to_finish[client])
+		label.text = Global.player_names[client] + ": " + _time_to_string(Global.player_time_to_finish[client])
 		label.add_font_override("font", dynamic_font)
 		center.size_flags_vertical = 3
 		center.add_child(label)
 		$MarginContainer/VBoxContainer.add_child(center)
+
+func _time_to_string(time):
+	var ms = fmod(Global.race_time,1)*100
+	var seconds = fmod(Global.race_time,60)
+	var minutes = fmod(Global.race_time, 3600) / 60
+	var str_elapsed = "%02d:%02d:%02d" % [minutes, seconds, ms]
+	return str_elapsed
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

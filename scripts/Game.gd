@@ -16,7 +16,7 @@ var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
 
-var time_start = 0
+var scene_path_to_load
 
 onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
@@ -88,7 +88,6 @@ func _start_racing_game_timer():
 func _start_racing_game():
 	for client in Global.clients:
 		cars[client].set_path(car_paths[client])
-	time_start = OS.get_unix_time()
 
 func generate_path_from_json(client, path):
 	var path_map = {}
@@ -113,16 +112,19 @@ func _on_car_progress(point, car):
 		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,0,0))
 	if point == track.get_node("ProgressNodes").get_children().size() - 1:
 		car_rounds_completed[id] += 1
-	if car_rounds_completed[id] == 3:
-		Global.player_time_to_finish[id] = OS.get_unix_time()-time_start
+		$WorldEnvironment/SplitScreen._increase_round_count(id)
+	if car_rounds_completed[id] == 3 and Global.player_time_to_finish[id] == -1:
+		Global.player_time_to_finish[id] = Global.race_time
 	var all_have_completed = true
 	for client in Global.clients:
 		if car_rounds_completed[client] < 3:
 			all_have_completed = false
 	if all_have_completed:
-		Global.goto_scene("res://scenes/Scoreboard.tscn")
+		scene_path_to_load = "res://scenes/Scoreboard.tscn"
+		$FadeIn.show()
+		$FadeIn.fade_in()
 		
-	
+
 func _respawn_car(car):
 	car.engine_force = 0
 	car.brake = 0
@@ -130,3 +132,7 @@ func _respawn_car(car):
 	car.brake_mult = 0
 	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))
 	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))
+
+
+func _on_FadeIn_fade_finished():
+	Global.goto_scene(scene_path_to_load)
