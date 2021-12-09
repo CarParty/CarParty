@@ -108,7 +108,7 @@ func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
 	
 	# check whether we did not just drive backwards but passed all progressnodes
-	var compare_point = car_progress[id] + 1 % (track.get_node("ProgressNodes").get_children().size())
+	var compare_point = (car_progress[id] + 1) % (track.get_node("ProgressNodes").get_children().size())
 	if point == compare_point:
 		car_progress[id] = point
 		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,0,0))
@@ -133,7 +133,11 @@ func _respawn_car(car):
 	car.brake = 0
 	car.throttle_mult = 0
 	car.brake_mult = 0
+	car.linear_velocity = Vector3.ZERO
 	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))
+	var velocity = Vector3.ZERO
+	velocity.y = 1
+	car.linear_velocity = velocity
 
 
 func _on_FadeIn_fade_finished():
