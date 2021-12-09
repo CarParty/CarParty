@@ -12,7 +12,9 @@ __meta__ = {
 [node name="Viewport" type="Viewport" parent="."]
 size = Vector2( 400, 400 )
 handle_input_locally = false
+msaa = 2
 render_target_update_mode = 3
+audio_listener_enable_3d = true
 
 [node name="Camera" type="Camera" parent="Viewport"]
 script = ExtResource( 1 )

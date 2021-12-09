@@ -21,12 +21,23 @@ var scene_path_to_load
 onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
 
+onready var generate_track_thread = Thread.new()
+onready var build_racing_tracks_thread = Thread.new()
+
 func _ready():
 	track = load(track_path).instance()
 	$WorldEnvironment.add_child(track)
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
 	cameras[0].make_current()
+
+	$WorldEnvironment/SplitScreen.layer = 1
+	$WorldEnvironment/TopCamera.layer = 2
+	
+	var track_camera = track.get_node("Camera")
+	track_camera.current = false
+	$WorldEnvironment/TopCamera/ViewportContainer/Viewport/OverlookingCamera.transform = track_camera.transform
+	$WorldEnvironment/TopCamera/ViewportContainer/Viewport/OverlookingCamera.fov = track_camera.fov
 	
 	for progress_node in track.get_node("ProgressNodes").get_children():
 		progress_node.connect("safepoint_reached", self, "_on_car_progress")
@@ -65,25 +76,35 @@ func _process(_delta):
 			send_track_now = false
 	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
 		finished_tracks.clear()	
-		_start_racing_game_timer()
+		build_racing_tracks_thread.start(self, "build_racing_tracks")
 	if send_track_now and not track_was_sent:
-		var track_meshes = track.get_node("Track").tags_to_meshes
-		for tag in track_meshes:
-			track_meshes[tag] = track.get_node("Track/" + track_meshes[tag])
-		var track_node = track
-		var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
-	
-		Client.send_global_message("track_transmission", track_dict)
-		# just for test
-		$PathGenerator.initialize_track_area(track_meshes, track_node)
-		# $PathGenerator.test_generate_path4area()
 		track_was_sent = true
+		generate_track_thread.start(self, "generate_track")
+
+func generate_track():
+	$WorldEnvironment/TopCamera/Loading.visible = true
+	var track_meshes = track.get_node("Track").tags_to_meshes
+	for tag in track_meshes:
+		track_meshes[tag] = track.get_node("Track/" + track_meshes[tag])
+	var track_node = track
+	var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
+
+	Client.send_global_message("track_transmission", track_dict)
+	# just for test
+	$PathGenerator.initialize_track_area(track_meshes, track_node)
+	# $PathGenerator.test_generate_path4area()
+	$WorldEnvironment/TopCamera/Loading.visible = false
+
 		
-func _start_racing_game_timer():
+func build_racing_tracks():
+	$WorldEnvironment/TopCamera/Loading.visible = true
 	Client.start_phase_global("racing")
 	for client in Global.clients:
 		generate_path_from_json(client, Global.player_path[client])
 	$WorldEnvironment/SplitScreen.start_timer(cars)
+	$WorldEnvironment/TopCamera/Loading.visible = false
+	$WorldEnvironment/SplitScreen.layer = 2
+	$WorldEnvironment/TopCamera.layer = 1
 	
 func _start_racing_game():
 	for client in Global.clients:
@@ -99,7 +120,9 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		$WorldEnvironment/SplitScreen/GridContainer.visible = not $WorldEnvironment/SplitScreen/GridContainer.visible
+		var tmp_layer = $WorldEnvironment/SplitScreen.layer
+		$WorldEnvironment/SplitScreen.layer = $WorldEnvironment/TopCamera.layer
+		$WorldEnvironment/TopCamera.layer = tmp_layer
 	if event.is_action_pressed("ui_cancel"):
 		for car in cars.values():
 			_respawn_car(car)
@@ -142,3 +165,8 @@ func _respawn_car(car):
 
 func _on_FadeIn_fade_finished():
 	Global.goto_scene(scene_path_to_load)
+
+func _exit_tree():
+	build_racing_tracks_thread.wait_to_finish()
+	generate_track_thread.wait_to_finish()
+	
