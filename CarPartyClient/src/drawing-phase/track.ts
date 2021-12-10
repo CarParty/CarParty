@@ -11,8 +11,8 @@ export type Chunk = {
     from?: Chunk;
     fromChunkName: string,
     boundingBox: Rectangle;
-  };
-  start?: Chunk;
+  }[];
+  start: Chunk[];
 };
 
 export type Rectangle = {

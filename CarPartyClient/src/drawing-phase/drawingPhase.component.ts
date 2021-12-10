@@ -89,6 +89,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     });
     // uncomment below for quicker testing
     // this.setupTrack(TEST_TRACK);
+    // this.setupTrack(TEST_TRACK2);
 
     // setup mouse events
     this.svgRoot.addEventListener('mousedown', this.startDraw);
@@ -156,12 +157,14 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.isDrawing = false;
     const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
     const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
-    if (this.currentChunk?.finish.boundingBox) {
-      const box = this.currentChunk.finish.boundingBox;
-      if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
-        this.moveToNextChunk();
+    this.currentChunk?.finish.forEach(finish => {
+      if (finish.boundingBox) {
+        const box = finish.boundingBox;
+        if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
+          this.moveToNextChunk(finish.from);
+        }
       }
-    }
+    });
   }
 
   private abortDraw = (event: MouseEvent | TouchEvent) => {
@@ -171,7 +174,8 @@ export class DrawingPhaseComponent extends HTMLElement {
   private resetCurrentPartialPath = () => {
     if (this.currentChunk) {
       if (this.currentChunk === this.track?.start) {
-        const startBox = this.track.start.start?.finish.boundingBox ?? this.track.start.boundingBox;
+        const areas = this.track.start.start[0].finish.filter(finish => finish.from === this.track?.start);
+        const startBox = areas.length > 0 ? areas[0].boundingBox : undefined ?? this.track.start.boundingBox;
         this.currentPartialPath = [{
           x: 0.5 * (startBox.x1 + startBox.x2),
           y: 0.5 * (startBox.y1 + startBox.y2)
@@ -267,11 +271,11 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.drawingEnabled = true;
   }
 
-  private async moveToNextChunk(): Promise<void> {
+  private async moveToNextChunk(nextChunk?: Chunk): Promise<void> {
     this.drawingEnabled = false;
     this.isDrawing = false;
 
-    this.currentChunk = this.currentChunk?.finish.from ?? null;
+    this.currentChunk = nextChunk ?? null;
     if (!this.currentChunk) {
       return;
     }
@@ -386,15 +390,17 @@ export class DrawingPhaseComponent extends HTMLElement {
       areaMarker.height.baseVal.value = (chunk.boundingBox.y2 - chunk.boundingBox.y1) * zoom;
       group.appendChild(areaMarker);
 
-      const finishMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      finishMarker.style.fill = 'none';
-      finishMarker.style.stroke = 'blue';
-      finishMarker.style.strokeWidth = '1';
-      finishMarker.x.baseVal.value = chunk.finish.boundingBox.x1 * zoom + offsetX;
-      finishMarker.y.baseVal.value = chunk.finish.boundingBox.y1 * zoom + offsetY;
-      finishMarker.width.baseVal.value = (chunk.finish.boundingBox.x2 - chunk.finish.boundingBox.x1) * zoom;
-      finishMarker.height.baseVal.value = (chunk.finish.boundingBox.y2 - chunk.finish.boundingBox.y1) * zoom;
-      group.appendChild(finishMarker);
+      chunk.finish.forEach(finish => {
+        const finishMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        finishMarker.style.fill = 'none';
+        finishMarker.style.stroke = 'blue';
+        finishMarker.style.strokeWidth = '1';
+        finishMarker.x.baseVal.value = finish.boundingBox.x1 * zoom + offsetX;
+        finishMarker.y.baseVal.value = finish.boundingBox.y1 * zoom + offsetY;
+        finishMarker.width.baseVal.value = (finish.boundingBox.x2 - finish.boundingBox.x1) * zoom;
+        finishMarker.height.baseVal.value = (finish.boundingBox.y2 - finish.boundingBox.y1) * zoom;
+        group.appendChild(finishMarker);
+      });
     });
   }
 
@@ -441,44 +447,47 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     // initial convert
     for (const [key, tChunk] of Object.entries(tTrack)) {
-      const finishKey = Object.keys(tChunk).filter(k => startsWith(k, 'Finish#'))[0];
-      if (startsWith(finishKey, 'Finish#')) { // true by design, just for typecheck
-        const chunk = {
-          name: key,
-          road: tChunk.Road.map(triangle => triangle.map(([x, y]) => ({ x, y }))),
+      const finishKeys = Object.keys(tChunk).filter((k): k is `Finish#${string}` => startsWith(k, 'Finish#'));
+      const chunk = {
+        name: key,
+        road: tChunk.Road.map(triangle => triangle.map(([x, y]) => ({ x, y }))),
+        boundingBox: {
+          x1: tChunk.Area.position[0],
+          x2: tChunk.Area.position[0] + tChunk.Area.size[0],
+          y1: tChunk.Area.position[1],
+          y2: tChunk.Area.position[1] + tChunk.Area.size[1]
+        },
+        finish: finishKeys.map(finishKey => ({
+          fromChunkName: finishKey.replace('Finish#', ''),
           boundingBox: {
-            x1: tChunk.Area.position[0],
-            x2: tChunk.Area.position[0] + tChunk.Area.size[0],
-            y1: tChunk.Area.position[1],
-            y2: tChunk.Area.position[1] + tChunk.Area.size[1]
-          },
-          finish: {
-            fromChunkName: finishKey.replace('Finish#', ''),
-            boundingBox: {
-              x1: tChunk[finishKey].position[0],
-              x2: tChunk[finishKey].position[0] + tChunk[finishKey].size[0],
-              y1: tChunk[finishKey].position[1],
-              y2: tChunk[finishKey].position[1] + tChunk[finishKey].size[1]
-            }
+            x1: tChunk[finishKey].position[0],
+            x2: tChunk[finishKey].position[0] + tChunk[finishKey].size[0],
+            y1: tChunk[finishKey].position[1],
+            y2: tChunk[finishKey].position[1] + tChunk[finishKey].size[1]
           }
-        };
-        chunks.set(key, chunk);
-        if (tChunk.isFirst && !startChunk) {
-          startChunk = chunk;
-        }
+        })
+        ),
+        start: []
+      };
+      chunks.set(key, chunk);
+      if (tChunk.isFirst && !startChunk) {
+        startChunk = chunk;
       }
     }
 
     // set cross references
     // -> finish area ('next' chunk)
-    chunks.forEach(chunk => chunk.finish.from = chunks.get(chunk.finish.fromChunkName));
+    chunks.forEach(chunk =>
+      chunk.finish.forEach(finish =>
+        finish.from = chunks.get(finish.fromChunkName)
+      )
+    );
     // -> start area ('previous' chunk)
-    chunks.forEach(chunk => {
-      const nextChunk = chunks.get(chunk.finish.from?.name ?? '');
-      if (nextChunk) {
-        nextChunk.start = chunk;
-      }
-    });
+    chunks.forEach(chunk =>
+      chunk.finish.forEach(finish =>
+        chunks.get(finish.from?.name ?? '')?.start.push(chunk)
+      )
+    );
 
     return {
       chunks,
@@ -531,10 +540,12 @@ export class DrawingPhaseComponent extends HTMLElement {
       chunk.boundingBox.y1 = scaleY * chunk.boundingBox.y1 + translateY;
       chunk.boundingBox.x2 = scaleX * chunk.boundingBox.x2 + translateX;
       chunk.boundingBox.y2 = scaleY * chunk.boundingBox.y2 + translateY;
-      chunk.finish.boundingBox.x1 = scaleX * chunk.finish.boundingBox.x1 + translateX;
-      chunk.finish.boundingBox.y1 = scaleY * chunk.finish.boundingBox.y1 + translateY;
-      chunk.finish.boundingBox.x2 = scaleX * chunk.finish.boundingBox.x2 + translateX;
-      chunk.finish.boundingBox.y2 = scaleY * chunk.finish.boundingBox.y2 + translateY;
+      chunk.finish.forEach(finish => {
+        finish.boundingBox.x1 = scaleX * finish.boundingBox.x1 + translateX;
+        finish.boundingBox.y1 = scaleY * finish.boundingBox.y1 + translateY;
+        finish.boundingBox.x2 = scaleX * finish.boundingBox.x2 + translateX;
+        finish.boundingBox.y2 = scaleY * finish.boundingBox.y2 + translateY;
+      });
       chunk.road.forEach(polygon => polygon.forEach(point => {
         point.x = scaleX * point.x + translateX;
         point.y = scaleY * point.y + translateY;
