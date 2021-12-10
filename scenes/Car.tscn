@@ -260,7 +260,6 @@ material/1 = null
 [node name="Wheel2" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0, -0.45 )
 use_as_traction = true
-use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
 wheel_friction_slip = 3.0
@@ -281,7 +280,6 @@ material/1 = null
 [node name="Wheel3" type="VehicleWheel" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0, -0.45 )
 use_as_traction = true
-use_as_steering = true
 wheel_radius = 0.1
 wheel_rest_length = 0.05
 wheel_friction_slip = 3.0
