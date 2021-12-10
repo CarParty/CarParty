@@ -5,7 +5,9 @@ export type ClientMessage = LoginMessageI
   | SetPlayerNameMessageI
   | ReadyForTrackMessageI
   | PathProgressUpdateMessageI
-  | SendPathDataMessageI;
+  | SendPathDataMessageI
+  | ResetCarMessageI
+  | DriftCarMessageI;
 
 export type LoginMessageI = {
   action: 'login_client';
@@ -35,6 +37,15 @@ export type PathProgressUpdateMessageI = {
 export type SendPathDataMessageI = {
   action: 'path_transmission',
   path: Record<string, Point[]>
+};
+
+export type ResetCarMessageI = {
+  action: 'reset_car';
+};
+
+export type DriftCarMessageI = {
+  action: 'drift_car';
+  start: boolean;
 };
 
 
