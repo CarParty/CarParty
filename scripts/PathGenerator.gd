@@ -115,7 +115,8 @@ func generate_path4area1(path_2d, area_name):
 	for tag in shapes[area_name]:
 		if not shapes[area_name][tag] is Array:
 			continue
-		all_shapes += shapes[area_name][tag]
+		if tag == 'Road':
+			all_shapes += shapes[area_name][tag]
 	var point_from = null
 	var intersect_point = null
 	for triangle in all_shapes:
@@ -224,13 +225,13 @@ func search_intersect_by_index(point_from, dir, tri_list, front, tail, count, te
 				if match_count == 0:
 					res["intersect_point"] = intersect_point
 					match_count = 1
-#					return res
-				else:
-					if res["intersect_point"].y < intersect_point.y:
-						res["intersect_point"].y = intersect_point.y
-						res["front"] = (i - TRISEARCHLENGTH)%count
-						res["tail"] = (i+TRISEARCHLENGTH)%count
 					return res
+#				else:
+#					if res["intersect_point"].y < intersect_point.y:
+#						res["intersect_point"].y = intersect_point.y
+#						res["front"] = (i - TRISEARCHLENGTH)%count
+#						res["tail"] = (i+TRISEARCHLENGTH)%count
+#					return res
 			else:
 				return res
 	if match_count == 1:
