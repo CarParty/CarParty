@@ -39,7 +39,12 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 		var mesh = track_meshes[tag].mesh
 		var mdt = MeshDataTool.new()
 		mdt.create_from_surface(mesh, 0)
+		var yield_count = 0
 		for face_id in mdt.get_face_count():
+			yield_count += 1
+			if yield_count == 500:
+				yield()
+				yield_count = 0
 			#print(mdt.get_face_normal(face_id).y)
 			#if mdt.get_face_normal(face_id).y < 0:
 			#	continue

@@ -21,8 +21,7 @@ var scene_path_to_load
 onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
 
-onready var generate_track_thread = Thread.new()
-onready var build_racing_tracks_thread = Thread.new()
+var current_running_thread = null
 
 func _ready():
 	track = load(track_path).instance()
@@ -76,31 +75,52 @@ func _process(_delta):
 			send_track_now = false
 	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
 		finished_tracks.clear()	
-		build_racing_tracks_thread.start(self, "build_racing_tracks")
+		current_running_thread = build_racing_tracks()
 	if send_track_now and not track_was_sent:
 		track_was_sent = true
-		generate_track_thread.start(self, "generate_track")
+		current_running_thread = generate_track()
+	
+	if current_running_thread != null and current_running_thread.is_valid():
+		var time_start = OS.get_ticks_msec()
+		var time_now = time_start
+		while (time_now - time_start) < 25 and current_running_thread is GDScriptFunctionState and current_running_thread.is_valid():
+			current_running_thread = current_running_thread.resume()
+			time_now = OS.get_ticks_msec()
 
 func generate_track():
+	yield()
 	$WorldEnvironment/TopCamera/Loading.visible = true
 	var track_meshes = track.get_node("Track").tags_to_meshes
 	for tag in track_meshes:
 		track_meshes[tag] = track.get_node("Track/" + track_meshes[tag])
 	var track_node = track
-	var track_dict = {"track": $TrackTransformer.transform_track(track_meshes, track_node)}
+	
+	var transform_result = $TrackTransformer.transform_track(track_meshes, track_node)
+	while transform_result is GDScriptFunctionState and transform_result.is_valid():
+		yield()
+		transform_result = transform_result.resume()
+
+	var track_dict = {"track": transform_result}
 
 	Client.send_global_message("track_transmission", track_dict)
 	# just for test
-	$PathGenerator.initialize_track_area(track_meshes, track_node)
-	# $PathGenerator.test_generate_path4area()
+	var initialize_result = $PathGenerator.initialize_track_area(track_meshes, track_node)
+	while initialize_result is GDScriptFunctionState and initialize_result.is_valid():
+		yield()
+		initialize_result = initialize_result.resume()
+		
 	$WorldEnvironment/TopCamera/Loading.visible = false
 
 		
 func build_racing_tracks():
+	yield()
 	$WorldEnvironment/TopCamera/Loading.visible = true
 	Client.start_phase_global("racing")
 	for client in Global.clients:
-		generate_path_from_json(client, Global.player_path[client])
+		var generate_result = generate_path_from_json(client, Global.player_path[client])
+		while generate_result is GDScriptFunctionState and generate_result.is_valid():
+			yield()
+			generate_result = generate_result.resume()
 	$WorldEnvironment/SplitScreen.start_timer(cars)
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/SplitScreen.layer = 2
@@ -114,6 +134,9 @@ func generate_path_from_json(client, path):
 	var path_map = {}
 	for area in path:
 		path_map[area] = $PathGenerator.generate_path4area(path[area], area)
+		while path_map[area] is GDScriptFunctionState and path_map[area].is_valid():
+			yield()
+			path_map[area] = path_map[area].resume()
 	var path_node = $PathGenerator.merge_path_to_node("LOOP", path_map)
 	self.add_child(path_node)
 	car_paths[client] = path_node
@@ -165,8 +188,3 @@ func _respawn_car(car):
 
 func _on_FadeIn_fade_finished():
 	Global.goto_scene(scene_path_to_load)
-
-func _exit_tree():
-	build_racing_tracks_thread.wait_to_finish()
-	generate_track_thread.wait_to_finish()
-	

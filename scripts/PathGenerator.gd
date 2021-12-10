@@ -24,7 +24,13 @@ func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
 		var mesh = track_meshes[tag].mesh
 		var mdt = MeshDataTool.new()
 		mdt.create_from_surface(mesh, 0)
+		var yield_count = 0
 		for face_id in mdt.get_face_count():
+			yield_count += 1
+			if yield_count == 500:
+				yield()
+				yield_count = 0
+			yield()
 			var vertices = []
 			for i in [0, 1, 2]:
 				var vertex_local_space = mdt.get_vertex(mdt.get_face_vertex(face_id, i))
@@ -68,7 +74,12 @@ func generate_path4area(path_2d, area_name):
 	var tail = all_shapes.size()
 	var count = all_shapes.size()
 	
+	var yield_count = 0
 	for point in path_2d:
+		yield_count += 1
+		if yield_count == 500:
+			yield()
+			yield_count = 0
 		var point_from = Vector3(point[0], max_y, point[1])
 		var res = null
 		if count < 2*TRISEARCHLENGTH:
