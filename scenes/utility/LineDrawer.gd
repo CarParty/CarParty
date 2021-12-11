@@ -12,7 +12,9 @@ func _ready():
 func draw_with_material(material):
 	var path = get_parent()
 	var curve = path.curve
-	begin(5, material)
+	material.vertex_color_use_as_albedo = true
+	set_material_override(material)
+	begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	var width = .1
 	var put_up = Vector3(0, .1, 0)
 	for i in curve.get_point_count():
