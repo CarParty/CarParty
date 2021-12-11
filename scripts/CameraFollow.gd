@@ -6,7 +6,7 @@ export var lerp_speed = 5
 # Set the target node in the Inspector
 export (NodePath) var target_path = null
 # Desired position of camera, relative to target. (0, 5, 7), for example, would be behind and above.
-export (Vector3) var offset = Vector3(0, 0.8, -2)
+export (Vector3) var offset = Vector3(0, 1.4, -2)
 var target = null
 
 func _ready():

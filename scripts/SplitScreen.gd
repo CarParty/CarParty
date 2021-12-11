@@ -112,7 +112,7 @@ func start_timer(players_cars_map):
 		time_label.add_constant_override("shadow_as_outline",0)
 		time_label.align = Label.ALIGN_LEFT
 		time_label.valign = Label.VALIGN_BOTTOM
-		time_label.rect_size = player_viewport.rect_size
+		# time_label.rect_size = player_viewport.rect_size
 		time_label.margin_left = player_viewport.rect_size.x / 10
 		time_label.margin_right = player_viewport.rect_size.x
 		time_label.margin_top = 0
@@ -121,7 +121,7 @@ func start_timer(players_cars_map):
 		player_time_label[player_name] = time_label
 
 		var name_label: Label = Label.new()
-		name_label.text = player_name
+		name_label.text = Global.player_names[player_name]
 		name_label.add_font_override("font", dynamic_font_2)
 		name_label.add_color_override("font_color_shadow", Color.black)
 		name_label.add_constant_override("shadow_offset_x",2)
@@ -129,9 +129,10 @@ func start_timer(players_cars_map):
 		name_label.add_constant_override("shadow_as_outline",0)
 		name_label.align = Label.ALIGN_RIGHT
 		name_label.valign = Label.VALIGN_BOTTOM
-		name_label.rect_size = player_viewport.rect_size
-		name_label.margin_left = 0
-		name_label.margin_right = player_viewport.rect_size.x / 10
+		# name_label.rect_size = player_viewport.rect_size
+		name_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		name_label.margin_left =  0
+		name_label.margin_right = player_viewport.rect_size.x - player_viewport.rect_size.x / 10
 		name_label.margin_top = 0
 		name_label.margin_bottom = player_viewport.rect_size.y - player_viewport.rect_size.y / 10
 		player_viewport.add_child(name_label)

@@ -187,7 +187,7 @@ func _respawn_car(car):
 	car.throttle_mult = 0
 	car.brake_mult = 0
 	car.linear_velocity = Vector3.ZERO
-	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,2,0))
+	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,.2,0))
 	var velocity = Vector3.ZERO
 	velocity.y = 1
 	car.linear_velocity = velocity
