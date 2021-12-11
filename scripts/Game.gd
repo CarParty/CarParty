@@ -8,6 +8,7 @@ var car_progress = {}
 var car_rounds_completed = {}
 var car_progress_global_transform = {}
 var car_paths = {}
+var car_visual_layer = {}
 
 var cameras = []
 var camera_counter = 0
@@ -44,6 +45,7 @@ func _ready():
 	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
 	
 	var index = 0
+	
 	for client in Global.clients:
 		camera_counter = 1
 		var car = preload("res://scenes/Car.tscn").instance()
@@ -57,9 +59,14 @@ func _ready():
 		car_rounds_completed[client] = 0
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
+		#set layer mask and cull mask!!!
+		#start from 6th layer 
+		car_visual_layer[client] = 4+index
+		car.set_path_visual_layer(4+index)
 		index += 1
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
+	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
 	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):

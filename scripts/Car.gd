@@ -47,7 +47,12 @@ func set_path(new_path: Path):
 	path_follow.add_child(debug_sphere)
 	path.add_child(line_drawer)
 	line_drawer.draw_with_material($CarBody1/CarBody/Body1.get_surface_material(0).duplicate())
+
+func set_path_visual_layer(layer):
+	line_drawer.set_layer_mask_bit(layer, true)
+	line_drawer.set_layer_mask_bit(0, false)
 	
+
 func change_speed(value):
 	if value+Global.epsilon >= throttle_mult:
 		throttle_mult = value

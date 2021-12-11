@@ -28,6 +28,7 @@ var player_label = {}
 var player_time_label = {}
 var player_round_label = {}
 var players_cars_map_local
+var players_camera_visual_layer = {}
 var timer
 signal start_race
 
@@ -63,11 +64,19 @@ func setup_for_cars(players_cars_map):
 		var camera = player_viewport.get_node("Viewport/Camera")
 		camera.transform = players_cars_map[player_name].transform
 		camera.target = players_cars_map[player_name]
+		if players_camera_visual_layer != {}:
+			for pn in players_camera_visual_layer:
+				if pn != player_name:
+					camera.set_cull_mask_bit(players_camera_visual_layer[pn], false)
+		
 		self.get_node("GridContainer").add_child(player_viewport)
 		player_viewport.set_size(Vector2(split_width, split_height))
 		player_viewport.get_node("Viewport").set_size(Vector2(split_width, split_height))
 		player_viewports[player_name] = player_viewport
-		
+
+func setup_for_camera_visual_layer(players_layers_map):
+	players_camera_visual_layer = players_layers_map
+
 func start_timer(players_cars_map):
 	var dynamic_font : DynamicFont = DynamicFont.new()
 	dynamic_font.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
