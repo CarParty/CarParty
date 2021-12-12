@@ -43,6 +43,8 @@ func _ready():
 		progress_node.connect("safepoint_reached", self, "_on_car_progress")
 	$WorldEnvironment.get_node("FellOffTrack").connect("fell_off_track", self, "_respawn_car")
 	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
+	Client.connect("respawn_car", self, "_respawn_car_player_id")
+	Client.connect("drift_car", self, "_drift_car")
 	
 	var index = 0
 	
@@ -192,6 +194,16 @@ func _respawn_car(car):
 	velocity.y = 1
 	car.linear_velocity = velocity
 
+func _respawn_car_player_id(player_id):
+	_respawn_car(cars[player_id])
+	
+func _drift_car(player_id, pressed):
+	if pressed:
+		cars[player_id].get_node("Wheel2").set_friction_slip(1)
+		cars[player_id].get_node("Wheel3").set_friction_slip(1)
+	else:
+		cars[player_id].get_node("Wheel2").set_friction_slip(3)
+		cars[player_id].get_node("Wheel3").set_friction_slip(3)
 
 func _on_FadeIn_fade_finished():
 	Global.goto_scene(scene_path_to_load)
