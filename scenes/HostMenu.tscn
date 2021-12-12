@@ -190,9 +190,6 @@ text = "Start ->"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
-[node name="FadeIn" parent="." instance=ExtResource( 5 )]
-visible = false
-
 [node name="MarginContainer2" type="MarginContainer" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
@@ -244,6 +241,9 @@ custom_fonts/font = SubResource( 7 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="FadeIn" parent="." instance=ExtResource( 5 )]
+visible = false
 
 [connection signal="tree_exited" from="." to="." method="_on_HostMenu_tree_exited"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
