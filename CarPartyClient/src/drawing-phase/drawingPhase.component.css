@@ -20,3 +20,16 @@
 #redrawButton:hover {
   background-color: lightgray;
 }
+
+.pulse {
+  animation: pulse 1s ease-in-out 0s infinite alternate both;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}

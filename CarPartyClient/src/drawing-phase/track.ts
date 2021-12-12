@@ -11,6 +11,7 @@ export type Chunk = {
     from?: Chunk;
     fromChunkName: string,
     boundingBox: Rectangle;
+    svgEl?: SVGRectElement;
   }[];
   start: Chunk[];
 };

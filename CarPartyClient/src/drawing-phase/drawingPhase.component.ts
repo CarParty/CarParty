@@ -89,7 +89,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     });
     // uncomment below for quicker testing
     // this.setupTrack(TEST_TRACK);
-    // this.setupTrack(TEST_TRACK2);
+    // this.setupTrack(TEST_TRACK5);
 
     // setup mouse events
     this.svgRoot.addEventListener('mousedown', this.startDraw);
@@ -135,9 +135,11 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.isDrawing = true;
       const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
       const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
-      if (this.pointInCurrentChunk(point)) {
-        this.currentPartialPath.push(point);
-        this.drawPath();
+      if (this.pointInCurrentChunk(point) && this.pointCloseToLast(point)) {
+        if (!this.checkAndHandlePointInFinishArea(point)) {
+          this.currentPartialPath.push(point);
+          this.drawPath();
+        }
       }
     }
   }
@@ -146,9 +148,11 @@ export class DrawingPhaseComponent extends HTMLElement {
     if (this.drawingEnabled && this.isDrawing) {
       const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
       const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
-      if (this.pointInCurrentChunk(point)) {
-        this.currentPartialPath.push(point);
-        this.drawPath();
+      if (this.pointInCurrentChunk(point) && this.pointCloseToLast(point)) {
+        if (!this.checkAndHandlePointInFinishArea(point)) {
+          this.currentPartialPath.push(point);
+          this.drawPath();
+        }
       }
     }
   }
@@ -157,14 +161,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.isDrawing = false;
     const eventPoint = event instanceof MouseEvent ? event : event.touches[0];
     const point = this.screenToSvg({ x: eventPoint.clientX, y: eventPoint.clientY });
-    this.currentChunk?.finish.forEach(finish => {
-      if (finish.boundingBox) {
-        const box = finish.boundingBox;
-        if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
-          this.moveToNextChunk(finish.from);
-        }
-      }
-    });
+    if (this.pointInCurrentChunk(point) && this.pointCloseToLast(point)) {
+      this.checkAndHandlePointInFinishArea(point);
+    }
   }
 
   private abortDraw = (event: MouseEvent | TouchEvent) => {
@@ -186,6 +185,21 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.partialPaths.set(this.currentChunk.name, this.currentPartialPath);
       this.drawPath();
     }
+  }
+
+  private checkAndHandlePointInFinishArea(point: Point): boolean {
+    if (this.currentChunk) {
+      for (const finish of this.currentChunk.finish) {
+        if (finish.boundingBox) {
+          const box = finish.boundingBox;
+          if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
+            this.moveToNextChunk(finish.from);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   private screenToSvg(screen: Point): Point {
@@ -231,6 +245,25 @@ export class DrawingPhaseComponent extends HTMLElement {
     return this.currentChunk.road.some(poly => this.pointInPolygon(point, poly));
   }
 
+  private pointCloseToLast(point: Point): boolean {
+    const last = this.getLastPathPoint();
+    const distanceSquared = Math.pow(point.x - last.x, 2) + Math.pow(point.y - last.y, 2);
+    console.log(distanceSquared);
+    return distanceSquared <= 20000;
+  }
+
+  private getLastPathPoint(): Point {
+    let path: Point[];
+    if (this.currentPartialPath.length > 0) {
+      path = this.currentPartialPath;
+    } else {
+      const pathFragmentCollector: Point[][] = [];
+      this.partialPaths.forEach(fragment => pathFragmentCollector.push(fragment));
+      path = pathFragmentCollector[pathFragmentCollector.length - 2];
+    }
+    return path[path.length - 1];
+  }
+
   private pointInPolygon(point: Point, polygon: Polygon): boolean {
     let posSign = 0;
     let negSign = 0;
@@ -258,12 +291,28 @@ export class DrawingPhaseComponent extends HTMLElement {
     return true;
   }
 
+  private highlightCurrentFinishAreas(): void {
+    this.track?.chunks.forEach(chunk => chunk.finish.forEach(finish => {
+      if (finish.svgEl) {
+        finish.svgEl.style.fill = 'none';
+        finish.svgEl.classList.remove('pulse');
+      }
+    }));
+    this.currentChunk?.finish.forEach(finish => {
+      if (finish.svgEl) {
+        finish.svgEl.style.fill = 'blue';
+        finish.svgEl.classList.add('pulse');
+      }
+    });
+  }
+
   private async startTrackDrawing(): Promise<void> {
     if (!this.track) {
       return;
     }
 
     this.currentChunk = this.track.start;
+    this.highlightCurrentFinishAreas();
     await this.zoomToBox(this.currentChunk.boundingBox);
 
     this.resetCurrentPartialPath();
@@ -296,6 +345,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.drawPath();
 
       // zoom out
+      this.highlightCurrentFinishAreas();
       if (this.trackBoundingBox) {
         this.zoomToBox(this.trackBoundingBox);
       }
@@ -305,6 +355,7 @@ export class DrawingPhaseComponent extends HTMLElement {
         path: this.convertPath(this.partialPaths)
       });
     } else {
+      this.highlightCurrentFinishAreas();
       await this.zoomToBox(this.currentChunk.boundingBox);
 
       this.resetCurrentPartialPath();
@@ -377,10 +428,10 @@ export class DrawingPhaseComponent extends HTMLElement {
           poly.points.appendItem(svgPoint);
         });
         group.appendChild(poly);
-        // break;
       }
 
-      const areaMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      // useful for debugging
+      /*const areaMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       areaMarker.style.fill = 'none';
       areaMarker.style.stroke = 'red';
       areaMarker.style.strokeWidth = '1';
@@ -388,18 +439,18 @@ export class DrawingPhaseComponent extends HTMLElement {
       areaMarker.y.baseVal.value = chunk.boundingBox.y1 * zoom + offsetY;
       areaMarker.width.baseVal.value = (chunk.boundingBox.x2 - chunk.boundingBox.x1) * zoom;
       areaMarker.height.baseVal.value = (chunk.boundingBox.y2 - chunk.boundingBox.y1) * zoom;
-      group.appendChild(areaMarker);
+      group.appendChild(areaMarker);*/
 
       chunk.finish.forEach(finish => {
-        const finishMarker = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        finishMarker.style.fill = 'none';
-        finishMarker.style.stroke = 'blue';
-        finishMarker.style.strokeWidth = '1';
-        finishMarker.x.baseVal.value = finish.boundingBox.x1 * zoom + offsetX;
-        finishMarker.y.baseVal.value = finish.boundingBox.y1 * zoom + offsetY;
-        finishMarker.width.baseVal.value = (finish.boundingBox.x2 - finish.boundingBox.x1) * zoom;
-        finishMarker.height.baseVal.value = (finish.boundingBox.y2 - finish.boundingBox.y1) * zoom;
-        group.appendChild(finishMarker);
+        finish.svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        finish.svgEl.style.fill = 'none';
+        finish.svgEl.style.stroke = 'blue';
+        finish.svgEl.style.strokeWidth = '1';
+        finish.svgEl.x.baseVal.value = finish.boundingBox.x1 * zoom + offsetX;
+        finish.svgEl.y.baseVal.value = finish.boundingBox.y1 * zoom + offsetY;
+        finish.svgEl.width.baseVal.value = (finish.boundingBox.x2 - finish.boundingBox.x1) * zoom;
+        finish.svgEl.height.baseVal.value = (finish.boundingBox.y2 - finish.boundingBox.y1) * zoom;
+        group.appendChild(finish.svgEl);
       });
     });
   }
