@@ -12,7 +12,7 @@ config_version=4
 
 config/name="CarParty"
 run/main_scene="res://scenes/StartMenu.tscn"
-config/icon="res://icon.png"
+config/icon="res://resources/images/icon.png"
 
 [autoload]
 
