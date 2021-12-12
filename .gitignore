@@ -13,3 +13,6 @@ data_*/
 
 # macs...
 .DS_Store
+
+# windows...
+.ini
