@@ -54,9 +54,10 @@ func _on_BackButton_pressed():
 	
 	
 func _on_StartButton_pressed():
-	scene_path_to_load = "res://scenes/Game.tscn"
-	$FadeIn.show()
-	$FadeIn.fade_in()
+	if Global.player_names.size() > 0:
+		scene_path_to_load = "res://scenes/Game.tscn"
+		$FadeIn.show()
+		$FadeIn.fade_in()
 	
 func _on_FadeIn_fade_finished():
 	if scene_path_to_load == "res://scenes/Game.tscn":
@@ -71,6 +72,19 @@ func _on_HostMenu_tree_exited():
 
 # websocket stuff below
 func _process(_delta):
+	var player_list = ""
+	if Global.player_names.size() <= 0:
+		$MarginContainer/VBoxContainer2/HBoxContainer/StartButton.disabled = true
+		$MarginContainer2/VBoxContainer/Ready.visible = false
+	else:
+		$MarginContainer/VBoxContainer2/HBoxContainer/StartButton.disabled = false
+		$MarginContainer2/VBoxContainer/Ready.visible = true
+		var i=1
+		for name in Global.player_names:
+			player_list += "   " + str(i) + ". " + Global.player_names[name] + "\n"
+			i+=1
+
+	$MarginContainer2/VBoxContainer/MarginContainer/PlayerListText.text = player_list
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(Global.clients.size())
 
 

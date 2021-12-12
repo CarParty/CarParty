@@ -142,6 +142,7 @@ func _on_data():
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
 				Global.clients.erase(parsed_data.client_id)
+				Global.player_names.erase(parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
