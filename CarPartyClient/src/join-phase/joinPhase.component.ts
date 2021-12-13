@@ -73,7 +73,7 @@ export class JoinPhaseComponent extends HTMLElement {
     const client_id = this.generateClientId();
     this.appendTextNode(`we are client ${client_id}`);
     this.appendTextNode('attempt to join room');
-    this.connection?.send({ action: 'login_client', server_code: this.roomId, client_id });
+    this.connection?.send({ action: 'login_client', server_code: this.roomId.toUpperCase(), client_id });
   }
 
   private appendTextNode(value: string): void {
