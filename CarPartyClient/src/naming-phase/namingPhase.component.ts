@@ -42,8 +42,7 @@ export class NamingPhaseComponent extends HTMLElement {
     }
 
     this.buttonEl.addEventListener('click', this.sendName);
-
-    // setTimeout(() => this.sendName()); // remove once godot prevents starting without everyone being ready
+    this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.sendName() : null);
   }
 
   private sendName = () => {

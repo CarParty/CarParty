@@ -46,10 +46,8 @@ export class JoinPhaseComponent extends HTMLElement {
       return;
     }
 
-    this.buttonEl.addEventListener('click', () => {
-      this.roomId = this.inputEl.value;
-      this.startConnection();
-    });
+    this.buttonEl.addEventListener('click', this.submit);
+    this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.submit() : null);
 
     if (this.roomId) {
       console.log(this.roomId);
@@ -57,6 +55,11 @@ export class JoinPhaseComponent extends HTMLElement {
 
       this.startConnection();
     }
+  }
+
+  private submit = () => {
+    this.roomId = this.inputEl.value;
+    this.startConnection();
   }
 
   private async startConnection(): Promise<void> {
