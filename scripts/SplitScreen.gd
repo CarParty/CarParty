@@ -29,6 +29,7 @@ var player_time_label = {}
 var player_round_label = {}
 var players_cars_map_local
 var players_camera_visual_layer = {}
+var players_complete_race = {}
 var timer
 signal start_race
 
@@ -46,6 +47,8 @@ func _process(delta):
 		var minutes = fmod(Global.race_time, 3600) / 60
 		var str_elapsed = "%02d:%02d:%02d" % [minutes, seconds, ms]
 		for player_name in players_cars_map_local:
+			if players_complete_race[player_name]:
+				continue
 			player_time_label[player_name].text = str_elapsed
 
 func setup_for_cars(players_cars_map):
@@ -73,6 +76,8 @@ func setup_for_cars(players_cars_map):
 		player_viewport.set_size(Vector2(split_width, split_height))
 		player_viewport.get_node("Viewport").set_size(Vector2(split_width, split_height))
 		player_viewports[player_name] = player_viewport
+		players_complete_race[player_name] = false
+		
 
 func setup_for_camera_visual_layer(players_layers_map):
 	players_camera_visual_layer = players_layers_map
@@ -184,6 +189,17 @@ func _increase_round_count(player_id):
 		resulting_label = "3/3"
 	
 	player_round_label[player_id].text = resulting_label
+
+func race_complete(player_id):
+	players_complete_race[player_id] = true
+	rotate_camera(player_id)
+	var time = Global.player_time_to_finish[player_id]
+	var ms = fmod(Global.race_time,1)*100
+	var seconds = fmod(Global.race_time,60)
+	var minutes = fmod(Global.race_time, 3600) / 60
+	var str_elapsed = "%02d:%02d:%02d" % [minutes, seconds, ms]
+	player_time_label[player_id].text = str_elapsed
+	
 
 func rotate_camera(player_id):
 	var camera =  player_viewports[player_id].get_node("Viewport/Camera")

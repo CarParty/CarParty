@@ -181,7 +181,7 @@ func _on_car_progress(point, car):
 		# let car self-driving
 		# let camera orbit the car
 		car_race_completed[id] = true
-		$WorldEnvironment/SplitScreen.rotate_camera(id)
+		$WorldEnvironment/SplitScreen.race_complete(id)
 		
 	var all_have_completed = true
 	for client in Global.clients:
