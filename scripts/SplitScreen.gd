@@ -184,4 +184,8 @@ func _increase_round_count(player_id):
 		resulting_label = "3/3"
 	
 	player_round_label[player_id].text = resulting_label
-	
+
+func rotate_camera(player_id):
+	var camera =  player_viewports[player_id].get_node("Viewport/Camera")
+	camera.set_is_rotate()
+	pass
