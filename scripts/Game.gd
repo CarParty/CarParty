@@ -9,6 +9,7 @@ var car_rounds_completed = {}
 var car_progress_global_transform = {}
 var car_paths = {}
 var car_visual_layer = {}
+var car_race_completed = {}
 
 var cameras = []
 var camera_counter = 0
@@ -59,10 +60,11 @@ func _ready():
 		cars_to_client_id[car] = client
 		car_progress[client] = -1
 		car_rounds_completed[client] = 0
+		car_race_completed[client] = false
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		#set layer mask and cull mask!!!
-		#start from 6th layer 
+		#start from 5th layer 
 		car_visual_layer[client] = 4+index
 		car.set_path_visual_layer(4+index)
 		index += 1
@@ -73,6 +75,9 @@ func _ready():
 
 func _process(_delta):
 	for client in Global.clients:
+		# only if the car doesn't compelte the race
+		if car_race_completed[client]:
+			continue
 		cars[client].change_speed(float(Global.player_speed[client]))
 		
 	var send_track_now = true
@@ -173,6 +178,9 @@ func _on_car_progress(point, car):
 	if car_rounds_completed[id] == 3 and Global.player_time_to_finish[id] == -1:
 		var time = Global.race_time
 		Global.player_time_to_finish[id] = time
+		# let car self-driving
+		# let camera orbit the car
+		car_race_completed[id] = true
 	var all_have_completed = true
 	for client in Global.clients:
 		if car_rounds_completed[client] < 3:
@@ -184,6 +192,8 @@ func _on_car_progress(point, car):
 		
 
 func _respawn_car(car):
+	if car_race_completed[cars_to_client_id[car]]:
+		return
 	car.linear_velocity = Vector3.ZERO
 	car.engine_force = 0
 	car.brake = 0
@@ -199,6 +209,8 @@ func _respawn_car_player_id(player_id):
 	_respawn_car(cars[player_id])
 	
 func _drift_car(player_id, pressed):
+	if car_race_completed[player_id]:
+		return
 	if pressed:
 		cars[player_id].get_node("Wheel2").set_friction_slip(1)
 		cars[player_id].get_node("Wheel3").set_friction_slip(1)
