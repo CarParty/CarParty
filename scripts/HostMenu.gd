@@ -89,3 +89,8 @@ func _process(_delta):
 
 
 
+
+
+func _on_Link_pressed():
+	OS.shell_open("http://car-party.de/?room=" + Global.key)
+	pass # Replace with function body.
