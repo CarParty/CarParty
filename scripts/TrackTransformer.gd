@@ -10,11 +10,6 @@ extends Node
 func _ready():
 	pass # Replace with function body.
 
-func _area_to_aabb(area: Area):
-	var collision_shape = area.get_node("CollisionShape")
-	var shape = collision_shape.shape as BoxShape
-	return AABB(collision_shape.to_global(-shape.extents), shape.extents*2)
-
 func _vertex_to_2d(v):
 	return [v.x, v.z]
 
@@ -24,14 +19,16 @@ func _vertices_to_2d(vertices):
 		vertices_2d.append(_vertex_to_2d(v))
 	return vertices_2d
 
-
 # track_meshes is a map from tags to MeshInstances
 func transform_track(track_meshes: Dictionary, track_node: Spatial):
 	var draw_area_node = track_node.get_node("DrawAreas")
 	var shapes = {}
+	var raw_vertices = {}
+	var raw_areas = {}
 	for area in draw_area_node.get_children():
 		shapes[area.name] = {}
 		shapes[area.name]["isFirst"] = track_node.is_area_first(area.name)
+		raw_vertices[area.name] = []
 	# serialize meshes
 	for tag in track_meshes:
 		for area in draw_area_node.get_children():
@@ -54,19 +51,26 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 				vertices.append(track_meshes[tag].to_global(vertex_local_space))
 			# double for is not quadratic time becuase 3 vertices only
 			for area in draw_area_node.get_children():
+				var collision_shape = area.get_node("Area").get_node("CollisionShape")
+				var shape = collision_shape.shape as BoxShape
+				var aabb = AABB(-shape.extents, shape.extents*2)
 				for v in vertices:
-					var aabb = _area_to_aabb(area.get_node("Area"))
 					# check if shape and v collide
-					if aabb.has_point(v):
+					if aabb.has_point(collision_shape.to_local(v)):
 						shapes[area.name][tag].append(_vertices_to_2d(vertices))
+						raw_vertices[area.name].append(vertices)
 						break
 	# serialize areas
 	for area in draw_area_node.get_children():
+		raw_areas[area.name] = {}
 		for child in area.get_children():
-			var aabb = _area_to_aabb(child)
+			var collision_shape = child.get_node("CollisionShape")
+			var shape = collision_shape.shape as BoxShape
+			var area_position = collision_shape.to_global(-shape.extents)
 			shapes[area.name][child.name] = {
-				"position": _vertex_to_2d(aabb.position),
-				"size": _vertex_to_2d(aabb.size),
-				"rotation": child.rotation
+				"position": _vertex_to_2d(area_position),
+				"size": _vertex_to_2d(shape.extents * 2),
+				"rotation": collision_shape.global_transform.basis.get_euler().y,
 			}
-	return shapes
+			raw_areas[area.name][child.name] = child
+	return [shapes, raw_vertices, raw_areas]

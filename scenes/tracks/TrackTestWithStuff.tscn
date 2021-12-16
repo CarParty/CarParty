@@ -91,7 +91,7 @@ transform = Transform( -0.643563, 0, 0.765393, 0, 1, 0, -0.765393, 0, -0.643563,
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.72825, 0.0458965, -22.7203 )
+transform = Transform( 0.890117, 0, 0.455731, 0, 1, 0, -0.455731, 0, 0.890117, -1.72825, 0.0458965, -22.7203 )
 shape = SubResource( 1 )
 
 [node name="Finish#Area1" type="Area" parent="DrawAreas/Area2"]

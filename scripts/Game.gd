@@ -97,7 +97,7 @@ func _process(_delta):
 	if current_running_thread != null and current_running_thread.is_valid():
 		var time_start = OS.get_ticks_msec()
 		var time_now = time_start
-		while (time_now - time_start) < 25 and current_running_thread is GDScriptFunctionState and current_running_thread.is_valid():
+		while (time_now - time_start) < 10 and current_running_thread is GDScriptFunctionState and current_running_thread.is_valid():
 			current_running_thread = current_running_thread.resume()
 			time_now = OS.get_ticks_msec()
 
@@ -114,15 +114,11 @@ func generate_track():
 		yield()
 		transform_result = transform_result.resume()
 
-	var track_dict = {"track": transform_result}
+	var track_dict = {"track": transform_result[0]}
+	
+	$PathGenerator.set_vertices_and_areas(transform_result[1], transform_result[2])
 
 	Client.send_global_message("track_transmission", track_dict)
-	# just for test
-	var initialize_result = $PathGenerator.initialize_track_area(track_meshes, track_node)
-	while initialize_result is GDScriptFunctionState and initialize_result.is_valid():
-		yield()
-		initialize_result = initialize_result.resume()
-		
 	$WorldEnvironment/TopCamera/Loading.visible = false
 
 		
@@ -151,7 +147,7 @@ func generate_path_from_json(client, path):
 		while path_map[area] is GDScriptFunctionState and path_map[area].is_valid():
 			yield()
 			path_map[area] = path_map[area].resume()
-	var path_node = $PathGenerator.merge_path_to_node("LOOP", path_map)
+	var path_node = $PathGenerator.merge_path_to_node(path_map, track)
 	self.add_child(path_node)
 	car_paths[client] = path_node
 

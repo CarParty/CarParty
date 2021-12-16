@@ -3,7 +3,10 @@ extends Node
 var TRISEARCHLENGTH = 100
 var SEARCHBASE = 100
 var SEARCHADDITION = 5000
-var shapes = {}
+
+var vertices
+var areas
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -13,195 +16,173 @@ func _area_to_aabb(area: Area):
 	var shape = collision_shape.shape as BoxShape
 	return AABB(collision_shape.to_global(-shape.extents), shape.extents*2)
 
-func initialize_track_area(track_meshes: Dictionary, track_node: Spatial):
-	var draw_area_node = track_node.get_node("DrawAreas")
-	for area in draw_area_node.get_children():
-		shapes[area.name] = {}
-	# serialize meshes
-	for tag in track_meshes:
-		for area in draw_area_node.get_children():
-			shapes[area.name][tag] = []
-		var mesh = track_meshes[tag].mesh
-		var mdt = MeshDataTool.new()
-		mdt.create_from_surface(mesh, 0)
-		var yield_count = 0
-		for face_id in mdt.get_face_count():
-			yield_count += 1
-			if yield_count == 500:
-				yield()
-				yield_count = 0
-			yield()
-			var vertices = []
-			for i in [0, 1, 2]:
-				var vertex_local_space = mdt.get_vertex(mdt.get_face_vertex(face_id, i))
-				vertices.append(track_meshes[tag].to_global(vertex_local_space))
-				
-			# double for is not quadratic time becuase 3 vertices only
-			for area in draw_area_node.get_children():
-				for v in vertices:
-					var aabb = _area_to_aabb(area.get_node("Area"))
-					# check if shape and v collide
-					if aabb.has_point(v):
-						shapes[area.name][tag].append(vertices)
-						break
-	
-	for area in draw_area_node.get_children():
-		for child in area.get_children():
-			var aabb = _area_to_aabb(child)
-			shapes[area.name][child.name] = aabb
-			#print(area.name, child.name, aabb.position, aabb.size)
-
-# func sort_by_y(shape_a, shape_b):
-# 	return shape_a[0][1] > shape_b[0][1]
+func set_vertices_and_areas(in_vertices, in_areas):
+	self.vertices = in_vertices
+	self.areas = in_areas
 
 # path_2d: [[x,z], [x,z]]
 # area_name should be same as the name of area in 'TrackWithStuff.tscn'
 # tag: see the key of track_meshes in 'WorldEnvironment'
 func generate_path4area(path_2d, area_name):
-	var temp_area = shapes[area_name]['Area']
-	var max_y = temp_area.position.y + temp_area.size.y
-	var dir = Vector3(0, -temp_area.size.y, 0)
+	var temp_area = areas[area_name]['Area']
+	var max_y = temp_area.to_global(temp_area.get_node("CollisionShape").shape.extents).y
+	var dir = Vector3(0, -1, 0)
+	
 	var path_3d = []
-	var all_shapes = []
-	for tag in shapes[area_name]:
-		if not shapes[area_name][tag] is Array:
-			continue
-		all_shapes += shapes[area_name][tag]
 	
-	# all_shapes.sort_custom(self, "sort_by_y")
-	var last_index = -1
-	var front = 0
-	var tail = all_shapes.size()
-	var count = all_shapes.size()
+	# var last_index = -1
+	# var front = 0
+	# var tail = all_shapes.size()
+	# var count = all_shapes.size()
 	
+	vertices[area_name].sort_custom(self, "sort_by_y")
 	var yield_count = 0
 	for point in path_2d:
+		var point_from = Vector3(point[0], max_y, point[1])
 		yield_count += 1
 		if yield_count == 500:
 			yield()
 			yield_count = 0
-		var point_from = Vector3(point[0], max_y, point[1])
-		var res = null
-		if count < 2*TRISEARCHLENGTH:
-			if front < tail:
-				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail,count,temp_area, last_index)
-			else:
-				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail+count,count,temp_area, last_index)
-#				if not res is Dictionary:
-#					res = search_intersect_by_index(point_from,dir,all_shapes,0,tail,count,temp_area, last_index)
-		if res == null or not res is Dictionary:
-			res = search_intersect_by_index(point_from,dir,all_shapes,0,count,count,temp_area, last_index)
 		
-		if res is Dictionary:
-			front = res["front"]
-			tail = res["tail"]
-			last_index = front+TRISEARCHLENGTH
-#					TRISEARCHLENGTH = (front+TRISEARCHLENGTH-last_index)%count + SEARCHBASE
-			if "intersect_point" in res:
-				path_3d.append(res["intersect_point"])
+		var final_point = null
+		for triangle in vertices[area_name]:
+			for dimension in [0, 2]:
+				var max_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
+				var min_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
+				var dimension_2d = dimension / 2
+				if max_val < point[dimension_2d] || min_val > point[dimension_2d]:
+					break
+			var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
+			if intersect_point is Vector3:
+				if final_point != null and final_point[1] > intersect_point[1]:
+					continue
+				final_point = intersect_point
+		path_3d.append(final_point)
+
+# 		var res = null
+# 		if count < 2*TRISEARCHLENGTH:
+# 			if front < tail:
+# 				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail,count,temp_area, last_index)
+# 			else:
+# 				res = search_intersect_by_index(point_from,dir,all_shapes,front,tail+count,count,temp_area, last_index)
+# #				if not res is Dictionary:
+# #					res = search_intersect_by_index(point_from,dir,all_shapes,0,tail,count,temp_area, last_index)
+# 		if res == null or not res is Dictionary:
+# 			res = search_intersect_by_index(point_from,dir,all_shapes,0,count,count,temp_area, last_index)
+		
+# 		if res is Dictionary:
+# 			front = res["front"]
+# 			tail = res["tail"]
+# 			last_index = front+TRISEARCHLENGTH
+# #					TRISEARCHLENGTH = (front+TRISEARCHLENGTH-last_index)%count + SEARCHBASE
+# 			if "intersect_point" in res:
+# 				path_3d.append(res["intersect_point"])
 				
 	#{"Path": ..., "Path in FinishArea": ...}
 	var path_dict = {}
 	path_dict["Path"] = path_3d 
-	var aabb = null
-	for area in shapes[area_name]:
-		if area.find("Finish",0) != -1:
-			aabb = shapes[area_name][area]
-			break
-	var path_in_finish = []
-	for point in path_3d:
-		if aabb.has_point(point):
-			path_in_finish.append(point)
-	path_dict["PathInFinishArea"] = path_in_finish
+	# var aabb = null
+	# for area in shapes[area_name]:
+	# 	if area.find("Finish",0) != -1:
+	# 		aabb = shapes[area_name][area]
+	# 		break
+	# var path_in_finish = []
+	# for point in path_3d:
+	# 	if aabb.has_point(point):
+	# 		path_in_finish.append(point)
+	# path_dict["PathInFinishArea"] = path_in_finish
 	return path_dict
 
 
-#  looping through all points for every triangle
-func generate_path4area1(path_2d, area_name):
-	var temp_area = shapes[area_name]['Area']
-	var max_y = temp_area.position.y + temp_area.size.y
-	var dir = Vector3(0, -temp_area.size.y, 0)
-	var path_3d = path_2d.duplicate()
-	var all_shapes = []
-	for tag in shapes[area_name]:
-		if not shapes[area_name][tag] is Array:
-			continue
-		if tag == 'Road':
-			all_shapes += shapes[area_name][tag]
-	var point_from = null
-	var intersect_point = null
-	for triangle in all_shapes:
-		var x_min = triangle[0].x
-		var z_min = triangle[0].z
-		var x_max = triangle[0].x
-		var z_max = triangle[0].z
-		for i in range(1,3):
-			if x_min > triangle[i].x:
-				x_min = triangle[i].x
-			if x_max < triangle[i].x:
-				x_max = triangle[i].x
-			if z_min > triangle[i].z:
-				z_min = triangle[i].z
-			if z_max < triangle[i].z:
-				z_max = triangle[i].z
+# #  looping through all points for every triangle
+# func generate_path4area1(path_2d, area_name):
+# 	var temp_area = shapes[area_name]['Area']
+# 	var max_y = temp_area.position.y + temp_area.size.y
+# 	var dir = Vector3(0, -temp_area.size.y, 0)
+# 	var path_3d = path_2d.duplicate()
+# 	var all_shapes = []
+# 	for tag in shapes[area_name]:
+# 		if not shapes[area_name][tag] is Array:
+# 			continue
+# 		if tag == 'Road':
+# 			all_shapes += shapes[area_name][tag]
+# 	var point_from = null
+# 	var intersect_point = null
+# 	for triangle in all_shapes:
+# 		var x_min = triangle[0].x
+# 		var z_min = triangle[0].z
+# 		var x_max = triangle[0].x
+# 		var z_max = triangle[0].z
+# 		for i in range(1,3):
+# 			if x_min > triangle[i].x:
+# 				x_min = triangle[i].x
+# 			if x_max < triangle[i].x:
+# 				x_max = triangle[i].x
+# 			if z_min > triangle[i].z:
+# 				z_min = triangle[i].z
+# 			if z_max < triangle[i].z:
+# 				z_max = triangle[i].z
 		
-		for point in path_3d:
-			if (point.size()==4||point[0]<x_min||point[0]>x_max||point[1]<z_min||point[1]>z_max):
-				continue
-			point_from = Vector3(point[0], max_y, point[1])
-			intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
-			if intersect_point is Vector3:
-				if point.size() == 2:
-					point.append(intersect_point.y)
-				else:
-					if point[2] < intersect_point.y:
-						point[2] = intersect_point.y
-					point.append(0)
+# 		for point in path_3d:
+# 			if (point.size()==4||point[0]<x_min||point[0]>x_max||point[1]<z_min||point[1]>z_max):
+# 				continue
+# 			point_from = Vector3(point[0], max_y, point[1])
+# 			intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
+# 			if intersect_point is Vector3:
+# 				if point.size() == 2:
+# 					point.append(intersect_point.y)
+# 				else:
+# 					if point[2] < intersect_point.y:
+# 						point[2] = intersect_point.y
+# 					point.append(0)
 					
-	var path_3d_vector = []
-	for point in path_3d:
-		path_3d_vector.append(Vector3(point[0],point[2],point[1]))
+# 	var path_3d_vector = []
+# 	for point in path_3d:
+# 		path_3d_vector.append(Vector3(point[0],point[2],point[1]))
 		
-	#{"Path": ..., "Path in FinishArea": ...}
-	var path_dict = {}
-	path_dict["Path"] = path_3d_vector 
-	var aabb = null
-	for area in shapes[area_name]:
-		if area.find("Finish",0) != -1:
-			aabb = shapes[area_name][area]
-			break
-	var path_in_finish = []
-	for point in path_3d_vector:
-		if aabb.has_point(point):
-			path_in_finish.append(point)
-	path_dict["PathInFinishArea"] = path_in_finish
-	return path_dict
+# 	#{"Path": ..., "Path in FinishArea": ...}
+# 	var path_dict = {}
+# 	path_dict["Path"] = path_3d_vector 
+# 	var aabb = null
+# 	for area in shapes[area_name]:
+# 		if area.find("Finish",0) != -1:
+# 			aabb = shapes[area_name][area]
+# 			break
+# 	var path_in_finish = []
+# 	for point in path_3d_vector:
+# 		if aabb.has_point(point):
+# 			path_in_finish.append(point)
+# 	path_dict["PathInFinishArea"] = path_in_finish
+# 	return path_dict
 
 
 # merge path_segment
 # mode: "LOOP" or "STRIP" 
 # path_segment: {area_name: {"Path": [Vector3], "PathInFinishArea": [Vector3]}}
 # return Path Node
-func merge_path_to_node(mode, path_segment):
+func merge_path_to_node(area_map, track_with_stuff_node):
 	var curve = Curve3D.new()
-	var path_in_finish = null
-#	var path_3d = []
-	for area_name in path_segment:
-		for points in path_segment[area_name]["Path"]:
-			if path_in_finish != null and points in path_in_finish:
-				continue
+	var start_area = track_with_stuff_node.get_node("DrawAreas").get_children()[0]
+	var considered_area = start_area
+	while curve.get_point_count() == 0 or considered_area != start_area:
+		for points in area_map[considered_area.get_name()]["Path"]:
 			curve.add_point(points)
-#			path_3d.append(points)
-		path_in_finish = path_segment[area_name]["PathInFinishArea"]
-	
-	# if the path is a loop, delete the points in the last finish area to avoid overlap.
-	if mode == "LOOP":
-		var curve_len = curve.get_point_count() 
-		for i in range(1, path_in_finish.size()+1):
-			curve.remove_point(curve_len-i)
+		var closest_next_area_name = null
+		for child in considered_area.get_children():
+			if "Finish" in child.get_name():
+				var next_area_name = child.get_name().split("#")[1]
+				if next_area_name in area_map:
+					if closest_next_area_name == null:
+						closest_next_area_name = next_area_name
+					elif area_map[next_area_name]["Path"][0].distance_to(area_map[considered_area.get_name()]["Path"][-1]) < \
+							area_map[closest_next_area_name]["Path"][0].distance_to(area_map[considered_area.get_name()]["Path"][-1]):
+						closest_next_area_name = next_area_name
+		if closest_next_area_name == null:
+			push_error("no valid path")
+		else:
+			considered_area = track_with_stuff_node.get_node("DrawAreas").get_node(closest_next_area_name)
 	var path_node = Path.new()
 	path_node.set_curve(curve)
-#	test_by_draw(path_3d)
 	return path_node
 
 

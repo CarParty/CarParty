@@ -166,7 +166,7 @@ shape = SubResource( 16 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area6/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.76563, -2.86168, -27.8333 )
+transform = Transform( 0.970695, 0, -0.240313, 0, 1, 0, 0.240313, 0, 0.970695, 5.76563, -2.86168, -27.8333 )
 shape = SubResource( 17 )
 
 [node name="Finish#Area1" type="Area" parent="DrawAreas/Area6"]
