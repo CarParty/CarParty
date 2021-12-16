@@ -11,7 +11,7 @@ export type Chunk = {
 export type Area = {
   position: Point;
   size: Point;
-  rotation?: `(${number}, ${number}, ${number})`; // why exactly is this a string of a numeric 3-tuple?
+  rotation?: number;
 };
 
 export type Road = Triangle[];

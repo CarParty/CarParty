@@ -117,9 +117,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     // compute initial view area fragment
     const boundingBoxes: Rectangle[] = [];
     this.track.chunks.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
-    this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => ({
-      x1: Math.min(r1.x1, r2.x1),
-      y1: Math.min(r1.y1, r2.y1),
+    this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => new Rectangle({
+      x1: Math.min(r1.x, r2.x),
+      y1: Math.min(r1.y, r2.y),
       x2: Math.max(r1.x2, r2.y2),
       y2: Math.max(r1.y2, r2.y2)
     }));
@@ -176,8 +176,8 @@ export class DrawingPhaseComponent extends HTMLElement {
         const areas = this.track.start.start[0].finish.filter(finish => finish.from === this.track?.start);
         const startBox = areas.length > 0 ? areas[0].boundingBox : undefined ?? this.track.start.boundingBox;
         this.currentPartialPath = [{
-          x: 0.5 * (startBox.x1 + startBox.x2),
-          y: 0.5 * (startBox.y1 + startBox.y2)
+          x: 0.5 * (startBox.x + startBox.x2),
+          y: 0.5 * (startBox.y + startBox.y2)
         }];
       } else {
         this.currentPartialPath = [];
@@ -192,7 +192,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       for (const finish of this.currentChunk.finish) {
         if (finish.boundingBox) {
           const box = finish.boundingBox;
-          if (box.x1 <= point.x && point.x <= box.x2 && box.y1 <= point.y && point.y <= box.y2) {
+          if (box.x <= point.x && point.x <= box.x2 && box.y <= point.y && point.y <= box.y2) {
             this.moveToNextChunk(finish.from);
             return true;
           }
@@ -446,10 +446,10 @@ export class DrawingPhaseComponent extends HTMLElement {
         finish.svgEl.style.fill = 'none';
         finish.svgEl.style.stroke = 'blue';
         finish.svgEl.style.strokeWidth = '1';
-        finish.svgEl.x.baseVal.value = finish.boundingBox.x1 * zoom + offsetX;
-        finish.svgEl.y.baseVal.value = finish.boundingBox.y1 * zoom + offsetY;
-        finish.svgEl.width.baseVal.value = (finish.boundingBox.x2 - finish.boundingBox.x1) * zoom;
-        finish.svgEl.height.baseVal.value = (finish.boundingBox.y2 - finish.boundingBox.y1) * zoom;
+        finish.svgEl.x.baseVal.value = finish.boundingBox.x * zoom + offsetX;
+        finish.svgEl.y.baseVal.value = finish.boundingBox.y * zoom + offsetY;
+        finish.svgEl.width.baseVal.value = (finish.boundingBox.width) * zoom;
+        finish.svgEl.height.baseVal.value = (finish.boundingBox.height) * zoom;
         group.appendChild(finish.svgEl);
       });
     });
@@ -463,10 +463,10 @@ export class DrawingPhaseComponent extends HTMLElement {
         width: this.svgRoot.viewBox.baseVal.width,
         height: this.svgRoot.viewBox.baseVal.height
       }).to({
-        x: box.x1,
-        y: box.y1,
-        width: box.x2 - box.x1,
-        height: box.y2 - box.y1,
+        x: box.x,
+        y: box.y,
+        width: box.width,
+        height: box.height,
       }, 1000)
         .onUpdate(upd => {
           console.log('tween update');
@@ -502,20 +502,20 @@ export class DrawingPhaseComponent extends HTMLElement {
       const chunk = {
         name: key,
         road: tChunk.Road.map(triangle => triangle.map(([x, y]) => ({ x, y }))),
-        boundingBox: {
-          x1: tChunk.Area.position[0],
-          x2: tChunk.Area.position[0] + tChunk.Area.size[0],
-          y1: tChunk.Area.position[1],
-          y2: tChunk.Area.position[1] + tChunk.Area.size[1]
-        },
+        boundingBox: new Rectangle({
+          x: tChunk.Area.position[0],
+          y: tChunk.Area.position[1],
+          width: tChunk.Area.size[0],
+          height: tChunk.Area.size[1]
+        }, tChunk.Area.rotation),
         finish: finishKeys.map(finishKey => ({
           fromChunkName: finishKey.replace('Finish#', ''),
-          boundingBox: {
-            x1: tChunk[finishKey].position[0],
-            x2: tChunk[finishKey].position[0] + tChunk[finishKey].size[0],
-            y1: tChunk[finishKey].position[1],
-            y2: tChunk[finishKey].position[1] + tChunk[finishKey].size[1]
-          }
+          boundingBox: new Rectangle({
+            x: tChunk[finishKey].position[0],
+            y: tChunk[finishKey].position[1],
+            width: tChunk[finishKey].size[0],
+            height: tChunk[finishKey].size[1]
+          }, tChunk[finishKey].rotation)
         })
         ),
         start: []
@@ -587,15 +587,15 @@ export class DrawingPhaseComponent extends HTMLElement {
     const [scaleX, scaleY] = [50, 50];
     const [translateX, translateY] = [0, 0];
     track.chunks.forEach(chunk => {
-      chunk.boundingBox.x1 = scaleX * chunk.boundingBox.x1 + translateX;
-      chunk.boundingBox.y1 = scaleY * chunk.boundingBox.y1 + translateY;
-      chunk.boundingBox.x2 = scaleX * chunk.boundingBox.x2 + translateX;
-      chunk.boundingBox.y2 = scaleY * chunk.boundingBox.y2 + translateY;
+      chunk.boundingBox.x = scaleX * chunk.boundingBox.x + translateX;
+      chunk.boundingBox.y = scaleY * chunk.boundingBox.y + translateY;
+      chunk.boundingBox.width = scaleX * chunk.boundingBox.width;
+      chunk.boundingBox.height = scaleY * chunk.boundingBox.height;
       chunk.finish.forEach(finish => {
-        finish.boundingBox.x1 = scaleX * finish.boundingBox.x1 + translateX;
-        finish.boundingBox.y1 = scaleY * finish.boundingBox.y1 + translateY;
-        finish.boundingBox.x2 = scaleX * finish.boundingBox.x2 + translateX;
-        finish.boundingBox.y2 = scaleY * finish.boundingBox.y2 + translateY;
+        finish.boundingBox.x = scaleX * finish.boundingBox.x + translateX;
+        finish.boundingBox.y = scaleY * finish.boundingBox.y + translateY;
+        finish.boundingBox.width = scaleX * finish.boundingBox.width;
+        finish.boundingBox.height = scaleY * finish.boundingBox.height;
       });
       chunk.road.forEach(polygon => polygon.forEach(point => {
         point.x = scaleX * point.x + translateX;
