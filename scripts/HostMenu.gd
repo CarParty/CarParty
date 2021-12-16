@@ -128,4 +128,3 @@ func rmPlayerName(id):
 
 func _on_Link_pressed():
 	OS.shell_open("http://car-party.de/?room=" + Global.key)
-pass
