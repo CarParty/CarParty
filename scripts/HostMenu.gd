@@ -23,6 +23,8 @@ func _ready():
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = Global.key
 	
 	Client.connect_to_url()	
+	Client.connect("addPlayerName", self, "addPlayerName")
+	Client.connect("rmPlayerName", self, "rmPlayerName")
 	
 func load_qr_code():
 	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=Q&margin=0&data=https://xn--bci0938m.ml/?room=" + Global.key)
@@ -54,6 +56,12 @@ func _on_BackButton_pressed():
 	
 	
 func _on_StartButton_pressed():
+	for player in Global.clients:
+		if not Global.player_names.has(player):
+			Global.clients.erase(player)
+			Global.player_names.erase(player)
+			rmPlayerName(player)
+			print("Client disconnected "+player)
 	if Global.player_names.size() > 0:
 		scene_path_to_load = "res://scenes/Game.tscn"
 		$FadeIn.show()
@@ -72,25 +80,52 @@ func _on_HostMenu_tree_exited():
 
 # websocket stuff below
 func _process(_delta):
-	var player_list = ""
 	if Global.player_names.size() <= 0:
 		$MarginContainer/VBoxContainer2/HBoxContainer/StartButton.disabled = true
-		$MarginContainer2/VBoxContainer/Ready.visible = false
 	else:
 		$MarginContainer/VBoxContainer2/HBoxContainer/StartButton.disabled = false
-		$MarginContainer2/VBoxContainer/Ready.visible = true
-		var i=1
-		for name in Global.player_names:
-			player_list += "   " + str(i) + ". " + Global.player_names[name] + "\n"
-			i+=1
 
-	$MarginContainer2/VBoxContainer/MarginContainer/PlayerListText.text = player_list
+	$MarginContainer2/VBoxContainer/Waiting.text = "waiting for " + str(Global.clients.size()-Global.player_names.size()) + " .."
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(Global.clients.size())
 
+func addPlayerName(id, name):
+	var container = HBoxContainer.new()
+	container.name = id
+	print(id)
+	var font = DynamicFont.new()
+	font.font_data = load("res://resources/fonts/Clickuper.ttf")
+	font.size = 30
+	var font2 = DynamicFont.new()
+	font2.font_data = load("res://resources/fonts/Clickuper.ttf")
+	font2.size = 20
+	
+	var label = Label.new()
+	label.size_flags_vertical = false;
+	label.text = "   " + name + "  "
+	label.set("custom_fonts/font", font)
+	container.add_child(label)
+	
+	var kickButton = Button.new()
+	kickButton.name = id
+	kickButton.text = "kick?"
+	kickButton.set("custom_fonts/font", font2)
+	kickButton.size_flags_vertical = false;
+	kickButton.connect("pressed", self, "_kickButton_pressed", [kickButton])
+	container.add_child(kickButton)
+	$MarginContainer2/VBoxContainer/VBoxContainer.add_child(container)
 
-
+func _kickButton_pressed(kickButton):
+	var id = kickButton.name
+	Global.clients.erase(id)
+	Global.player_names.erase(id)
+	rmPlayerName(id)
+	print("Client disconnected "+id)
+	
+func rmPlayerName(id):
+	if get_node("MarginContainer2/VBoxContainer/VBoxContainer/" +id) != null:
+		get_node("MarginContainer2/VBoxContainer/VBoxContainer/" +id).queue_free()
 
 
 func _on_Link_pressed():
 	OS.shell_open("http://car-party.de/?room=" + Global.key)
-	pass # Replace with function body.
+pass

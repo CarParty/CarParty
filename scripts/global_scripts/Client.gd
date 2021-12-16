@@ -3,6 +3,8 @@ extends Node
 export var websocket_url = "wss://cp.linus.space/ws"
 var _server = WebSocketClient.new()
 
+signal addPlayerName(client_id, client_name)
+signal rmPlayerName(client_id)
 signal respawn_car(client_id)
 signal drift_car(client_id, pressed)
 
@@ -141,11 +143,19 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
+				randomize()
+				Global.player_color[parsed_data.client_id] = Color.from_hsv(randf(), .7, .79)
+				var player_color = {}
+				player_color["color"] = "#"+Global.player_color[parsed_data.client_id].to_html(false)
+				send_client_message("color_transmission", player_color, parsed_data.client_id)
+				start_phase_player("naming", parsed_data.client_id)
 				Global.clients.erase(parsed_data.client_id)
 				Global.player_names.erase(parsed_data.client_id)
+				emit_signal("rmPlayerName",parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
+				emit_signal("addPlayerName",parsed_data.client_id, parsed_data.name)
 				start_phase_player("waiting", parsed_data.client_id)
 				print("Player connected: "+Global.player_names[parsed_data.client_id])
 			"speed_change":
