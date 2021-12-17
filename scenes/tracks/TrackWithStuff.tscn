@@ -6,7 +6,7 @@
 [ext_resource path="res://scripts/TrackWithStuffScript.gd" type="Script" id=4]
 
 [sub_resource type="BoxShape" id=8]
-extents = Vector3( 24.8834, 7.50691, 11.0885 )
+extents = Vector3( 24.8834, 7.50691, 12.2578 )
 
 [sub_resource type="BoxShape" id=9]
 extents = Vector3( 4.08666, 1.93816, 2.01619 )
@@ -99,7 +99,7 @@ transform = Transform( 0.978375, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978375, -
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Area"]
-transform = Transform( -0.108711, 0, -0.994073, 0, 1, 0, 0.994073, 0, -0.108711, 10.4913, -4.7585, 0.501791 )
+transform = Transform( -0.108711, 0, -0.994073, 0, 1, 0, 0.994073, 0, -0.108711, 9.29365, -4.7585, 0.370819 )
 shape = SubResource( 8 )
 
 [node name="Finish#Area4" type="Area" parent="DrawAreas/Area2"]
