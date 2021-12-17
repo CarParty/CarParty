@@ -6,40 +6,40 @@
 [ext_resource path="res://scripts/TrackWithStuffScript.gd" type="Script" id=4]
 
 [sub_resource type="BoxShape" id=8]
-extents = Vector3( 12.3072, 7.50691, 21.5385 )
+extents = Vector3( 24.8834, 7.50691, 11.0885 )
 
 [sub_resource type="BoxShape" id=9]
 extents = Vector3( 4.08666, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=10]
-extents = Vector3( 11.859, 11.6354, 22.3807 )
+extents = Vector3( 22.7175, 11.6354, 10.4116 )
 
 [sub_resource type="BoxShape" id=11]
 extents = Vector3( 1.35216, 1.76003, 0.990178 )
 
 [sub_resource type="BoxShape" id=19]
-extents = Vector3( 1.35216, 1.76003, 1.49096 )
+extents = Vector3( 1.35216, 1.76003, 1.65007 )
 
 [sub_resource type="BoxShape" id=13]
-extents = Vector3( 22.5933, 4.47244, 18.9523 )
+extents = Vector3( 24.4335, 4.47244, 14.0688 )
 
 [sub_resource type="BoxShape" id=14]
 extents = Vector3( 2.59137, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=15]
-extents = Vector3( 22.5933, 8.39044, 18.9523 )
+extents = Vector3( 22.5933, 8.39044, 17.0211 )
 
 [sub_resource type="BoxShape" id=16]
 extents = Vector3( 2.59137, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=17]
-extents = Vector3( 10.2774, 3.79775, 23.0903 )
+extents = Vector3( 23.5673, 3.79775, 8.79432 )
 
 [sub_resource type="BoxShape" id=18]
 extents = Vector3( 2.59137, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=20]
-extents = Vector3( 12.3072, 7.50691, 16.604 )
+extents = Vector3( 15.3897, 7.50691, 12.4392 )
 
 [sub_resource type="BoxShape" id=21]
 extents = Vector3( 1.97221, 1.93816, 2.01619 )
@@ -99,7 +99,7 @@ transform = Transform( 0.978375, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978375, -
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.40602, -4.7585, 1.45423 )
+transform = Transform( -0.108711, 0, -0.994073, 0, 1, 0, 0.994073, 0, -0.108711, 10.4913, -4.7585, 0.501791 )
 shape = SubResource( 8 )
 
 [node name="Finish#Area4" type="Area" parent="DrawAreas/Area2"]
@@ -115,19 +115,19 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.0521, 0 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6.81328, 0, 12.4282 )
+transform = Transform( -0.21025, 0, -0.977648, 0, 1, 0, 0.977648, 0, -0.21025, -5.32849, 0, 12.764 )
 shape = SubResource( 10 )
 
 [node name="Finish#Area2" type="Area" parent="DrawAreas/Area1"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Finish#Area2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.27163, 2.24226, 22.4087 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.53525, 2.24226, 22.4087 )
 shape = SubResource( 11 )
 
 [node name="Finish#Area3" type="Area" parent="DrawAreas/Area1"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Finish#Area3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.27163, 2.24226, 33.8649 )
+transform = Transform( 0.997559, 0, -0.0698261, 0, 1, 0, 0.0698261, 0, 0.997559, -2.17954, 2.24226, 33.5378 )
 shape = SubResource( 19 )
 
 [node name="Area4" type="Spatial" parent="DrawAreas"]
@@ -136,7 +136,7 @@ shape = SubResource( 19 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area4/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.150874, 3.97893, -34.4531 )
+transform = Transform( 0.798036, 0, -0.602609, 0, 1, 0, 0.602609, 0, 0.798036, -3.05009, 3.97893, -30.2141 )
 shape = SubResource( 13 )
 
 [node name="Finish#Area5" type="Area" parent="DrawAreas/Area4"]
@@ -151,7 +151,7 @@ shape = SubResource( 14 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area5/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.150874, 3.97893, -63.4458 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.150874, 3.97893, -58.4085 )
 shape = SubResource( 15 )
 
 [node name="Finish#Area6" type="Area" parent="DrawAreas/Area5"]
@@ -166,7 +166,7 @@ shape = SubResource( 16 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area6/Area"]
-transform = Transform( 0.970695, 0, -0.240313, 0, 1, 0, 0.240313, 0, 0.970695, 5.76563, -2.86168, -27.8333 )
+transform = Transform( -0.231561, 0, -0.97282, 0, 1, 0, 0.97282, 0, -0.231561, 5.76563, -2.86168, -27.8333 )
 shape = SubResource( 17 )
 
 [node name="Finish#Area1" type="Area" parent="DrawAreas/Area6"]
@@ -181,13 +181,13 @@ shape = SubResource( 18 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area3/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.40602, -4.7585, 22.5805 )
+transform = Transform( -0.118924, 0, -0.992903, 0, 1, 0, 0.992903, 0, -0.118924, 7.65021, -4.7585, 20.5417 )
 shape = SubResource( 20 )
 
 [node name="Finish#Area2" type="Area" parent="DrawAreas/Area3"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area3/Finish#Area2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5872, -0.305639, 11.9793 )
+transform = Transform( 0.99639, 0, -0.0848952, 0, 1, 0, 0.0848952, 0, 0.99639, 13.7726, -0.305639, 9.80303 )
 shape = SubResource( 21 )
 
 [node name="Track" parent="." instance=ExtResource( 1 )]
