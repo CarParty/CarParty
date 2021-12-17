@@ -1,3 +1,4 @@
+import { startsWith } from '../additionalTypes';
 import { Chunk, Rectangle, Track } from './track';
 import * as transportTrack from './transportTrack';
 
@@ -57,35 +58,43 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
 
 export function optimizeTrack(track: Track): Track {
   track.chunks.forEach(chunk => {
-    for (let polygonIndex = 0; polygonIndex < chunk.road.length; polygonIndex++) {
-      const polygon = chunk.road[polygonIndex];
-      base: for (let lineIndex = 0; lineIndex < polygon.length; lineIndex++) {
-        const line = [polygon[lineIndex], polygon[(lineIndex + 1) % polygon.length]];
+    let madeOptimization = true;
+    while (madeOptimization) {
+      madeOptimization = false;
 
-        for (let polygonIndex2 = polygonIndex + 1; polygonIndex2 < chunk.road.length; polygonIndex2++) {
-          const polygon2 = chunk.road[polygonIndex2];
-          for (let lineIndex2 = 0; lineIndex2 < polygon2.length; lineIndex2++) {
-            const line2 = [polygon2[lineIndex2], polygon2[(lineIndex2 + 1) % polygon2.length]];
+      for (let polygonIndex = 0; polygonIndex < chunk.road.length; polygonIndex++) {
+        const polygon = chunk.road[polygonIndex];
+        base: for (let lineIndex = 0; lineIndex < polygon.length; lineIndex++) {
+          const line = [polygon[lineIndex], polygon[(lineIndex + 1) % polygon.length]];
 
-            //    0     3 4
-            // 1:   1 2
-            // 2:   3 2
-            //    4     1 0
-            if (line[0].x === line2[1].x && line[0].y === line2[1].y
-              && line[1].x === line2[0].x && line[1].y === line2[0].y) {
-              // contract polygons
-              // console.log('contracting polygons');
-              for (let iter = (lineIndex2 + 2) % polygon2.length; iter !== lineIndex2; iter = (iter + 1) % polygon2.length) {
-                polygon.splice(lineIndex + 1, 0, polygon2[iter]);
+          for (let polygonIndex2 = polygonIndex + 1; polygonIndex2 < chunk.road.length; polygonIndex2++) {
+            const polygon2 = chunk.road[polygonIndex2];
+            for (let lineIndex2 = 0; lineIndex2 < polygon2.length; lineIndex2++) {
+              const line2 = [polygon2[lineIndex2], polygon2[(lineIndex2 + 1) % polygon2.length]];
+
+              //    0     3 4
+              // 1:   1 2
+              // 2:   3 2
+              //    4     1 0
+              if (line[0].x === line2[1].x && line[0].y === line2[1].y
+                && line[1].x === line2[0].x && line[1].y === line2[0].y) {
+                // contract polygons
+                // console.log('contracting polygons');
+                let count = 0;
+                for (let iter = (lineIndex2 + 2) % polygon2.length; iter !== lineIndex2; iter = (iter + 1) % polygon2.length) {
+                  polygon.splice(lineIndex + 1 + count++, 0, polygon2[iter]);
+                }
+                chunk.road.splice(polygonIndex2, 1);
+                madeOptimization = true;
+                break base;
               }
-              chunk.road.splice(polygonIndex2, 1);
-              break base;
+
             }
-
           }
-        }
 
+        }
       }
+
     }
   });
 
