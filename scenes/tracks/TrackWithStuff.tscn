@@ -56,8 +56,9 @@ script = ExtResource( 4 )
 first_area = "Area1"
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 70, -28.794 )
+transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 70, -15 )
 current = true
+fov = 48.2
 size = 15.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]

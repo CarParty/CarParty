@@ -124,10 +124,12 @@ func generate_track():
 
 	Client.send_global_message("track_transmission", track_dict)
 	$WorldEnvironment/TopCamera/Loading.visible = false
+	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = true
 
 		
 func build_racing_tracks():
 	yield()
+	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = false
 	$WorldEnvironment/TopCamera/Loading.visible = true
 	Client.start_phase_global("racing")
 	for client in Global.clients:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://scenes/tracks/FellOffTrack.gd" type="Script" id=1]
 [ext_resource path="res://scripts/Game.gd" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://scenes/utility/FadeIn.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/utility/Loading.tscn" type="PackedScene" id=7]
 [ext_resource path="res://resources/audio/unnecrocountdown.mp3" type="AudioStream" id=8]
+[ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=9]
 
 [sub_resource type="ProceduralSky" id=1]
 
@@ -17,6 +18,10 @@ background_sky = SubResource( 1 )
 
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 2.45845, 1, 2.59544 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 80
+font_data = ExtResource( 9 )
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 2 )
@@ -53,6 +58,36 @@ render_target_update_mode = 3
 
 [node name="Loading" parent="WorldEnvironment/TopCamera" instance=ExtResource( 7 )]
 visible = false
+
+[node name="DrawingPhaseOverlay" type="Control" parent="WorldEnvironment/TopCamera"]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+rect_pivot_offset = Vector2( 506, 524 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="WorldEnvironment/TopCamera/DrawingPhaseOverlay"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 1880.0
+margin_bottom = 1040.0
+custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
+custom_constants/shadow_offset_x = 5
+custom_constants/shadow_offset_y = 5
+custom_fonts/font = SubResource( 5 )
+text = "look onto your device
+
+draw your track:
+from the dot
+to the flashing area.
+repeat until done :-)"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TrackTransformer" type="Node" parent="."]
 script = ExtResource( 3 )
