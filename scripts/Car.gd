@@ -37,6 +37,7 @@ func _ready():
 	material.albedo_color = color
 	$CarBody1/CarBody/Body1.set_surface_material(0, material)
 	brake = 1
+	$MotorNoise.playing = true
 
 func set_path(new_path: Path):
 	self.path = new_path
@@ -65,6 +66,10 @@ func change_speed(value):
 			brake_mult = 1.0
 
 func _physics_process(delta):
+	var velocity = self.linear_velocity.length()
+	$MotorNoise.pitch_scale = velocity / 15.0 + 1.0
+	$MotorNoise.unit_db = velocity / 8.0
+
 	if path_follow == null:
 		return
 		
@@ -111,3 +116,8 @@ func _physics_process(delta):
 	steer_angle = min(MAX_STEER_ANGLE, steer_angle)
 	steer_angle = max(-MAX_STEER_ANGLE, steer_angle)
 	steering = steer_angle
+
+
+func _on_Car_body_entered(_body):
+	print("entered")
+	$ThunkNoise.play()

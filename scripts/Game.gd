@@ -20,7 +20,7 @@ var finished_tracks = []
 
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
 var track
 
 var current_running_thread = null
@@ -46,6 +46,10 @@ func _ready():
 	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
 	Client.connect("respawn_car", self, "_respawn_car_player_id")
 	Client.connect("drift_car", self, "_drift_car")
+	
+	
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Motor Sounds"), -5 * Global.clients.size())
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Thunk Sounds"), -6 * Global.clients.size())
 	
 	var index = 0
 	
@@ -135,6 +139,7 @@ func build_racing_tracks():
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/SplitScreen.layer = 2
 	$WorldEnvironment/TopCamera.layer = 1
+	$CountdownPlayer.play()
 	
 func _start_racing_game():
 	for client in Global.clients:

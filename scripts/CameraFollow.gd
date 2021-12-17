@@ -34,6 +34,8 @@ func _physics_process(delta):
 		
 	# Find the destination - target's position + the offset
 	var target_pos = target.global_transform.translated(offset)
+	
+	target_pos.origin.y = max(target_pos.origin.y, target.global_transform.origin.y + 0.5)
 	# Interpolate the current position with the destination
 	
 	global_transform = global_transform.interpolate_with(target_pos, lerp_speed * delta)
