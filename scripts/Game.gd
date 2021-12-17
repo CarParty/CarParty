@@ -20,7 +20,7 @@ var finished_tracks = []
 
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/TrackTestWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
 var track
 
 var current_running_thread = null
