@@ -1,8 +1,6 @@
 import { Chunk, Rectangle, Track } from './track';
 import * as transportTrack from './transportTrack';
 
-
-
 export function convertTransportTrack(tTrack: transportTrack.Track): Track {
   const chunks = new Map<string, Chunk>();
   let startChunk: Chunk | null = null;
