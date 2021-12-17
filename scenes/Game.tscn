@@ -99,7 +99,7 @@ script = ExtResource( 4 )
 
 [node name="CountdownPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 8 )
-volume_db = -7.053
+volume_db = -15.0
 
 [connection signal="body_entered" from="WorldEnvironment/FellOffTrack" to="WorldEnvironment/FellOffTrack" method="_on_FellOffTrack_body_entered"]
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]
