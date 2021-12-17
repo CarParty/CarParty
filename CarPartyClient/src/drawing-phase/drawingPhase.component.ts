@@ -280,7 +280,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     return path[path.length - 1];
   }
 
-  private pointInPolygon(point: Point, polygon: Polygon): boolean {
+  private pointInConvexPolygon(point: Point, polygon: Polygon): boolean {
     let posSign = 0;
     let negSign = 0;
 
@@ -305,6 +305,25 @@ export class DrawingPhaseComponent extends HTMLElement {
     }
 
     return true;
+  }
+
+  private pointInPolygon(p: Point, polygon: Polygon): boolean {
+    // based on https://stackoverflow.com/a/29915728
+    // which is based on https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const pi = polygon[i];
+      const pj = polygon[j];
+
+      const intersect = ((pi.y > p.y) !== (pj.y > p.y))
+        && (p.x < (pj.x - pi.x) * (p.y - pi.y) / (pj.y - pi.y) + pi.x);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
   }
 
   private highlightCurrentFinishAreas(): void {
