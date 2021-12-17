@@ -19,6 +19,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
   private svgRoot: SVGSVGElement;
+  private trackGroupEl: SVGGElement;
   private pathEl: SVGPathElement;
   private currentPosMarkerEl: SVGCircleElement;
   private redrawButtonEl: HTMLButtonElement;
@@ -32,6 +33,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private currentPartialPath: Point[] = [];
   private currentChunk: Chunk | null = null;
   private complete = false;
+  private currentRotationInverse: DOMMatrix;
 
   static get observedAttributes(): string[] {
     return ['color'];
@@ -52,18 +54,26 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.root = shadow.getElementById('root');
     this.svgRoot = shadow.getElementById('svgtrack') as any as SVGSVGElement;
 
+    this.trackGroupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const transform = this.svgRoot.createSVGTransform();
+    transform.setRotate(0, 0, 0);
+    this.trackGroupEl.transform.baseVal.appendItem(transform);
+    this.svgRoot.appendChild(this.trackGroupEl);
+    this.currentRotationInverse = transform.matrix.inverse();
+    this.updateRotationInverse();
+
     this.pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     this.pathEl.style.stroke = 'green';
     this.pathEl.style.strokeWidth = '5';
     this.pathEl.style.fill = 'none';
-    this.svgRoot.appendChild(this.pathEl);
+    this.trackGroupEl.appendChild(this.pathEl);
 
     this.currentPosMarkerEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     this.currentPosMarkerEl.style.stroke = 'green';
     this.currentPosMarkerEl.style.strokeWidth = '5';
     this.currentPosMarkerEl.style.fill = 'green';
     this.currentPosMarkerEl.setAttribute('r', '15');
-    this.svgRoot.appendChild(this.currentPosMarkerEl);
+    this.trackGroupEl.appendChild(this.currentPosMarkerEl);
 
     this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
     this.redrawButtonEl.addEventListener('click', this.resetCurrentPartialPath);
@@ -230,11 +240,20 @@ export class DrawingPhaseComponent extends HTMLElement {
       compensation.y = svgTooTall;
     }
 
-    return {
+    const beforeRotation = {
       x: this.svgRoot.viewBox.baseVal.x - compensation.x / 2
         + screen.x / this.svgRoot.clientWidth * (this.svgRoot.viewBox.baseVal.width + compensation.x),
       y: this.svgRoot.viewBox.baseVal.y - compensation.y / 2
         + screen.y / this.svgRoot.clientHeight * (this.svgRoot.viewBox.baseVal.height + compensation.y)
+    };
+
+    // and now for our last magic trick: inverse the possibly applied rotation
+    // -> for this we pre-save the inverse of the current rotation matrix that transformed our track
+    // -> do matrix multiplication ourselves, because built-in is weird
+    const rotMatrix = this.currentRotationInverse;
+    return {
+      x: rotMatrix.a * beforeRotation.x + rotMatrix.c * beforeRotation.y + rotMatrix.e,
+      y: rotMatrix.b * beforeRotation.x + rotMatrix.d * beforeRotation.y + rotMatrix.f
     };
   }
 
@@ -248,7 +267,6 @@ export class DrawingPhaseComponent extends HTMLElement {
   private pointCloseToLast(point: Point): boolean {
     const last = this.getLastPathPoint();
     const distanceSquared = Math.pow(point.x - last.x, 2) + Math.pow(point.y - last.y, 2);
-    console.log(distanceSquared);
     return distanceSquared <= 20000;
   }
 
@@ -304,6 +322,10 @@ export class DrawingPhaseComponent extends HTMLElement {
         finish.svgEl.classList.add('pulse');
       }
     });
+  }
+
+  private updateRotationInverse(): void {
+    this.currentRotationInverse = this.trackGroupEl.transform.baseVal.getItem(0).matrix.inverse();
   }
 
   private async startTrackDrawing(): Promise<void> {
@@ -411,7 +433,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       colorIndex++;
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       // group.style.transform = `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`;
-      this.svgRoot.appendChild(group);
+      this.trackGroupEl.appendChild(group);
 
       for (const polygon of chunk.road) {
         const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -435,10 +457,13 @@ export class DrawingPhaseComponent extends HTMLElement {
       areaMarker.style.fill = 'none';
       areaMarker.style.stroke = 'red';
       areaMarker.style.strokeWidth = '1';
-      areaMarker.x.baseVal.value = chunk.boundingBox.x1 * zoom + offsetX;
-      areaMarker.y.baseVal.value = chunk.boundingBox.y1 * zoom + offsetY;
-      areaMarker.width.baseVal.value = (chunk.boundingBox.x2 - chunk.boundingBox.x1) * zoom;
-      areaMarker.height.baseVal.value = (chunk.boundingBox.y2 - chunk.boundingBox.y1) * zoom;
+      areaMarker.x.baseVal.value = chunk.boundingBox.x * zoom + offsetX;
+      areaMarker.y.baseVal.value = chunk.boundingBox.y * zoom + offsetY;
+      areaMarker.width.baseVal.value = (chunk.boundingBox.width) * zoom;
+      areaMarker.height.baseVal.value = (chunk.boundingBox.height) * zoom;
+      const transform = this.svgRoot.createSVGTransform();
+      transform.setRotate(-1 * chunk.boundingBox.rotation * 180 / Math.PI, chunk.boundingBox.x, chunk.boundingBox.y);
+      areaMarker.transform.baseVal.appendItem(transform);
       group.appendChild(areaMarker);*/
 
       chunk.finish.forEach(finish => {
@@ -456,17 +481,27 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private async zoomToBox(box: Rectangle): Promise<void> {
+    const transform = this.trackGroupEl.transform.baseVal.getItem(0);
+
+    const goalTransform = this.svgRoot.createSVGTransform();
+    goalTransform.setRotate(box.rotation * 180 / Math.PI, box.x, box.y);
+
     return new Promise<void>((resolve, reject) => {
       new Tween({
         x: this.svgRoot.viewBox.baseVal.x,
         y: this.svgRoot.viewBox.baseVal.y,
         width: this.svgRoot.viewBox.baseVal.width,
-        height: this.svgRoot.viewBox.baseVal.height
+        height: this.svgRoot.viewBox.baseVal.height,
+        // rotation: transform.angle,
+        rotMatrix: transform.matrix // yes, we're tweening rotation matrices - no, I don't see any problem with that : P
       }).to({
-        x: box.x,
-        y: box.y,
-        width: box.width,
-        height: box.height,
+        // add 0.05 * width/height on each side
+        x: box.x - 0.05 * box.width,
+        y: box.y - 0.05 * box.height,
+        width: 1.1 * box.width,
+        height: 1.1 * box.height,
+        // rotation: box.rotation * 180 / Math.PI,
+        rotMatrix: goalTransform.matrix
       }, 1000)
         .onUpdate(upd => {
           console.log('tween update');
@@ -474,9 +509,14 @@ export class DrawingPhaseComponent extends HTMLElement {
           this.svgRoot.viewBox.baseVal.y = upd.y;
           this.svgRoot.viewBox.baseVal.width = upd.width;
           this.svgRoot.viewBox.baseVal.height = upd.height;
+          // transform.setRotate(upd.rotation, box.x, box.y);
+          transform.setMatrix(upd.rotMatrix);
         })
         .start()
-        .onComplete(() => resolve());
+        .onComplete(() => {
+          this.updateRotationInverse();
+          resolve();
+        });
     });
   }
 
