@@ -17,9 +17,11 @@ func draw_with_material(material):
 	begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	var width = .1
 	var put_up = Vector3(0, .1, 0)
-	for i in curve.get_point_count():
-		var a = curve.get_point_position(i) + put_up
-		var b = curve.get_point_position((i + 1) % curve.get_point_count()) + put_up
+	var arr = curve.get_baked_points()
+	var l = arr.size()
+	for i in l:
+		var a = arr[i] + put_up
+		var b = arr[(i + 1) % l] + put_up
 		var direction = (b - a).normalized()
 		# a -= direction * (width / 2);
 		# b += direction * (width / 2);

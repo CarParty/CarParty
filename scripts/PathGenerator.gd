@@ -7,6 +7,12 @@ var SEARCHADDITION = 5000
 var vertices
 var areas
 
+# [0,1]
+export var beziers_offset = 0.3
+# the minimum distance between two adjacent points. 
+# Manhattan dist
+export var min_distance = 2
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -161,12 +167,13 @@ func generate_path4area(path_2d, area_name):
 # path_segment: {area_name: {"Path": [Vector3], "PathInFinishArea": [Vector3]}}
 # return Path Node
 func merge_path_to_node(area_map, track_with_stuff_node):
+	var arr = []
 	var curve = Curve3D.new()
 	var start_area = track_with_stuff_node.get_node("DrawAreas").get_children()[0]
 	var considered_area = start_area
-	while curve.get_point_count() == 0 or considered_area != start_area:
+	while arr.size() == 0 or considered_area != start_area:
 		for points in area_map[considered_area.get_name()]["Path"]:
-			curve.add_point(points)
+			arr.append(points)
 		var closest_next_area_name = null
 		for child in considered_area.get_children():
 			if "Finish" in child.get_name():
@@ -181,6 +188,29 @@ func merge_path_to_node(area_map, track_with_stuff_node):
 			push_error("no valid path")
 		else:
 			considered_area = track_with_stuff_node.get_node("DrawAreas").get_node(closest_next_area_name)
+	var array1 = []
+	var last_point = null
+	for point in arr:
+		if last_point == null:
+			last_point = point
+			array1.append(point)
+			continue
+		else:
+			if abs(point.x-last_point.x)+abs(point.y-last_point.y)+abs(point.z-last_point.z) < min_distance:
+				continue
+			else:
+				array1.append(point)
+				last_point = point
+		
+	var length = array1.size()
+	for i in range(length):
+		var point = array1[i];
+		var pre = array1[(i+length-1)%length]
+		var post = array1[(i+1)%length]
+		var in_p = -0.5*beziers_offset*(post-pre)
+		var out_p = 0.5*beziers_offset*(post-pre)
+		curve.add_point(point,in_p,out_p)
+	
 	var path_node = Path.new()
 	path_node.set_curve(curve)
 	return path_node
