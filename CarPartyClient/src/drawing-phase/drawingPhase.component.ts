@@ -33,6 +33,8 @@ export class DrawingPhaseComponent extends HTMLElement {
   private complete = false;
   private currentRotationInverse: DOMMatrix;
 
+  private repeatedPathSend?: NodeJS.Timer;
+
   static get observedAttributes(): string[] {
     return ['color'];
   }
@@ -309,6 +311,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private pointInPolygon(p: Point, polygon: Polygon): boolean {
     // based on https://stackoverflow.com/a/29915728
+    // which references https://github.com/substack/point-in-polygon
     // which is based on https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
     let inside = false;
@@ -375,12 +378,6 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.complete = true;
       this.currentChunk = null;
 
-      /*// add first position to close loop (only visually? - check if the others want this position)
-      const startBox = this.initialChunk.start?.finish.boundingBox ?? this.initialChunk.boundingBox;
-      this.currentPartialPath.push({
-        x: 0.5 * (startBox.x1 + startBox.x2),
-        y: 0.5 * (startBox.y1 + startBox.y2)
-      });*/
       this.drawPath();
 
       // zoom out
@@ -389,10 +386,19 @@ export class DrawingPhaseComponent extends HTMLElement {
         this.zoomToBox(this.trackBoundingBox);
       }
 
+      let retryCount = 0;
       this.connection?.send({
         action: 'path_transmission',
-        path: this.convertPath(this.partialPaths)
+        path: this.convertPath(this.partialPaths),
+        retry: ++retryCount
       });
+      this.repeatedPathSend = setInterval(() => {
+        this.connection?.send({
+          action: 'path_transmission',
+          path: this.convertPath(this.partialPaths),
+          retry: ++retryCount
+        });
+      }, 5000);
     } else {
       this.highlightCurrentFinishAreas();
       await this.zoomToBox(this.currentChunk.boundingBox);
@@ -408,7 +414,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.partialPaths.forEach(fragment => pathFragmentCollector.push(fragment));
     const fullPath = pathFragmentCollector.flat();
     if (this.complete) {
-      fullPath.push(fullPath[0]);
+      fullPath.push(fullPath[0]); // complete loop visually with first position
     }
     this.pathEl.setAttribute('d', `M${fullPath.map(point => `${point.x},${point.y}`).join(' L')}`);
     this.currentPosMarkerEl.cx.baseVal.value = fullPath[fullPath.length - 1].x;
@@ -562,7 +568,13 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   public connectedCallback(): void { }
 
-  public disconnectedCallback(): void { }
+  public disconnectedCallback(): void {
+    // stop sending path once leaving this phase
+    if (this.repeatedPathSend) {
+      clearInterval(this.repeatedPathSend);
+      this.repeatedPathSend = undefined;
+    }
+  }
 }
 
 window.customElements.define('drawing-phase', DrawingPhaseComponent);

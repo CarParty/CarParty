@@ -35,8 +35,9 @@ export type PathProgressUpdateMessageI = {
 };
 
 export type SendPathDataMessageI = {
-  action: 'path_transmission',
-  path: Record<string, Point[]>
+  action: 'path_transmission';
+  path: Record<string, Point[]>;
+  retry: number;
 };
 
 export type ResetCarMessageI = {
@@ -59,7 +60,7 @@ export interface ServerActionsMap { // not great, but at least not completely du
 
 export type PhaseChangeMessageI = {
   action: 'phase_change';
-  phase: Phase
+  phase: Phase;
 };
 
 export type CarColorMessageI = {
@@ -68,8 +69,8 @@ export type CarColorMessageI = {
 };
 
 export type TrackDataMessageI = {
-  action: 'track_transmission',
-  track: Track
+  action: 'track_transmission';
+  track: Track;
 };
 
 export enum Phase {
