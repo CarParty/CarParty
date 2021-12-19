@@ -86,7 +86,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.trackGroupEl.appendChild(this.currentPosMarkerEl);
 
     this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
-    this.redrawButtonEl.addEventListener('click', this.resetCurrentPartialPath);
+    this.redrawButtonEl.addEventListener('click', this.handleRedraw);
 
     if (!this.svgRoot) {
       console.error('root not found');
@@ -190,7 +190,23 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.isDrawing = false;
   }
 
-  private resetCurrentPartialPath = () => {
+  private handleRedraw = () => {
+    if (this.currentPartialPath.length > 0) {
+      // reset path for *current* area
+      this.resetCurrentPartialPath();
+    } else {
+      // reset path for *previous* area
+      if (!this.currentChunk) {
+        return;
+      }
+      this.partialPaths.delete(this.currentChunk.name);
+      const areaKeyCollector: string[] = [];
+      this.partialPaths.forEach((_, key) => areaKeyCollector.push(key));
+      this.moveToNextChunk(this.track?.chunks.get(areaKeyCollector[areaKeyCollector.length - 1]), false);
+    }
+  }
+
+  private resetCurrentPartialPath(): void {
     if (this.currentChunk) {
       if (this.currentChunk === this.track?.start) {
         const areas = this.track.start.start[0].finish.filter(finish => finish.from === this.track?.start);
@@ -378,16 +394,10 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
-    this.currentChunk = this.track.start;
-    this.highlightCurrentFinishAreas();
-    await this.zoomToBox(this.currentChunk.boundingBox);
-
-    this.resetCurrentPartialPath();
-
-    this.drawingEnabled = true;
+    this.moveToNextChunk(this.track.start, false);
   }
 
-  private async moveToNextChunk(nextChunk?: Chunk): Promise<void> {
+  private async moveToNextChunk(nextChunk?: Chunk, canBeFinal = true): Promise<void> {
     this.drawingEnabled = false;
     this.isDrawing = false;
 
@@ -398,7 +408,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.connection?.send({ action: 'path_progress_update', area: this.currentChunk.name });
 
-    if (this.currentChunk === this.track?.start) {
+    if (canBeFinal && this.currentChunk === this.track?.start) {
       // done, got full path
       this.complete = true;
       this.currentChunk = null;
@@ -411,16 +421,17 @@ export class DrawingPhaseComponent extends HTMLElement {
         this.zoomToBox(this.trackBoundingBox);
       }
 
+      const convertedPath = this.convertPath(this.partialPaths);
       let retryCount = 0;
       this.connection?.send({
         action: 'path_transmission',
-        path: this.convertPath(this.partialPaths),
+        path: convertedPath,
         retry: ++retryCount
       });
       this.repeatedPathSend = setInterval(() => {
         this.connection?.send({
           action: 'path_transmission',
-          path: this.convertPath(this.partialPaths),
+          path: convertedPath,
           retry: ++retryCount
         });
       }, 5000);
