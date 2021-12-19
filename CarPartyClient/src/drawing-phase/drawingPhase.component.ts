@@ -18,6 +18,9 @@ export class DrawingPhaseComponent extends HTMLElement {
   private root: HTMLElement | null;
   private svgRoot: SVGSVGElement;
   private trackGroupEl: SVGGElement;
+  private roadEl: SVGGElement;
+  private finishEl: SVGGElement;
+  private boundingEl: SVGGElement;
   private pathEl: SVGPathElement;
   private currentPosMarkerEl: SVGCircleElement;
   private redrawButtonEl: HTMLButtonElement;
@@ -61,6 +64,13 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.svgRoot.appendChild(this.trackGroupEl);
     this.currentRotationInverse = transform.matrix.inverse();
     this.updateRotationInverse();
+
+    this.roadEl = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.trackGroupEl.appendChild(this.roadEl);
+    this.finishEl = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.trackGroupEl.appendChild(this.finishEl);
+    this.boundingEl = document.createElementNS(SVG_NAMESPACE, 'g');
+    this.trackGroupEl.appendChild(this.boundingEl);
 
     this.pathEl = document.createElementNS(SVG_NAMESPACE, 'path');
     this.pathEl.style.stroke = 'green';
@@ -330,14 +340,29 @@ export class DrawingPhaseComponent extends HTMLElement {
   }
 
   private highlightCurrentFinishAreas(): void {
-    this.track?.chunks.forEach(chunk => chunk.finish.forEach(finish => {
-      if (finish.svgEl) {
-        finish.svgEl.style.fill = 'none';
-        finish.svgEl.classList.remove('pulse');
-      }
-    }));
+    this.track?.chunks.forEach(chunk => {
+      chunk.roadSvgEls?.forEach(poly => {
+        poly.style.stroke = 'lightgray';
+        poly.style.fill = 'lightgray';
+      });
+      chunk.finish.forEach(finish => {
+        if (finish.svgEl) {
+          finish.svgEl.style.stroke = 'none';
+          finish.svgEl.style.fill = 'none';
+          finish.svgEl.classList.remove('pulse');
+        }
+      });
+    });
+    if (this.currentChunk?.roadSvgContainerEl) {
+      this.roadEl.appendChild(this.currentChunk.roadSvgContainerEl);
+    }
+    this.currentChunk?.roadSvgEls?.forEach(poly => {
+      poly.style.stroke = 'gray';
+      poly.style.fill = 'gray';
+    });
     this.currentChunk?.finish.forEach(finish => {
       if (finish.svgEl) {
+        finish.svgEl.style.stroke = 'blue';
         finish.svgEl.style.fill = 'blue';
         finish.svgEl.classList.add('pulse');
       }
@@ -426,79 +451,51 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
-    // figure out transformation function based on target view area - DEPRECATED
-    let zoom = 1;
-    let [offsetX, offsetY] = [0, 0];
-    /*const chunkZoom = track.get('Area2');
-    if (chunkZoom) {
-      const [availableWidth, availableHeight] = [this.svgRoot.width.baseVal.value, this.svgRoot.height.baseVal.value];
-      console.log(availableWidth, availableHeight);
-      console.log(chunkZoom.boundingBox);
-      const xZoom = availableWidth / (chunkZoom.boundingBox.x2 - chunkZoom.boundingBox.x1);
-      const yZoom = availableHeight / (chunkZoom.boundingBox.y2 - chunkZoom.boundingBox.y1);
-      console.log(xZoom, yZoom);
-      zoom = Math.min(xZoom, yZoom);
-      offsetX = -chunkZoom.boundingBox.x1 * zoom;
-      if (xZoom !== zoom) {
-        offsetX = 0.5 * offsetX + 0.5 * (availableWidth - chunkZoom.boundingBox.x2 * zoom);
-      }
-      offsetY = -chunkZoom.boundingBox.y1 * zoom;
-      if (yZoom !== zoom) {
-        offsetY = 0.5 * offsetY + 0.5 * (availableHeight - chunkZoom.boundingBox.y2 * zoom);
-      }
-      console.log(zoom, offsetX, offsetY);
-    }*/
-
-    // draw track
-    const colors = ['black', 'purple', 'orange', 'lime'];
-    let colorIndex = -1;
     this.track.chunks.forEach(chunk => {
-      colorIndex++;
-      const group = document.createElementNS(SVG_NAMESPACE, 'g');
-      // group.style.transform = `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`;
-      this.trackGroupEl.appendChild(group);
 
+      const road = document.createElementNS(SVG_NAMESPACE, 'g');
+      chunk.roadSvgContainerEl = road;
+      chunk.roadSvgEls = [];
+      this.roadEl.appendChild(road);
       for (const polygon of chunk.road) {
         const poly = document.createElementNS(SVG_NAMESPACE, 'polygon');
-        poly.style.fill = 'none';
-        poly.style.stroke = colors[colorIndex % colors.length];
+        poly.style.stroke = 'black';
+        poly.style.fill = 'lightgray';
         poly.style.strokeWidth = '1';
-        // scale(35) translate(15px,32px)
-        // poly.style.transform = `scale(${zoom}) translate(${offsetX / zoom}px, ${offsetY / zoom}px)`;
-        // poly.style.transform = `scale(2)`;
         polygon.forEach(({ x, y }) => {
           const svgPoint = this.svgRoot.createSVGPoint();
-          svgPoint.x = x * zoom + offsetX;
-          svgPoint.y = y * zoom + offsetY;
+          svgPoint.x = x;
+          svgPoint.y = y;
           poly.points.appendItem(svgPoint);
         });
-        group.appendChild(poly);
+        road.appendChild(poly);
+        chunk.roadSvgEls.push(poly);
       }
 
       // useful for debugging
       /*const areaMarker = document.createElementNS(SVG_NAMESPACE, 'rect');
-      areaMarker.style.fill = 'none';
       areaMarker.style.stroke = 'red';
+      areaMarker.style.fill = 'none';
       areaMarker.style.strokeWidth = '1';
-      areaMarker.x.baseVal.value = chunk.boundingBox.x * zoom + offsetX;
-      areaMarker.y.baseVal.value = chunk.boundingBox.y * zoom + offsetY;
-      areaMarker.width.baseVal.value = (chunk.boundingBox.width) * zoom;
-      areaMarker.height.baseVal.value = (chunk.boundingBox.height) * zoom;
+      areaMarker.x.baseVal.value = chunk.boundingBox.x;
+      areaMarker.y.baseVal.value = chunk.boundingBox.y;
+      areaMarker.width.baseVal.value = chunk.boundingBox.width;
+      areaMarker.height.baseVal.value = chunk.boundingBox.height;
       const transform = this.svgRoot.createSVGTransform();
       transform.setRotate(-1 * chunk.boundingBox.rotation * 180 / Math.PI, chunk.boundingBox.x, chunk.boundingBox.y);
       areaMarker.transform.baseVal.appendItem(transform);
-      group.appendChild(areaMarker);*/
+      this.boundingEl.appendChild(areaMarker);*/
 
       chunk.finish.forEach(finish => {
         finish.svgEl = document.createElementNS(SVG_NAMESPACE, 'rect');
+        finish.svgEl.style.stroke = 'none';
         finish.svgEl.style.fill = 'none';
-        finish.svgEl.style.stroke = 'blue';
         finish.svgEl.style.strokeWidth = '1';
-        finish.svgEl.x.baseVal.value = finish.boundingBox.x * zoom + offsetX;
-        finish.svgEl.y.baseVal.value = finish.boundingBox.y * zoom + offsetY;
-        finish.svgEl.width.baseVal.value = (finish.boundingBox.width) * zoom;
-        finish.svgEl.height.baseVal.value = (finish.boundingBox.height) * zoom;
-        group.appendChild(finish.svgEl);
+        finish.svgEl.x.baseVal.value = finish.boundingBox.x;
+        finish.svgEl.y.baseVal.value = finish.boundingBox.y;
+        finish.svgEl.width.baseVal.value = finish.boundingBox.width;
+        finish.svgEl.height.baseVal.value = finish.boundingBox.height;
+        this.finishEl.appendChild(finish.svgEl);
       });
     });
   }
