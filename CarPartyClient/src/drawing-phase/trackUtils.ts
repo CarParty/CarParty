@@ -1,5 +1,5 @@
 import { startsWith } from '../additionalTypes';
-import { Chunk, Rectangle, Track } from './track';
+import { Chunk, Point, Rectangle, Track } from './track';
 import * as transportTrack from './transportTrack';
 
 export function convertTransportTrack(tTrack: transportTrack.Track): Track {
@@ -52,7 +52,7 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
 
   return {
     chunks,
-    start: startChunk ?? chunks.values().next().value // manually decide start chunk if unset
+    start: startChunk ?? chunks.values().next().value // pick 'first' chunk as arbitrary start chunk if unset
   };
 }
 
@@ -101,23 +101,21 @@ export function optimizeTrack(track: Track): Track {
   return track;
 }
 
-export function transformCoordinateSystem(track: Track): Track {
-  const [scaleX, scaleY] = [50, 50];
-  const [translateX, translateY] = [0, 0];
+export function transformCoordinateSystem(track: Track, { scale, translate }: { scale: Point, translate: Point }): Track {
   track.chunks.forEach(chunk => {
-    chunk.boundingBox.x = scaleX * chunk.boundingBox.x + translateX;
-    chunk.boundingBox.y = scaleY * chunk.boundingBox.y + translateY;
-    chunk.boundingBox.width = scaleX * chunk.boundingBox.width;
-    chunk.boundingBox.height = scaleY * chunk.boundingBox.height;
+    chunk.boundingBox.x = scale.x * chunk.boundingBox.x + translate.x;
+    chunk.boundingBox.y = scale.y * chunk.boundingBox.y + translate.y;
+    chunk.boundingBox.width = scale.x * chunk.boundingBox.width;
+    chunk.boundingBox.height = scale.y * chunk.boundingBox.height;
     chunk.finish.forEach(finish => {
-      finish.boundingBox.x = scaleX * finish.boundingBox.x + translateX;
-      finish.boundingBox.y = scaleY * finish.boundingBox.y + translateY;
-      finish.boundingBox.width = scaleX * finish.boundingBox.width;
-      finish.boundingBox.height = scaleY * finish.boundingBox.height;
+      finish.boundingBox.x = scale.x * finish.boundingBox.x + translate.x;
+      finish.boundingBox.y = scale.y * finish.boundingBox.y + translate.y;
+      finish.boundingBox.width = scale.x * finish.boundingBox.width;
+      finish.boundingBox.height = scale.y * finish.boundingBox.height;
     });
     chunk.road.forEach(polygon => polygon.forEach(point => {
-      point.x = scaleX * point.x + translateX;
-      point.y = scaleY * point.y + translateY;
+      point.x = scale.x * point.x + translate.x;
+      point.y = scale.y * point.y + translate.y;
     }));
   });
   return track;

@@ -37,6 +37,7 @@ export type PathProgressUpdateMessageI = {
 export type SendPathDataMessageI = {
   action: 'path_transmission';
   path: Record<string, Point[]>;
+  order: string[];
   retry: number;
 };
 

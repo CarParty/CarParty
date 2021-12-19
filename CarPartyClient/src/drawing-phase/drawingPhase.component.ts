@@ -1,5 +1,6 @@
 import { Tween, update } from '@tweenjs/tween.js';
 import { Connection } from '../connection';
+import { SendPathDataMessageI } from '../messages';
 import { SVG_NAMESPACE } from './../constants';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
@@ -38,6 +39,9 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private repeatedPathSend?: NodeJS.Timer;
 
+  private readonly TRACK_PRE_TRANSFORM = { scale: { x: 50, y: 50 }, translate: { x: 0, y: 0 } };
+  private readonly MAXIMUM_DRAW_DISTANCE = 25000;
+
   static get observedAttributes(): string[] {
     return ['color'];
   }
@@ -65,6 +69,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.currentRotationInverse = transform.matrix.inverse();
     this.updateRotationInverse();
 
+    // container for svg organization -> handle layering
     this.roadEl = document.createElementNS(SVG_NAMESPACE, 'g');
     this.trackGroupEl.appendChild(this.roadEl);
     this.finishEl = document.createElementNS(SVG_NAMESPACE, 'g');
@@ -82,7 +87,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.currentPosMarkerEl.style.stroke = 'green';
     this.currentPosMarkerEl.style.strokeWidth = '5';
     this.currentPosMarkerEl.style.fill = 'green';
-    this.currentPosMarkerEl.setAttribute('r', '15');
+    this.currentPosMarkerEl.setAttribute('r', '20');
+    this.currentPosMarkerEl.classList.add('pulse');
+    this.currentPosMarkerEl.style.display = 'none';
     this.trackGroupEl.appendChild(this.currentPosMarkerEl);
 
     this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
@@ -130,11 +137,11 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.track.chunks.forEach(chunk => console.log('#Triangles', chunk.road.length));
     optimizeTrack(this.track);
-    transformCoordinateSystem(this.track);
+    transformCoordinateSystem(this.track, this.TRACK_PRE_TRANSFORM);
     this.track.chunks.forEach(chunk => console.log('#Polygons', chunk.road.length));
     console.log(this.track);
 
-    // compute initial view area fragment
+    // compute initial view area fragment -> boundingbox of complete track
     const boundingBoxes: Rectangle[] = [];
     this.track.chunks.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
     this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => new Rectangle({
@@ -212,8 +219,8 @@ export class DrawingPhaseComponent extends HTMLElement {
         const areas = this.track.start.start[0].finish.filter(finish => finish.from === this.track?.start);
         const startBox = areas.length > 0 ? areas[0].boundingBox : undefined ?? this.track.start.boundingBox;
         this.currentPartialPath = [{
-          x: 0.5 * (startBox.x + startBox.x2),
-          y: 0.5 * (startBox.y + startBox.y2)
+          x: startBox.x + 0.5 * startBox.width,
+          y: startBox.y + 0.5 * startBox.height
         }];
       } else {
         this.currentPartialPath = [];
@@ -250,27 +257,29 @@ export class DrawingPhaseComponent extends HTMLElement {
     // then we might need to map to [MIN_SVG-epsilon, MAX_SVG+epsilon]
     // thus we first figure out in which direction we are larger
     // and afterwards compute how much we are larger
-    const targetAspectRatio = this.svgRoot.viewBox.baseVal.width / this.svgRoot.viewBox.baseVal.height;
-    const actualAspectRatio = this.svgRoot.clientWidth / this.svgRoot.clientHeight;
+    const actualSize = { x: this.svgRoot.clientWidth, y: this.svgRoot.clientHeight };
+    const targetSize = { x: this.svgRoot.viewBox.baseVal.width, y: this.svgRoot.viewBox.baseVal.height };
+    const svgOffset = { x: this.svgRoot.viewBox.baseVal.x, y: this.svgRoot.viewBox.baseVal.y };
+
+    const targetAspectRatio = targetSize.x / targetSize.y;
+    const actualAspectRatio = actualSize.x / actualSize.y;
 
     const compensation = { x: 0, y: 0 };
     if (targetAspectRatio - actualAspectRatio < 0) {
       // wider than expected
-      const actualSvgWidth = this.svgRoot.viewBox.baseVal.height * actualAspectRatio;
-      const svgTooWide = actualSvgWidth - this.svgRoot.viewBox.baseVal.width;
+      const actualSvgWidth = targetSize.y * actualAspectRatio;
+      const svgTooWide = actualSvgWidth - targetSize.x;
       compensation.x = svgTooWide;
     } else {
       // taller than expected
-      const actualSvgHeight = this.svgRoot.viewBox.baseVal.width / actualAspectRatio;
-      const svgTooTall = actualSvgHeight - this.svgRoot.viewBox.baseVal.height;
+      const actualSvgHeight = targetSize.x / actualAspectRatio;
+      const svgTooTall = actualSvgHeight - targetSize.y;
       compensation.y = svgTooTall;
     }
 
     const beforeRotation = {
-      x: this.svgRoot.viewBox.baseVal.x - compensation.x / 2
-        + screen.x / this.svgRoot.clientWidth * (this.svgRoot.viewBox.baseVal.width + compensation.x),
-      y: this.svgRoot.viewBox.baseVal.y - compensation.y / 2
-        + screen.y / this.svgRoot.clientHeight * (this.svgRoot.viewBox.baseVal.height + compensation.y)
+      x: svgOffset.x - compensation.x / 2 + screen.x / actualSize.x * (targetSize.x + compensation.x),
+      y: svgOffset.y - compensation.y / 2 + screen.y / actualSize.y * (targetSize.y + compensation.y)
     };
 
     // and now for our last magic trick: inverse the possibly applied rotation
@@ -293,7 +302,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private pointCloseToLast(point: Point): boolean {
     const last = this.getLastPathPoint();
     const distanceSquared = Math.pow(point.x - last.x, 2) + Math.pow(point.y - last.y, 2);
-    return distanceSquared <= 20000;
+    return distanceSquared <= this.MAXIMUM_DRAW_DISTANCE;
   }
 
   private getLastPathPoint(): Point {
@@ -355,12 +364,15 @@ export class DrawingPhaseComponent extends HTMLElement {
     return inside;
   }
 
-  private highlightCurrentFinishAreas(): void {
+  private highlightCurrentChunk(): void {
+    // clear highlighting from previous chunk
     this.track?.chunks.forEach(chunk => {
+      // -> road
       chunk.roadSvgEls?.forEach(poly => {
         poly.style.stroke = 'lightgray';
         poly.style.fill = 'lightgray';
       });
+      // -> finish areas
       chunk.finish.forEach(finish => {
         if (finish.svgEl) {
           finish.svgEl.style.stroke = 'none';
@@ -369,13 +381,20 @@ export class DrawingPhaseComponent extends HTMLElement {
         }
       });
     });
+
+    // push current chunk's road to front to prevent occlusion from other chunks
+    // (layering in svg: last element is in front)
     if (this.currentChunk?.roadSvgContainerEl) {
       this.roadEl.appendChild(this.currentChunk.roadSvgContainerEl);
     }
+
+    // highlight current chunk
+    // -> road
     this.currentChunk?.roadSvgEls?.forEach(poly => {
       poly.style.stroke = 'gray';
       poly.style.fill = 'gray';
     });
+    // -> finish areas
     this.currentChunk?.finish.forEach(finish => {
       if (finish.svgEl) {
         finish.svgEl.style.stroke = 'blue';
@@ -394,7 +413,9 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
-    this.moveToNextChunk(this.track.start, false);
+    await this.moveToNextChunk(this.track.start, false);
+
+    this.currentPosMarkerEl.style.display = ''; // show position marker
   }
 
   private async moveToNextChunk(nextChunk?: Chunk, canBeFinal = true): Promise<void> {
@@ -416,27 +437,25 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.drawPath();
 
       // zoom out
-      this.highlightCurrentFinishAreas();
+      this.highlightCurrentChunk();
       if (this.trackBoundingBox) {
         this.zoomToBox(this.trackBoundingBox);
       }
 
-      const convertedPath = this.convertPath(this.partialPaths);
-      let retryCount = 0;
-      this.connection?.send({
+      // send path and repeat sending until this phase is left
+      const [convertedPath, areaOrder] = this.convertPath(this.partialPaths);
+      const transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'> = {
         action: 'path_transmission',
         path: convertedPath,
-        retry: ++retryCount
-      });
+        order: areaOrder
+      };
+      let retryCount = 0;
+      this.connection?.send({ ...transmission, retry: ++retryCount });
       this.repeatedPathSend = setInterval(() => {
-        this.connection?.send({
-          action: 'path_transmission',
-          path: convertedPath,
-          retry: ++retryCount
-        });
+        this.connection?.send({ ...transmission, retry: ++retryCount });
       }, 5000);
     } else {
-      this.highlightCurrentFinishAreas();
+      this.highlightCurrentChunk();
       await this.zoomToBox(this.currentChunk.boundingBox);
 
       this.resetCurrentPartialPath();
@@ -551,16 +570,16 @@ export class DrawingPhaseComponent extends HTMLElement {
     });
   }
 
-  private convertPath(path: Map<string, Point[]>): Record<string, transportTrack.Point[]> {
-
-    const [scaleX, scaleY] = [50, 50];
-    const [translateX, translateY] = [0, 0];
+  private convertPath(path: Map<string, Point[]>): [Record<string, transportTrack.Point[]>, string[]] {
+    const { scale, translate } = this.TRACK_PRE_TRANSFORM;
 
     const obj: Record<string, transportTrack.Point[]> = {};
+    const order: string[] = [];
     path.forEach((fragment, key) => {
-      obj[key] = fragment.map(point => [(point.x - translateX) / scaleX, (point.y - translateY) / scaleY]);
+      obj[key] = fragment.map(point => [(point.x - translate.x) / scale.x, (point.y - translate.y) / scale.y]);
+      order.push(key);
     });
-    return obj;
+    return [obj, order];
   }
 
   public attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
