@@ -21,7 +21,7 @@ extents = Vector3( 1.35216, 1.76003, 0.990178 )
 extents = Vector3( 1.35216, 1.76003, 1.65007 )
 
 [sub_resource type="BoxShape" id=13]
-extents = Vector3( 24.4335, 4.47244, 14.0688 )
+extents = Vector3( 24.4335, 3.60666, 14.0688 )
 
 [sub_resource type="BoxShape" id=14]
 extents = Vector3( 2.59137, 1.93816, 2.01619 )
@@ -137,7 +137,7 @@ shape = SubResource( 19 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55446, 1.53414 )
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area4/Area"]
-transform = Transform( 0.798036, 0, -0.602609, 0, 1, 0, 0.602609, 0, 0.798036, -3.05009, 3.97893, -30.2141 )
+transform = Transform( 0.798036, 0, -0.602609, 0, 1, 0, 0.602609, 0, 0.798036, -3.05009, 3.76607, -30.2141 )
 shape = SubResource( 13 )
 
 [node name="Finish#Area5" type="Area" parent="DrawAreas/Area4"]
