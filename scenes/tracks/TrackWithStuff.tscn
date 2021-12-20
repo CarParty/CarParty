@@ -64,7 +64,6 @@ size = 15.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 6.64482, 24.5967, -0.61457 )
-visible = false
 light_energy = 1.514
 
 [node name="CarPositions" type="Spatial" parent="."]
