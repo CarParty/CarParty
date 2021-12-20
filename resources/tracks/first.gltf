@@ -26,20 +26,28 @@
             "name" : "Road"
         },
         {
-            "mesh" : 2,
-            "name" : "Track Solid"
-        },
-        {
             "name" : "Path as Mesh"
         },
         {
             "name" : "Path"
+        },
+        {
+            "mesh" : 2,
+            "name" : "Track Solid"
         }
     ],
     "materials" : [
         {
             "doubleSided" : true,
             "name" : "Material.002",
+            "pbrMetallicRoughness" : {
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "Material.001",
             "pbrMetallicRoughness" : {
                 "metallicFactor" : 0,
                 "roughnessFactor" : 0.5
@@ -76,7 +84,7 @@
             ]
         },
         {
-            "name" : "Plane.008",
+            "name" : "Plane.006",
             "primitives" : [
                 {
                     "attributes" : {
@@ -85,7 +93,7 @@
                         "TEXCOORD_0" : 10
                     },
                     "indices" : 11,
-                    "material" : 0
+                    "material" : 1
                 }
             ]
         }
@@ -94,7 +102,7 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 2147,
+            "count" : 2148,
             "max" : [
                 19.726547241210938,
                 5.499953269958496,
@@ -110,25 +118,25 @@
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 2147,
+            "count" : 2148,
             "type" : "VEC3"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 2147,
+            "count" : 2148,
             "type" : "VEC2"
         },
         {
             "bufferView" : 3,
             "componentType" : 5123,
-            "count" : 3633,
+            "count" : 3663,
             "type" : "SCALAR"
         },
         {
             "bufferView" : 4,
             "componentType" : 5126,
-            "count" : 627,
+            "count" : 520,
             "max" : [
                 18.726543426513672,
                 4.999953269958496,
@@ -144,25 +152,25 @@
         {
             "bufferView" : 5,
             "componentType" : 5126,
-            "count" : 627,
+            "count" : 520,
             "type" : "VEC3"
         },
         {
             "bufferView" : 6,
             "componentType" : 5126,
-            "count" : 627,
+            "count" : 520,
             "type" : "VEC2"
         },
         {
             "bufferView" : 7,
             "componentType" : 5123,
-            "count" : 1083,
+            "count" : 1002,
             "type" : "SCALAR"
         },
         {
             "bufferView" : 8,
             "componentType" : 5126,
-            "count" : 5552,
+            "count" : 5599,
             "max" : [
                 19.726547241210938,
                 5.499953269958496,
@@ -170,7 +178,7 @@
             ],
             "min" : [
                 -24.369613647460938,
-                -0.7227066159248352,
+                -0.7630612254142761,
                 -72.36491394042969
             ],
             "type" : "VEC3"
@@ -178,87 +186,87 @@
         {
             "bufferView" : 9,
             "componentType" : 5126,
-            "count" : 5552,
+            "count" : 5599,
             "type" : "VEC3"
         },
         {
             "bufferView" : 10,
             "componentType" : 5126,
-            "count" : 5552,
+            "count" : 5599,
             "type" : "VEC2"
         },
         {
             "bufferView" : 11,
             "componentType" : 5123,
-            "count" : 8736,
+            "count" : 8850,
             "type" : "SCALAR"
         }
     ],
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 25764,
+            "byteLength" : 25776,
             "byteOffset" : 0
         },
         {
             "buffer" : 0,
-            "byteLength" : 25764,
-            "byteOffset" : 25764
+            "byteLength" : 25776,
+            "byteOffset" : 25776
         },
         {
             "buffer" : 0,
-            "byteLength" : 17176,
-            "byteOffset" : 51528
+            "byteLength" : 17184,
+            "byteOffset" : 51552
         },
         {
             "buffer" : 0,
-            "byteLength" : 7266,
-            "byteOffset" : 68704
+            "byteLength" : 7326,
+            "byteOffset" : 68736
         },
         {
             "buffer" : 0,
-            "byteLength" : 7524,
-            "byteOffset" : 75972
+            "byteLength" : 6240,
+            "byteOffset" : 76064
         },
         {
             "buffer" : 0,
-            "byteLength" : 7524,
-            "byteOffset" : 83496
+            "byteLength" : 6240,
+            "byteOffset" : 82304
         },
         {
             "buffer" : 0,
-            "byteLength" : 5016,
-            "byteOffset" : 91020
+            "byteLength" : 4160,
+            "byteOffset" : 88544
         },
         {
             "buffer" : 0,
-            "byteLength" : 2166,
-            "byteOffset" : 96036
+            "byteLength" : 2004,
+            "byteOffset" : 92704
         },
         {
             "buffer" : 0,
-            "byteLength" : 66624,
-            "byteOffset" : 98204
+            "byteLength" : 67188,
+            "byteOffset" : 94708
         },
         {
             "buffer" : 0,
-            "byteLength" : 66624,
-            "byteOffset" : 164828
+            "byteLength" : 67188,
+            "byteOffset" : 161896
         },
         {
             "buffer" : 0,
-            "byteLength" : 44416,
-            "byteOffset" : 231452
+            "byteLength" : 44792,
+            "byteOffset" : 229084
         },
         {
             "buffer" : 0,
-            "byteLength" : 17472,
-            "byteOffset" : 275868
+            "byteLength" : 17700,
+            "byteOffset" : 273876
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 293340,
+            "byteLength" : 291576,
             "uri" : "first.bin"
         }
     ]
