@@ -94,6 +94,18 @@ transform = Transform( 0.978376, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978376, -
 [node name="Position8" type="Position3D" parent="CarPositions"]
 transform = Transform( 0.978375, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978375, -2.65261, 0, 3.25392 )
 
+[node name="Position9" type="Position3D" parent="CarPositions"]
+transform = Transform( 0.978376, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978376, 1.45418, 0, 6.01555 )
+
+[node name="Position10" type="Position3D" parent="CarPositions"]
+transform = Transform( 0.978376, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978376, -0.0570937, 0, 6.14302 )
+
+[node name="Position11" type="Position3D" parent="CarPositions"]
+transform = Transform( 0.978376, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978376, -1.57647, 0, 6.258 )
+
+[node name="Position12" type="Position3D" parent="CarPositions"]
+transform = Transform( 0.978375, 0, -0.206836, 0, 1, 0, 0.206836, 0, 0.978375, -3.54866, 0, 6.37355 )
+
 [node name="DrawAreas" type="Spatial" parent="."]
 
 [node name="Area2" type="Spatial" parent="DrawAreas"]
