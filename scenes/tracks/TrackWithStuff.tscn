@@ -15,28 +15,28 @@ extents = Vector3( 4.08666, 1.93816, 2.01619 )
 extents = Vector3( 22.7175, 11.6354, 10.4116 )
 
 [sub_resource type="BoxShape" id=11]
-extents = Vector3( 1.35216, 1.76003, 0.990178 )
+extents = Vector3( 1.35216, 1.76003, 1 )
 
 [sub_resource type="BoxShape" id=19]
-extents = Vector3( 1.35216, 1.76003, 1.65007 )
+extents = Vector3( 1.35216, 1.76003, 2 )
 
 [sub_resource type="BoxShape" id=13]
 extents = Vector3( 24.4335, 4.47244, 14.0688 )
 
 [sub_resource type="BoxShape" id=14]
-extents = Vector3( 2.59137, 1.93816, 2.01619 )
+extents = Vector3( 4, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=15]
 extents = Vector3( 22.5933, 8.39044, 17.0211 )
 
 [sub_resource type="BoxShape" id=16]
-extents = Vector3( 2.59137, 1.93816, 2.01619 )
+extents = Vector3( 3.90588, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=17]
 extents = Vector3( 23.5673, 3.79775, 8.79432 )
 
 [sub_resource type="BoxShape" id=18]
-extents = Vector3( 2.59137, 1.93816, 2.01619 )
+extents = Vector3( 3.53143, 1.93816, 2.01619 )
 
 [sub_resource type="BoxShape" id=20]
 extents = Vector3( 15.3897, 7.50691, 12.4392 )
@@ -57,12 +57,14 @@ first_area = "Area1"
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( -4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -2, 70, -15 )
+visible = false
 current = true
 fov = 48.2
 size = 15.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 6.64482, 24.5967, -0.61457 )
+visible = false
 light_energy = 1.514
 
 [node name="CarPositions" type="Spatial" parent="."]
@@ -106,7 +108,7 @@ shape = SubResource( 8 )
 [node name="Finish#Area4" type="Area" parent="DrawAreas/Area2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Finish#Area4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.94, 3.49565, -16.087 )
+transform = Transform( 0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 11.94, 3.49565, -16.087 )
 shape = SubResource( 9 )
 
 [node name="Area1" type="Spatial" parent="DrawAreas"]
@@ -143,7 +145,7 @@ shape = SubResource( 13 )
 [node name="Finish#Area5" type="Area" parent="DrawAreas/Area4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area4/Finish#Area5"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5192, 4.13401, -45.3913 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17.948, 4.15311, -46.3176 )
 shape = SubResource( 14 )
 
 [node name="Area5" type="Spatial" parent="DrawAreas"]
@@ -158,7 +160,7 @@ shape = SubResource( 15 )
 [node name="Finish#Area6" type="Area" parent="DrawAreas/Area5"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area5/Finish#Area6"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9.88266, -0.19265, -45.3913 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1212, -0.140244, -45.3913 )
 shape = SubResource( 16 )
 
 [node name="Area6" type="Spatial" parent="DrawAreas"]
@@ -173,7 +175,7 @@ shape = SubResource( 17 )
 [node name="Finish#Area1" type="Area" parent="DrawAreas/Area6"]
 
 [node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area6/Finish#Area1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861502, -0.432638, -5.60381 )
+transform = Transform( 0.959521, 0, -0.281638, 0, 1, 0, 0.281638, 0, 0.959521, 1.15506, -0.432638, -5.60381 )
 shape = SubResource( 18 )
 
 [node name="Area3" type="Spatial" parent="DrawAreas"]
@@ -201,29 +203,35 @@ tags_to_meshes = {
 
 [node name="Finish" type="Area" parent="ProgressNodes"]
 transform = Transform( 0.916544, 0, 18.8349, 0, 6, 0, -2.85936, 0, 5.42464, 1.88895, 0.543978, -6.73372 )
+visible = false
 collision_layer = 8
 collision_mask = 2
 script = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/Finish"]
 transform = Transform( 0.105363, 0, 0, 0, 1.00259, 0, 9.31323e-10, 0, 0.190059, 0.098413, 0.231799, -1.49012e-08 )
+visible = false
 shape = SubResource( 5 )
 
 [node name="Texture" type="Spatial" parent="ProgressNodes/Finish"]
+visible = false
 
 [node name="MeshInstance" type="MeshInstance" parent="ProgressNodes/Finish/Texture"]
 transform = Transform( 0.232844, 0, 0, 0, 0.0020965, 0, 2.14204e-08, 0, 0.199664, 0, 0, 0 )
+visible = false
 mesh = SubResource( 6 )
 material/0 = null
 
 [node name="MidPoint" type="Area" parent="ProgressNodes"]
 transform = Transform( 0.973107, 0, -0.341624, 0, 1, 0, 0.230355, 0, 1.44315, -1.58826, 6.5679, -24.1585 )
+visible = false
 collision_layer = 8
 collision_mask = 2
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/MidPoint"]
 transform = Transform( 0.812559, 0, -1.78814e-07, 0, 2.39684, 0, 0, 0, 2.59327, -4.76837e-07, 0, -0.573061 )
+visible = false
 shape = SubResource( 7 )
 
 [connection signal="body_entered" from="ProgressNodes/Finish" to="ProgressNodes/Finish" method="_on_Finish_body_entered"]
