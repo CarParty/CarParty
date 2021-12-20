@@ -233,9 +233,8 @@ export class DrawingPhaseComponent extends HTMLElement {
   private checkAndHandlePointInFinishArea(point: Point): boolean {
     if (this.currentChunk) {
       for (const finish of this.currentChunk.finish) {
-        if (finish.boundingBox) {
-          const box = finish.boundingBox;
-          if (box.x <= point.x && point.x <= box.x2 && box.y <= point.y && point.y <= box.y2) {
+        if (finish.boundingPolygon) {
+          if (this.pointInConvexPolygon(point, finish.boundingPolygon)) {
             this.moveToNextChunk(finish.from);
             return true;
           }
@@ -525,6 +524,9 @@ export class DrawingPhaseComponent extends HTMLElement {
         finish.svgEl.y.baseVal.value = finish.boundingBox.y;
         finish.svgEl.width.baseVal.value = finish.boundingBox.width;
         finish.svgEl.height.baseVal.value = finish.boundingBox.height;
+        const transform = this.svgRoot.createSVGTransform();
+        transform.setRotate(-1 * finish.boundingBox.rotation * 180 / Math.PI, finish.boundingBox.x, finish.boundingBox.y);
+        finish.svgEl.transform.baseVal.appendItem(transform);
         this.finishEl.appendChild(finish.svgEl);
       });
     });

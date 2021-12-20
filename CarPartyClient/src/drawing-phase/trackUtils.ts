@@ -36,6 +36,18 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
     }
   }
 
+  // add finish areas in polygon representation
+  chunks.forEach(chunk =>
+    chunk.finish.forEach(finish =>
+      finish.boundingPolygon = [
+        { x: finish.boundingBox.x, y: finish.boundingBox.y },
+        { x: finish.boundingBox.x2, y: finish.boundingBox.y },
+        { x: finish.boundingBox.x2, y: finish.boundingBox.y2 },
+        { x: finish.boundingBox.x, y: finish.boundingBox.y2 },
+      ]
+    )
+  );
+
   // set cross references
   // -> finish area ('next' chunk)
   chunks.forEach(chunk =>
@@ -112,6 +124,7 @@ export function transformCoordinateSystem(track: Track, { scale, translate }: { 
       finish.boundingBox.y = scale.y * finish.boundingBox.y + translate.y;
       finish.boundingBox.width = scale.x * finish.boundingBox.width;
       finish.boundingBox.height = scale.y * finish.boundingBox.height;
+      finish.boundingPolygon = finish.boundingPolygon?.map(({ x, y }) => ({ x: scale.x * x + translate.x, y: scale.y * y + translate.y }));
     });
     chunk.road.forEach(polygon => polygon.forEach(point => {
       point.x = scale.x * point.x + translate.x;
