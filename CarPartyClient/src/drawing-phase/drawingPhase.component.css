@@ -21,6 +21,10 @@
   background-color: lightgray;
 }
 
+#redrawButton:disabled {
+  color: red;
+}
+
 .pulse {
   animation: pulse 1s ease-in-out 0s infinite alternate both;
 }

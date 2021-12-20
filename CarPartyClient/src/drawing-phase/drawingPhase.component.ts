@@ -197,7 +197,8 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.isDrawing = false;
   }
 
-  private handleRedraw = () => {
+  private handleRedraw = async () => {
+    this.redrawButtonEl.disabled = true;
     if (this.currentPartialPath.length > 0) {
       // reset path for *current* area
       this.resetCurrentPartialPath();
@@ -209,8 +210,9 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.partialPaths.delete(this.currentChunk.name);
       const areaKeyCollector: string[] = [];
       this.partialPaths.forEach((_, key) => areaKeyCollector.push(key));
-      this.moveToNextChunk(this.track?.chunks.get(areaKeyCollector[areaKeyCollector.length - 1]), false);
+      await this.moveToNextChunk(this.track?.chunks.get(areaKeyCollector[areaKeyCollector.length - 1]), false);
     }
+    this.redrawButtonEl.disabled = false;
   }
 
   private resetCurrentPartialPath(): void {
@@ -390,8 +392,8 @@ export class DrawingPhaseComponent extends HTMLElement {
     // highlight current chunk
     // -> road
     this.currentChunk?.roadSvgEls?.forEach(poly => {
-      poly.style.stroke = 'gray';
-      poly.style.fill = 'gray';
+      poly.style.stroke = '#807e78';
+      poly.style.fill = '#807e78';
     });
     // -> finish areas
     this.currentChunk?.finish.forEach(finish => {
