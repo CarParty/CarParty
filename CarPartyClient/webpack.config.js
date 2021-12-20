@@ -103,7 +103,13 @@ module.exports = env => {
         inject: 'head',
         template: 'public/index.html'
       }),
-      // new MiniCssExtractPlugin()
+      // new MiniCssExtractPlugin(),
+      new webpack.DefinePlugin({
+        // inject version information
+        VERSION_BRANCH: JSON.stringify(require('./dist/versions.json').branch),
+        VERSION_HASH: JSON.stringify(require('./dist/versions.json').hash),
+        VERSION_PROD: JSON.stringify(env.MODE !== 'development')
+      }),
       // new BundleAnalyzerPlugin()
     ]
   });

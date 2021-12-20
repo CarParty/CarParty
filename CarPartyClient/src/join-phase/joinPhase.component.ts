@@ -13,6 +13,7 @@ export class JoinPhaseComponent extends HTMLElement {
   private root: HTMLElement | null;
   private inputEl: HTMLInputElement;
   private buttonEl: HTMLButtonElement;
+  private versionEl: HTMLDivElement;
 
   private roomId: string | null = null;
 
@@ -36,9 +37,9 @@ export class JoinPhaseComponent extends HTMLElement {
 
     this.inputEl = this.shadow.getElementById('roomcode') as HTMLInputElement;
     this.buttonEl = this.shadow.getElementById('submitButton') as HTMLButtonElement;
+    this.versionEl = this.shadow.getElementById('version') as HTMLDivElement;
 
     this.roomId = new URLSearchParams(window.location.search).get('room');
-
 
     this.root = shadow.getElementById('root');
     if (!this.root) {
@@ -48,6 +49,8 @@ export class JoinPhaseComponent extends HTMLElement {
 
     this.buttonEl.addEventListener('click', this.submit);
     this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.submit() : null);
+
+    this.versionEl.textContent = `${VERSION_BRANCH}-${VERSION_HASH.substring(0, 8)}${VERSION_PROD === true ? '' : '-dev'}`;
 
     if (this.roomId) {
       console.log(this.roomId);
