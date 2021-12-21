@@ -102,9 +102,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.helpButtonEl = shadow.getElementById('helpButton') as HTMLButtonElement;
     this.helpButtonEl.addEventListener('click', () => {
       // try to request full-screen
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      }
+      // if (!document.fullscreenElement) {
+      //   document.documentElement.requestFullscreen();
+      // }
 
       this.helpModalContainer?.classList.add('show');
     });
