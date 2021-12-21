@@ -4,6 +4,7 @@ import { SendPathDataMessageI } from '../messages';
 import { SVG_NAMESPACE } from './../constants';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
+import { HelpModalComponent } from './help-modal/helpModal.component';
 import { Chunk, Point, Polygon, Rectangle, Track } from './track';
 import { convertTransportTrack, optimizeTrack, transformCoordinateSystem } from './trackUtils';
 import * as transportTrack from './transportTrack';
@@ -25,6 +26,10 @@ export class DrawingPhaseComponent extends HTMLElement {
   private pathEl: SVGPathElement;
   private currentPosMarkerEl: SVGCircleElement;
   private redrawButtonEl: HTMLButtonElement;
+  private helpButtonEl: HTMLButtonElement;
+
+  private helpModal: HelpModalComponent;
+  private helpModalContainer: HTMLElement | null;
 
   public connection?: Connection;
   private track: Track | null = null;
@@ -94,6 +99,12 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
     this.redrawButtonEl.addEventListener('click', this.handleRedraw);
+    this.helpButtonEl = shadow.getElementById('helpButton') as HTMLButtonElement;
+    this.helpButtonEl.addEventListener('click', () => this.helpModalContainer?.classList.add('show'));
+
+    this.helpModal = this.shadow.getElementById('helpModal') as HelpModalComponent;
+    this.helpModalContainer = this.shadow.getElementById('helpModalContainer');
+    this.helpModal.addEventListener('close', () => this.helpModalContainer?.classList.remove('show'));
 
     if (!this.svgRoot) {
       console.error('root not found');

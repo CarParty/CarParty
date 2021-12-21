@@ -2,5 +2,11 @@
   <svg xmlns="http://www.w3.org/2000/svg" id="svgtrack" viewBox="-500 -1500 1000 1500"
     preserveAspectRatio="xMidYMid meet">
   </svg>
-  <button role="button" id="redrawButton">Redraw</button>
+  <button type="button" id="redrawButton">Redraw</button>
+  <button type="button" id="helpButton" class="btn btn-outline-info position-absolute top-0 left-0"
+    style="margin: 0.5em">Help</button>
+
+  <div class="slide-in-left slide-in-left-center top-50 w-100" id="helpModalContainer">
+    <help-modal id="helpModal" class="w-100"></help-modal>
+  </div>
 </div>
