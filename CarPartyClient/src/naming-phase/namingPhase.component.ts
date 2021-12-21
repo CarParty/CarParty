@@ -46,6 +46,11 @@ export class NamingPhaseComponent extends HTMLElement {
   }
 
   private sendName = () => {
+    // try to request full-screen
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    }
+
     let name = this.inputEl.value;
     if (!name || name.trim().length === 0) {
       name = navigator.userAgent;

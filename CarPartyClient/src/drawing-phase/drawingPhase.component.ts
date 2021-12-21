@@ -100,7 +100,14 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.redrawButtonEl = shadow.getElementById('redrawButton') as HTMLButtonElement;
     this.redrawButtonEl.addEventListener('click', this.handleRedraw);
     this.helpButtonEl = shadow.getElementById('helpButton') as HTMLButtonElement;
-    this.helpButtonEl.addEventListener('click', () => this.helpModalContainer?.classList.add('show'));
+    this.helpButtonEl.addEventListener('click', () => {
+      // try to request full-screen
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      }
+
+      this.helpModalContainer?.classList.add('show');
+    });
 
     this.helpModal = this.shadow.getElementById('helpModal') as HelpModalComponent;
     this.helpModalContainer = this.shadow.getElementById('helpModalContainer');
