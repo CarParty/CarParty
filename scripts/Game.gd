@@ -1,5 +1,6 @@
 extends Spatial
 
+
 var spawnPoints
 var cars = {}
 var cars_to_client_id = {}
@@ -16,8 +17,6 @@ var camera_counter = 0
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
-var countdown_started = false
-
 
 var scene_path_to_load
 
@@ -92,13 +91,9 @@ func _process(_delta):
 			finished_tracks.append(client)
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
-	if finished_tracks.size() != 0:
-		if finished_tracks.size() >= (cars.size()/2) and countdown_started == false:
-			start_countdown(60)
-		if finished_tracks.size() == cars.size():
-			countdown_started = false
-			finished_tracks.clear()
-			current_running_thread = build_racing_tracks()
+	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
+		finished_tracks.clear()	
+		current_running_thread = build_racing_tracks()
 	if send_track_now and not track_was_sent:
 		track_was_sent = true
 		current_running_thread = generate_track()
@@ -131,27 +126,6 @@ func generate_track():
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = true
 
-func start_countdown(countdown_time):
-	var time = {"time": countdown_time}
-	Client.send_global_message("countdown_started", time)
-	countdown_started = true
-	var timerKick = Timer.new()
-	add_child(timerKick)
-	timerKick.one_shot = true
-	timerKick.wait_time = countdown_time
-	#sorry, not finished yet, so not started and connected..
-	timerKick.start()
-	timerKick.connect("timeout", self, "_timeoutKick")
-	print("60 seconds left")
-	
-func _timeoutKick():
-	for car in cars:
-		print (car)
-		if not finished_tracks.has(car):
-			Global.clients.erase(car)
-			Global.player_names.erase(car)
-			cars.erase(car)
-			print("kick " + car)
 		
 func build_racing_tracks():
 	yield()
@@ -211,8 +185,7 @@ func _on_car_progress(point, car):
 		# let camera orbit the car
 		car_race_completed[id] = true
 		$WorldEnvironment/SplitScreen.race_complete(id)
-		if car_race_completed.size() >= (cars.size()/2) and countdown_started == false:
-			start_countdown("60")
+		
 	var all_have_completed = true
 	for client in Global.clients:
 		if car_rounds_completed[client] < 3:
@@ -249,6 +222,6 @@ func _drift_car(player_id, pressed):
 	else:
 		cars[player_id].get_node("Wheel2").set_friction_slip(3)
 		cars[player_id].get_node("Wheel3").set_friction_slip(3)
-	
+
 func _on_FadeIn_fade_finished():
 	Global.goto_scene(scene_path_to_load)

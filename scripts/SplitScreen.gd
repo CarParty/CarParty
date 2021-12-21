@@ -142,15 +142,6 @@ func start_timer(players_cars_map):
 		name_label.margin_bottom = player_viewport.rect_size.y - player_viewport.rect_size.y / 10
 		player_viewport.add_child(name_label)
 		
-		#kick
-		var kickButton = Button.new()
-		kickButton.name = player_name
-		kickButton.text = "kick"
-		kickButton.size_flags_vertical = false;
-		kickButton.connect("pressed", self, "_kickButton_pressed", [kickButton.name])
-		#sorry not finished yet, so not appended..
-		#player_viewport.add_child(kickButton)
-		
 		# Round
 		var round_count: Label = Label.new()
 		round_count.text = "1/3"
@@ -174,13 +165,7 @@ func start_timer(players_cars_map):
 	timer.set_wait_time(1) #value is in seconds: 600 seconds = 10 minutes
 	timer.set_one_shot(false)
 	add_child(timer) 
-	timer.start()
-	
-func _kickButton_pressed(id):
-	Global.clients.erase(id)
-	Global.player_names.erase(id)
-	Client.car[id].remove
-	print("Client disconnected "+id)
+	timer.start() 
 	
 func _on_timer_timeout():
 	for player_name in players_cars_map_local:
