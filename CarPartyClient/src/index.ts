@@ -1,6 +1,7 @@
 import './car-party.component';
 import './drawing-phase/drawingPhase.component';
 import './ending-phase/endingPhase.component';
+import './join-phase/download-modal/downloadModal.component';
 import './join-phase/joinPhase.component';
 import './naming-phase/namingPhase.component';
 import './racing-phase/racingPhase.component';

@@ -1,4 +1,5 @@
 import { Connection } from '../connection';
+import { DownloadModalComponent } from './download-modal/downloadModal.component';
 import css from './joinPhase.component.css';
 import template from './joinPhase.component.html';
 
@@ -13,7 +14,11 @@ export class JoinPhaseComponent extends HTMLElement {
   private root: HTMLElement | null;
   private inputEl: HTMLInputElement;
   private buttonEl: HTMLButtonElement;
+  private downloadButtonEl: HTMLButtonElement;
   private versionEl: HTMLDivElement;
+
+  private downloadModal: DownloadModalComponent;
+  private downloadModalContainer: HTMLElement | null;
 
   private roomId: string | null = null;
 
@@ -37,9 +42,14 @@ export class JoinPhaseComponent extends HTMLElement {
 
     this.inputEl = this.shadow.getElementById('roomcode') as HTMLInputElement;
     this.buttonEl = this.shadow.getElementById('submitButton') as HTMLButtonElement;
+    this.downloadButtonEl = this.shadow.getElementById('downloadButton') as HTMLButtonElement;
     this.versionEl = this.shadow.getElementById('version') as HTMLDivElement;
 
     this.roomId = new URLSearchParams(window.location.search).get('room');
+
+    this.downloadModal = this.shadow.getElementById('downloadModal') as DownloadModalComponent;
+    this.downloadModalContainer = this.shadow.getElementById('downloadModalContainer');
+    this.downloadModal.addEventListener('close', () => this.downloadModalContainer?.classList.remove('show'));
 
     this.root = shadow.getElementById('root');
     if (!this.root) {
@@ -48,6 +58,7 @@ export class JoinPhaseComponent extends HTMLElement {
     }
 
     this.buttonEl.addEventListener('click', this.submit);
+    this.downloadButtonEl.addEventListener('click', () => this.downloadModalContainer?.classList.add('show'));
     this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.submit() : null);
 
     this.versionEl.textContent = `${VERSION_BRANCH}-${VERSION_HASH.substring(0, 8)}${VERSION_PROD === true ? '' : '-dev'}`;

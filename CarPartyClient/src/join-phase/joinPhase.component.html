@@ -1,11 +1,15 @@
 <div id="root" class="full-height">
   <div id="roomcodeContainer">
-    <div id="roomcodeWrapper">
+    <div id="roomcodeWrapper" class="d-grid gap-2">
       <input type="text" id="roomcode" placeholder="ABCD">
-      <button role="submit" id="submitButton">Join!</button>
-      <a id="downloadLink" href="https://github.com/CarParty/CarParty-Releases/releases">Download CarParty game (not
-        client!)</a>
+      <button type="submit" id="submitButton">Join!</button>
+      <button type="button" id="downloadButton" class="btn btn-outline-info">Download <span class="fw-bold">Car
+          Party</span> (for shared screen)!</button>
     </div>
   </div>
   <div id="version"></div>
+
+  <div class="slide-in-left slide-in-left-center top-50 w-100" id="downloadModalContainer">
+    <download-modal id="downloadModal" class="w-100"></download-modal>
+  </div>
 </div>
