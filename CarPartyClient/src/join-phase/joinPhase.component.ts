@@ -61,8 +61,6 @@ export class JoinPhaseComponent extends HTMLElement {
     this.downloadButtonEl.addEventListener('click', () => this.downloadModalContainer?.classList.add('show'));
     this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.submit() : null);
 
-    this.versionEl.textContent = `${VERSION_BRANCH}-${VERSION_HASH.substring(0, 8)}${VERSION_PROD === true ? '' : '-dev'}`;
-
     if (this.roomId) {
       console.log(this.roomId);
       this.appendTextNode(`using room id ${this.roomId}`);
