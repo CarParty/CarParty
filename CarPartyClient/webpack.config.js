@@ -62,12 +62,14 @@ module.exports = env => {
                 name: '[name].css',
                 outputPath: 'assets/'
               }
-            },
-            {
+            }, {
               loader: 'extract-loader'
             }, {
               // Translate CSS into CommonJS modules
-              loader: 'css-loader'
+              loader: 'css-loader',
+              options: {
+                esModule: false // I don't really want to set this, but somehow this now became required
+              }
             }, {
               // Run postcss actions
               loader: 'postcss-loader',

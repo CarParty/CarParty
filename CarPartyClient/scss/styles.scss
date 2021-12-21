@@ -1,3 +1,137 @@
+// Custom Bootstrap build to trim the size down at least a bit
+// and include extensions and modifications
+
+// Configuration
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+
+// Variable Customizations
+$custom-spacers: (
+  0d5: $spacer * 0.125,
+  0d8: $spacer * 0.2,
+  1d5: $spacer * 0.375,
+);
+$spacers: map-merge($spacers, $custom-spacers);
+
+@import '../node_modules/bootstrap/scss/mixins';
+@import '../node_modules/bootstrap/scss/utilities';
+
+// Layout & components
+@import '../node_modules/bootstrap/scss/root';
+@import '../node_modules/bootstrap/scss/reboot';
+@import '../node_modules/bootstrap/scss/type';
+// @import '../node_modules/bootstrap/scss/images';
+@import '../node_modules/bootstrap/scss/containers';
+@import '../node_modules/bootstrap/scss/grid';
+// @import '../node_modules/bootstrap/scss/tables';
+@import '../node_modules/bootstrap/scss/forms';
+@import '../node_modules/bootstrap/scss/buttons';
+// @import '../node_modules/bootstrap/scss/transitions';
+// @import '../node_modules/bootstrap/scss/dropdown';
+// @import '../node_modules/bootstrap/scss/button-group';
+// @import '../node_modules/bootstrap/scss/nav';
+// @import '../node_modules/bootstrap/scss/navbar';
+@import '../node_modules/bootstrap/scss/card';
+// @import '../node_modules/bootstrap/scss/accordion';
+// @import '../node_modules/bootstrap/scss/breadcrumb';
+// @import '../node_modules/bootstrap/scss/pagination';
+// @import '../node_modules/bootstrap/scss/badge';
+// @import '../node_modules/bootstrap/scss/alert';
+// @import '../node_modules/bootstrap/scss/progress';
+@import '../node_modules/bootstrap/scss/list-group';
+@import '../node_modules/bootstrap/scss/close';
+// @import '../node_modules/bootstrap/scss/toasts';
+// @import '../node_modules/bootstrap/scss/modal';
+// @import '../node_modules/bootstrap/scss/tooltip';
+// @import '../node_modules/bootstrap/scss/popover';
+// @import '../node_modules/bootstrap/scss/carousel';
+// @import '../node_modules/bootstrap/scss/spinners';
+// @import '../node_modules/bootstrap/scss/offcanvas';
+
+// Helpers
+@import '../node_modules/bootstrap/scss/helpers';
+
+// Utilities
+@import '../node_modules/bootstrap/scss/utilities/api';
+
+// Customizations
+$border-radius-xs: 0.2rem !default;
+$font-size-xs: $font-size-base * 0.85 !default;
+$input-btn-padding-y-xs: 0.125rem !default;
+$input-btn-padding-x-xs: 0.25rem !default;
+$input-padding-y-xs: $input-btn-padding-y-xs !default;
+$input-padding-x-xs: $input-btn-padding-x-xs !default;
+
+$input-btn-padding-y-xs: 0.25rem !default;
+$input-btn-padding-x-xs: 0.5rem !default;
+$input-btn-font-size-xs: $font-size-xs !default;
+
+$input-font-size-xs: $input-btn-font-size-xs !default;
+$input-border-radius-xs: $border-radius-xs !default;
+$input-height-xs: add(
+  $input-line-height * 1em,
+  add($input-padding-y-xs * 2, $input-height-border, false)
+) !default;
+
+$btn-border-radius-xs: $border-radius-xs !default;
+
+$btn-padding-y-xs: $input-btn-padding-y-xs !default;
+$btn-padding-x-xs: $input-btn-padding-x-xs !default;
+$btn-font-size-xs: $input-btn-font-size-xs !default;
+
+.form-control-xs {
+  min-height: $input-height-xs;
+  padding: $input-padding-y-xs $input-padding-x-xs;
+  @include font-size($input-font-size-xs);
+  @include border-radius($input-border-radius-xs);
+}
+
+.btn-xs {
+  @include button-size(
+    $btn-padding-y-xs,
+    $btn-padding-x-xs,
+    $btn-font-size-xs,
+    $btn-border-radius-xs
+  );
+}
+
+.btn-square {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  width: 27px;
+  height: 27px;
+}
+
+.slide-in-left {
+  position: absolute;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    visibility 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  transform: translateX(-100%);
+  visibility: hidden;
+}
+
+.slide-in-left.show {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.slide-in-left-center {
+  transform: translateX(-100%) translateY(-50%);
+}
+
+.slide-in-left-center.show {
+  transform: translateX(0) translateY(-50%);
+}
+
+.text-highlight:hover {
+  text-shadow: -2px -2px 1px rgba(2, 136, 255, 0.2),
+    2px -2px 1px rgba(2, 136, 255, 0.2), -2px 2px 1px rgba(2, 136, 255, 0.2),
+    2px 2px 1px rgba(2, 136, 255, 0.2);
+}
+
 html,
 body,
 car-party {
