@@ -46,6 +46,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private readonly TRACK_PRE_TRANSFORM = { scale: { x: 50, y: 50 }, translate: { x: 0, y: 0 } };
   private readonly MAXIMUM_DRAW_DISTANCE = 25000;
+  private readonly MINIMUM_DRAW_DISTANCE = 1000;
 
   static get observedAttributes(): string[] {
     return ['color'];
@@ -321,7 +322,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private pointCloseToLast(point: Point): boolean {
     const last = this.getLastPathPoint();
     const distanceSquared = Math.pow(point.x - last.x, 2) + Math.pow(point.y - last.y, 2);
-    return distanceSquared <= this.MAXIMUM_DRAW_DISTANCE;
+    return distanceSquared <= this.MAXIMUM_DRAW_DISTANCE && distanceSquared >= this.MINIMUM_DRAW_DISTANCE;
   }
 
   private getLastPathPoint(): Point {
