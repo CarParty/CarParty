@@ -107,7 +107,7 @@ func addPlayerName(id, name):
 	
 	var kickButton = Button.new()
 	kickButton.name = id
-	kickButton.text = "kick?"
+	kickButton.text = "kick"
 	kickButton.set("custom_fonts/font", font2)
 	kickButton.size_flags_vertical = false;
 	kickButton.connect("pressed", self, "_kickButton_pressed", [kickButton])
