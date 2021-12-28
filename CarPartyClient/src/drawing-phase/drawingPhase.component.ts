@@ -5,6 +5,7 @@ import { SVG_NAMESPACE } from './../constants';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
 import { HelpModalComponent } from './help-modal/helpModal.component';
+import { TEST_TRACK5 } from './testTrack5';
 import { Chunk, Point, Polygon, Rectangle, Track } from './track';
 import { convertTransportTrack, optimizeTrack, transformCoordinateSystem } from './trackUtils';
 import * as transportTrack from './transportTrack';
@@ -135,7 +136,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     });
     // uncomment below for quicker testing
     // this.setupTrack(TEST_TRACK);
-    // this.setupTrack(TEST_TRACK5);
+    this.setupTrack(TEST_TRACK5);
 
     // setup mouse events
     this.svgRoot.addEventListener('mousedown', this.startDraw);
