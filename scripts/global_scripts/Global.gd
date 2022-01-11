@@ -47,3 +47,16 @@ func _deferred_goto_scene(path):
 
 	# Optionally, to make it compatible with the SceneTree.change_scene() API.
 	get_tree().set_current_scene(current_scene)
+
+func restart():
+	Client.reset_connection()
+	goto_scene("res://scenes/StartMenu.tscn")
+	key = null
+	clients = []
+	player_names = {}
+	player_speed = {}
+	player_color = {}
+	clients_ready_for_track_json = []
+	player_path = {}
+	player_time_to_finish = {}
+	race_time = -1

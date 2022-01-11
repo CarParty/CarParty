@@ -35,3 +35,13 @@ func _time_to_string(time):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+
+func _on_Restart_pressed():
+	print('restart')
+	$FadeIn.show()
+	$FadeIn.fade_in()
+
+
+func _on_FadeIn_fade_finished():
+	Global.restart()

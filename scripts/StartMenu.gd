@@ -17,3 +17,4 @@ func _on_FadeIn_fade_finished():
 		get_tree().quit()
 	else:
 		Global.goto_scene(scene_path_to_load)
+
