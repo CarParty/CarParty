@@ -14,6 +14,8 @@ var car_race_completed = {}
 var cameras = []
 var camera_counter = 0
 
+var race_countdown = 60
+
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
@@ -187,14 +189,34 @@ func _on_car_progress(point, car):
 		$WorldEnvironment/SplitScreen.race_complete(id)
 		
 	var all_have_completed = true
+	var completed_count = 0
 	for client in Global.clients:
 		if car_rounds_completed[client] < 3:
 			all_have_completed = false
+		else:
+			completed_count += 1
 	if all_have_completed:
 		scene_path_to_load = "res://scenes/Scoreboard.tscn"
 		$FadeIn.show()
 		$FadeIn.fade_in()
-		
+	elif (completed_count==1):
+		start_race_countdown()
+
+func start_race_countdown():
+	var race_timer = Timer.new()
+	add_child((race_timer))
+	race_timer.one_shot = true
+	race_timer.wait_time = race_countdown
+	race_timer.connect("timeout",self,"_race_timeout")
+	race_timer.start()
+	print("timer start")
+
+func _race_timeout():
+	print("timeout")
+	scene_path_to_load = "res://scenes/Scoreboard.tscn"
+	$FadeIn.show()
+	$FadeIn.fade_in()
+	pass
 
 func _respawn_car(car):
 	if car_race_completed[cars_to_client_id[car]]:

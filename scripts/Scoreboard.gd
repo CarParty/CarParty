@@ -18,7 +18,10 @@ func _ready():
 	for client in Global.clients:
 		var center = CenterContainer.new()
 		var label = Label.new()
-		label.text = Global.player_names[client] + ": " + _time_to_string(Global.player_time_to_finish[client])
+		if Global.player_time_to_finish[client] > 0:
+			label.text = Global.player_names[client] + ": " + _time_to_string(Global.player_time_to_finish[client])
+		else:
+			label.text = Global.player_names[client] + ": " + "unfinished"
 		label.add_font_override("font", dynamic_font)
 		center.size_flags_vertical = 3
 		center.add_child(label)
