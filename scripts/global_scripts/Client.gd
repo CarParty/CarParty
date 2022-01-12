@@ -7,6 +7,7 @@ signal addPlayerName(client_id, client_name)
 signal rmPlayerName(client_id)
 signal respawn_car(client_id)
 signal drift_car(client_id, pressed)
+signal exit_player(client_id)
 
 
 # Declare member variables here. Examples:
@@ -170,6 +171,8 @@ func _on_data():
 				emit_signal("respawn_car",parsed_data.client_id)
 			"drift_car":
 				emit_signal("drift_car",parsed_data.client_id, parsed_data.start)
+			"exit":
+				emit_signal("exit_player",parsed_data.client_id)
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:

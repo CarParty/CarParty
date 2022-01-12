@@ -10,6 +10,7 @@ var car_progress_global_transform = {}
 var car_paths = {}
 var car_visual_layer = {}
 var car_race_completed = {}
+var car_race_exit = {}
 
 var cameras = []
 var camera_counter = 0
@@ -50,7 +51,7 @@ func _ready():
 	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
 	Client.connect("respawn_car", self, "_respawn_car_player_id")
 	Client.connect("drift_car", self, "_drift_car")
-	
+	Client.connect("exit_player",self,"_exit_player")
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Motor Sounds"), -5 * Global.clients.size())
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Thunk Sounds"), -6 * Global.clients.size())
@@ -69,6 +70,7 @@ func _ready():
 		car_progress[client] = -1
 		car_rounds_completed[client] = 0
 		car_race_completed[client] = false
+		car_race_exit[client] = false
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		#set layer mask and cull mask!!!
@@ -84,7 +86,7 @@ func _ready():
 func _process(_delta):
 	for client in Global.clients:
 		# only if the car doesn't compelte the race
-		if car_race_completed[client]:
+		if car_race_completed[client] || car_race_exit[client]:
 			continue
 		cars[client].change_speed(float(Global.player_speed[client]))
 		
@@ -195,7 +197,7 @@ func _on_car_progress(point, car):
 	for client in Global.clients:
 		if car_rounds_completed[client] < 3:
 			all_have_completed = false
-		else:
+		elif not car_race_exit[client]:
 			completed_count += 1
 	if all_have_completed:
 		scene_path_to_load = "res://scenes/Scoreboard.tscn"
@@ -221,7 +223,7 @@ func _final_timeout():
 	pass
 
 func _respawn_car(car):
-	if car_race_completed[cars_to_client_id[car]]:
+	if car_race_completed[cars_to_client_id[car]]||car_race_exit[cars_to_client_id[car]]:
 		return
 	car.linear_velocity = Vector3.ZERO
 	car.engine_force = 0
@@ -238,7 +240,7 @@ func _respawn_car_player_id(player_id):
 	_respawn_car(cars[player_id])
 	
 func _drift_car(player_id, pressed):
-	if car_race_completed[player_id]:
+	if car_race_completed[player_id]||car_race_exit[player_id]:
 		return
 	if pressed:
 		cars[player_id].get_node("Wheel2").set_friction_slip(1)
@@ -246,6 +248,22 @@ func _drift_car(player_id, pressed):
 	else:
 		cars[player_id].get_node("Wheel2").set_friction_slip(3)
 		cars[player_id].get_node("Wheel3").set_friction_slip(3)
+
+func _exit_player(player_id):
+	var m = 100
+	var flag = true
+	car_rounds_completed[player_id] = m
+	car_race_exit[player_id] = true
+	$WorldEnvironment/SplitScreen.exit_player(player_id)
+	for player_id in car_race_exit:
+		if not car_race_exit[player_id]:
+			flag = false
+			break
+	if flag:
+		scene_path_to_load = "res://scenes/Scoreboard.tscn"
+		$FadeIn.show()
+		$FadeIn.fade_in()
+	pass
 
 func _on_FadeIn_fade_finished():
 	Global.goto_scene(scene_path_to_load)

@@ -172,6 +172,8 @@ func start_timer(players_cars_map):
 	
 func _on_timer_timeout():
 	for player_name in players_cars_map_local:
+		if(player_label[player_name].text == "EXITED"):
+			continue
 		var last_value = int(player_label[player_name].text)
 		if last_value-1 <= 0:
 			player_label[player_name].visible = false
@@ -231,6 +233,10 @@ func _on_timer_final_timeout():
 				timer.stop()
 			else:
 				player_label[player_name].text = str(last_value-1)
+
+func exit_player(player_id):
+	player_label[player_id].text = "EXITED"
+	player_label[player_id].visible = true
 
 func rotate_camera(player_id):
 	var camera =  player_viewports[player_id].get_node("Viewport/Camera")
