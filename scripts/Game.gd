@@ -14,7 +14,7 @@ var car_race_completed = {}
 var cameras = []
 var camera_counter = 0
 
-var race_countdown = 60
+var final_countdown = 60
 
 var track_was_sent = false
 var player_track_initialized = {}
@@ -36,6 +36,8 @@ func _ready():
 
 	$WorldEnvironment/SplitScreen.layer = 1
 	$WorldEnvironment/TopCamera.layer = 2
+	
+	$WorldEnvironment/SplitScreen.final_countdown = final_countdown
 	
 	var track_camera = track.get_node("Camera")
 	track_camera.current = false
@@ -200,18 +202,18 @@ func _on_car_progress(point, car):
 		$FadeIn.show()
 		$FadeIn.fade_in()
 	elif (completed_count==1):
-		start_race_countdown()
+		start_final_countdown()
 
-func start_race_countdown():
+func start_final_countdown():
 	var race_timer = Timer.new()
 	add_child((race_timer))
 	race_timer.one_shot = true
-	race_timer.wait_time = race_countdown
-	race_timer.connect("timeout",self,"_race_timeout")
+	race_timer.wait_time = final_countdown
+	race_timer.connect("timeout",self,"_final_timeout")
 	race_timer.start()
 	print("timer start")
 
-func _race_timeout():
+func _final_timeout():
 	print("timeout")
 	scene_path_to_load = "res://scenes/Scoreboard.tscn"
 	$FadeIn.show()

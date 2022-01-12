@@ -31,6 +31,9 @@ var players_cars_map_local
 var players_camera_visual_layer = {}
 var players_complete_race = {}
 var timer
+var is_anyone_complete = false
+#default
+var final_countdown = 60
 signal start_race
 
 onready var viewport = load("res://scenes/utility/PlayerViewport.tscn")
@@ -199,7 +202,35 @@ func race_complete(player_id):
 	var minutes = fmod(Global.race_time, 3600) / 60
 	var str_elapsed = "%02d:%02d:%02d" % [minutes, seconds, ms]
 	player_time_label[player_id].text = str_elapsed
-	
+	if not is_anyone_complete:
+		is_anyone_complete = true
+		start_final_countdown()
+	else:
+		player_label[player_id].visible = false
+
+func start_final_countdown():
+	for player_name in players_complete_race:
+		if players_complete_race[player_name]:
+			continue
+		player_label[player_name].text = str(final_countdown)
+		player_label[player_name].visible = true
+		
+	timer = Timer.new()
+	timer.connect("timeout",self,"_on_timer_final_timeout") 
+	timer.set_wait_time(1) #value is in seconds: 600 seconds = 10 minutes
+	timer.set_one_shot(false)
+	add_child(timer) 
+	timer.start() 
+
+func _on_timer_final_timeout():
+	for player_name in players_cars_map_local:
+		if(player_label[player_name].visible):
+			var last_value = int(player_label[player_name].text)
+			if last_value-1 <= 0:
+				player_label[player_name].visible = false
+				timer.stop()
+			else:
+				player_label[player_name].text = str(last_value-1)
 
 func rotate_camera(player_id):
 	var camera =  player_viewports[player_id].get_node("Viewport/Camera")
