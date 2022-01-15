@@ -63,3 +63,8 @@
   right: 0;
   color: gray;
 }
+
+animated-splash {
+  margin-top: -200px;
+  margin-bottom: -50px;
+}
