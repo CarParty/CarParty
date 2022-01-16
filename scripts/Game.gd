@@ -118,8 +118,12 @@ func _process(_delta):
 		var path_step = 0.001
 		for client in Global.clients:
 			var position = track.get_node("DefaultPath").get_curve().get_closest_point(cars[client].translation)
+			var local_change = 0
 			while (track.get_node("DefaultPath").get_node("PathFollow").translation - position).length() > step:
 				track.get_node("DefaultPath").get_node("PathFollow").unit_offset += path_step
+				local_change += path_step
+				if local_change >= 1:
+					break
 			if(track.get_node("DefaultPath").get_node("PathFollow").unit_offset < 0.95):
 				player_progress[client] = car_rounds_completed[client] + track.get_node("DefaultPath").get_node("PathFollow").unit_offset
 		$WorldEnvironment/SplitScreen.update_player_progress(player_progress)

@@ -269,6 +269,7 @@ func update_player_progress(progress):
 		reversed_progress[progress[key]] = key
 	var progress_sorted = reversed_progress.keys()
 	progress_sorted.sort()
+	progress_sorted.invert()
 	var counter = 1
 	for progress2 in progress_sorted:
 		player_standing_label[reversed_progress[progress2]].text = str(counter) + "."
