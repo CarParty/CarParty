@@ -1,6 +1,5 @@
 extends Spatial
 
-
 var spawnPoints
 var cars = {}
 var cars_to_client_id = {}
@@ -11,6 +10,9 @@ var car_paths = {}
 var car_visual_layer = {}
 var car_race_completed = {}
 var car_race_exit = {}
+var player_progress = {}
+
+var race_started = false
 
 var cameras = []
 var camera_counter = 0
@@ -67,6 +69,7 @@ func _ready():
 		car.global_transform = spawnPoints[index].global_transform
 		cars[client] = car
 		cars_to_client_id[car] = client
+		player_progress[client] = 0
 		car_progress[client] = -1
 		car_rounds_completed[client] = 0
 		car_race_completed[client] = false
@@ -110,6 +113,17 @@ func _process(_delta):
 		while (time_now - time_start) < 10 and current_running_thread is GDScriptFunctionState and current_running_thread.is_valid():
 			current_running_thread = current_running_thread.resume()
 			time_now = OS.get_ticks_msec()
+	if race_started:
+		var step = 1
+		var path_step = 0.001
+		for client in Global.clients:
+			var position = track.get_node("DefaultPath").get_curve().get_closest_point(cars[client].translation)
+			while (track.get_node("DefaultPath").get_node("PathFollow").translation - position).length() > step:
+				track.get_node("DefaultPath").get_node("PathFollow").unit_offset += path_step
+			if(track.get_node("DefaultPath").get_node("PathFollow").unit_offset < 0.95):
+				player_progress[client] = car_rounds_completed[client] + track.get_node("DefaultPath").get_node("PathFollow").unit_offset
+		$WorldEnvironment/SplitScreen.update_player_progress(player_progress)
+		
 
 func generate_track():
 	yield()
@@ -150,6 +164,7 @@ func build_racing_tracks():
 	$CountdownPlayer.play()
 	
 func _start_racing_game():
+	race_started = true
 	for client in Global.clients:
 		cars[client].set_path(car_paths[client])
 
