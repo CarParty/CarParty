@@ -137,18 +137,14 @@ func _on_data():
 				Global.player_speed[parsed_data.client_id] = 0
 				Global.player_time_to_finish[parsed_data.client_id] = -1
 				randomize()
-				Global.player_color[parsed_data.client_id] = Color.from_hsv(randf(), .7, .79)
+				Global.player_color[parsed_data.client_id] = Color(Global.get_unused_color())
 				var player_color = {}
 				player_color["color"] = "#"+Global.player_color[parsed_data.client_id].to_html(false)
 				send_client_message("color_transmission", player_color, parsed_data.client_id)
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-				randomize()
-				Global.player_color[parsed_data.client_id] = Color.from_hsv(randf(), .7, .79)
-				var player_color = {}
-				player_color["color"] = "#"+Global.player_color[parsed_data.client_id].to_html(false)
-				send_client_message("color_transmission", player_color, parsed_data.client_id)
+				send_client_message("color_transmission", Global.player_color[parsed_data.client_id], parsed_data.client_id)
 				start_phase_player("naming", parsed_data.client_id)
 				Global.clients.erase(parsed_data.client_id)
 				Global.player_names.erase(parsed_data.client_id)

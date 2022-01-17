@@ -2,6 +2,22 @@ extends Node
 
 const epsilon = 0.001
 
+const COLORS = [
+	"#ffe478",
+	"#3ca370",
+	"#4da6ff",
+	"#ffffeb",
+	"#43434f",
+	"#e36956",
+	"#b0305c",
+	"#73275c",
+	"#ff6b97",
+]
+
+var used_colors = []
+
+
+
 var current_scene = null
 
 var key
@@ -19,6 +35,11 @@ var race_time = -1
 func _ready():
 	var root = get_tree().get_root()
 	current_scene = root.get_child(root.get_child_count() - 1)
+	
+func get_unused_color():
+	var unused_colors = subtract(COLORS, used_colors)
+	used_colors.append(unused_colors[0])
+	return unused_colors[0]
 
 
 func goto_scene(path):
@@ -60,3 +81,19 @@ func restart():
 	player_path = {}
 	player_time_to_finish = {}
 	race_time = -1
+	
+static func subtract(a: Array, b: Array) -> Array:
+	var result := []
+	var bag := {}
+	for item in b:
+		if not bag.has(item):
+			bag[item] = 0
+		bag[item] += 1
+	for item in a:
+		if bag.has(item):
+			bag[item] -= 1
+			if bag[item] == 0:
+				bag.erase(item)
+		else:
+			result.append(item)
+	return result

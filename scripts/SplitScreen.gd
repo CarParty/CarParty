@@ -151,9 +151,9 @@ func start_timer(players_cars_map):
 		round_count.text = "1/3"
 		round_count.add_font_override("font", dynamic_font_2)
 		round_count.add_color_override("font_color_shadow", Color.black)
-		round_count.add_constant_override("shadow_offset_x",1)
-		round_count.add_constant_override("shadow_offset_y",1)
-		round_count.add_constant_override("shadow_as_outline",1)
+		round_count.add_constant_override("shadow_offset_x",2)
+		round_count.add_constant_override("shadow_offset_y",2)
+		round_count.add_constant_override("shadow_as_outline",0)
 		round_count.align = Label.ALIGN_LEFT
 		round_count.valign = Label.VALIGN_TOP
 		round_count.rect_size = player_viewport.rect_size
@@ -169,9 +169,9 @@ func start_timer(players_cars_map):
 		player_standing.text = "-"
 		player_standing.add_font_override("font", dynamic_font_2)
 		player_standing.add_color_override("font_color_shadow", Color.black)
-		player_standing.add_constant_override("shadow_offset_x",1)
-		player_standing.add_constant_override("shadow_offset_y",1)
-		player_standing.add_constant_override("shadow_as_outline",1)
+		player_standing.add_constant_override("shadow_offset_x",2)
+		player_standing.add_constant_override("shadow_offset_y",2)
+		player_standing.add_constant_override("shadow_as_outline",0)
 		player_standing.align = Label.ALIGN_LEFT
 		player_standing.valign = Label.VALIGN_TOP
 		player_standing.rect_size = player_viewport.rect_size
