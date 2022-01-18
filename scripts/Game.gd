@@ -18,6 +18,9 @@ var cameras = []
 var camera_counter = 0
 
 var final_countdown = 60
+var draw_countdown = 60
+var draw_isCountdown = false
+var draw_isTimeout = false
 
 var track_was_sent = false
 var player_track_initialized = {}
@@ -83,8 +86,8 @@ func _ready():
 		index += 1
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
-	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
-	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
+#	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
+#	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):
 	for client in Global.clients:
@@ -100,9 +103,17 @@ func _process(_delta):
 			finished_tracks.append(client)
 		if not Global.clients_ready_for_track_json.has(client):
 			send_track_now = false
-	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
-		finished_tracks.clear()	
-		current_running_thread = build_racing_tracks()
+#	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
+#		finished_tracks.clear()	
+#		current_running_thread = build_racing_tracks()
+	if finished_tracks.size() != 0:
+		if finished_tracks.size() >= (cars.size()/2) and draw_isCountdown == false:
+			start_draw_countdown()
+		if finished_tracks.size() == cars.size():
+			draw_isCountdown = false
+			finished_tracks.clear()
+			current_running_thread = build_racing_tracks()		
+		
 	if send_track_now and not track_was_sent:
 		track_was_sent = true
 		current_running_thread = generate_track()
@@ -161,6 +172,8 @@ func build_racing_tracks():
 		while generate_result is GDScriptFunctionState and generate_result.is_valid():
 			yield()
 			generate_result = generate_result.resume()
+	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
+	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 	$WorldEnvironment/SplitScreen.start_timer(cars)
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/SplitScreen.layer = 2
@@ -224,6 +237,30 @@ func _on_car_progress(point, car):
 		$FadeIn.fade_in()
 	elif (completed_count==1):
 		start_final_countdown()
+
+func start_draw_countdown():
+	draw_isCountdown = true
+	var draw_timer = Timer.new()
+	add_child((draw_timer))
+	draw_timer.one_shot = true
+	draw_timer.wait_time = draw_countdown
+	draw_timer.connect("timeout",self,"_draw_timeout")
+	draw_timer.start()
+	print("timer start")
+	pass
+
+func _draw_timeout():
+	if(not draw_isCountdown):
+		return
+	for car in cars:
+		if not finished_tracks.has(car):
+			Global.clients.erase(car)
+			Global.player_names.erase(car)
+			cars.erase(car)
+			player_progress.erase(car)
+			print("kick " + car)
+	draw_isTimeout = true
+	print("time out")
 
 func start_final_countdown():
 	var race_timer = Timer.new()

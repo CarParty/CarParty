@@ -254,6 +254,10 @@ func _on_timer_final_timeout():
 				player_label[player_name].text = str(last_value-1)
 
 func exit_player(player_id):
+	var dynamic_font : DynamicFont = DynamicFont.new()
+	dynamic_font.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+	dynamic_font.size = player_viewports[player_id].rect_size.x / 6
+	player_label[player_id].add_font_override("font", dynamic_font)
 	player_label[player_id].text = "EXITED"
 	player_label[player_id].visible = true
 
