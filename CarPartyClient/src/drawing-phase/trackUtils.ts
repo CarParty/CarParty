@@ -39,11 +39,22 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
   // add finish areas in polygon representation
   chunks.forEach(chunk =>
     chunk.finish.forEach(finish =>
+      // complexity is due to manually applying the rotation
+      // please note that the angle is inverted !
       finish.boundingPolygon = [
         { x: finish.boundingBox.x, y: finish.boundingBox.y },
-        { x: finish.boundingBox.x2, y: finish.boundingBox.y },
-        { x: finish.boundingBox.x2, y: finish.boundingBox.y2 },
-        { x: finish.boundingBox.x, y: finish.boundingBox.y2 },
+        {
+          x: finish.boundingBox.x + finish.boundingBox.width * Math.cos(-finish.boundingBox.rotation),
+          y: finish.boundingBox.y + finish.boundingBox.width * Math.sin(-finish.boundingBox.rotation)
+        },
+        {
+          x: finish.boundingBox.x + finish.boundingBox.width * Math.cos(-finish.boundingBox.rotation) + finish.boundingBox.height * Math.sin(finish.boundingBox.rotation),
+          y: finish.boundingBox.y + finish.boundingBox.width * Math.sin(-finish.boundingBox.rotation) + finish.boundingBox.height * Math.cos(-finish.boundingBox.rotation)
+        },
+        {
+          x: finish.boundingBox.x + finish.boundingBox.height * Math.sin(finish.boundingBox.rotation),
+          y: finish.boundingBox.y + finish.boundingBox.height * Math.cos(-finish.boundingBox.rotation)
+        },
       ]
     )
   );
