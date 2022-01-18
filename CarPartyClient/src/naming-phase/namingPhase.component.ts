@@ -1,4 +1,5 @@
 import { Connection } from '../connection';
+import { requestFullscreen } from '../fullscreenUtils';
 import css from './namingPhase.component.css';
 import template from './namingPhase.component.html';
 
@@ -47,9 +48,7 @@ export class NamingPhaseComponent extends HTMLElement {
 
   private sendName = () => {
     // try to request full-screen
-    // if (!document.fullscreenElement) {
-    //   document.documentElement.requestFullscreen();
-    // }
+    requestFullscreen();
 
     let name = this.inputEl.value;
     if (!name || name.trim().length === 0) {

@@ -1,6 +1,7 @@
 import { Tween, update } from '@tweenjs/tween.js';
 import { hasOwnProperty } from '../additionalTypes';
 import { Connection } from '../connection';
+import { requestFullscreen } from '../fullscreenUtils';
 import { SendPathDataMessageI } from '../messages';
 import { SVG_NAMESPACE } from './../constants';
 import css from './drawingPhase.component.css';
@@ -104,9 +105,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.helpButtonEl = shadow.getElementById('helpButton') as HTMLButtonElement;
     this.helpButtonEl.addEventListener('click', () => {
       // try to request full-screen
-      // if (!document.fullscreenElement) {
-      //   document.documentElement.requestFullscreen();
-      // }
+      requestFullscreen();
 
       this.helpModalContainer?.classList.add('show');
     });
