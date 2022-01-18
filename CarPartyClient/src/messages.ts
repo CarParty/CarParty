@@ -39,6 +39,9 @@ export type SendPathDataMessageI = {
   path: Record<string, Point[]>;
   order: string[];
   retry: number;
+  packet_num: number;
+  total_num_packets: number;
+  encoded_path: string;
 };
 
 export type ResetCarMessageI = {
@@ -72,6 +75,11 @@ export type CarColorMessageI = {
 export type TrackDataMessageI = {
   action: 'track_transmission';
   track: Track;
+} | {
+  action: 'track_transmission';
+  packet_num: number;
+  total_num_packets: number;
+  encoded_message: string;
 };
 
 export enum Phase {

@@ -40,6 +40,7 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
   chunks.forEach(chunk =>
     chunk.finish.forEach(finish =>
       // complexity is due to manually applying the rotation
+      // rotation origin is (x,y)
       // please note that the angle is inverted !
       finish.boundingPolygon = [
         { x: finish.boundingBox.x, y: finish.boundingBox.y },

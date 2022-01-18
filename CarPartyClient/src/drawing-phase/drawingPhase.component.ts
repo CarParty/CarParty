@@ -1,4 +1,5 @@
 import { Tween, update } from '@tweenjs/tween.js';
+import { hasOwnProperty } from '../additionalTypes';
 import { Connection } from '../connection';
 import { SendPathDataMessageI } from '../messages';
 import { SVG_NAMESPACE } from './../constants';
@@ -128,8 +129,19 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     // request and handle track data
     setTimeout(() => {
+      const trackFragments: string[] = [];
       this.connection?.subscribe('track_transmission', (data) => {
-        this.setupTrack(data.track);
+        if (hasOwnProperty(data, 'track')) {
+          // old way
+          this.setupTrack(data.track);
+        } else {
+          // new way
+          trackFragments.push(data.encoded_message);
+          if (trackFragments.length === data.total_num_packets) {
+            const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
+            this.setupTrack(tTrack);
+          }
+        }
       });
       this.connection?.send({ action: 'ready_for_track_json' });
     });
@@ -462,18 +474,32 @@ export class DrawingPhaseComponent extends HTMLElement {
         this.zoomToBox(this.trackBoundingBox);
       }
 
-      // send path and repeat sending until this phase is left
+      // send path
+      // -> prepared for path message splitting (backwards-compatible)
+      // ---> godot wants smaller websocket packets
+      // -----> encode path, split it by length, transmit it fragment by fragment
+      // -> remove old remains once godot code is updated
       const [convertedPath, areaOrder] = this.convertPath(this.partialPaths);
       const transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'> = {
         action: 'path_transmission',
         path: convertedPath,
         order: areaOrder
       };
-      let retryCount = 0;
-      this.connection?.send({ ...transmission, retry: ++retryCount });
-      this.repeatedPathSend = setInterval(() => {
-        this.connection?.send({ ...transmission, retry: ++retryCount });
-      }, 5000);
+      const encodedPath = JSON.stringify(convertedPath);
+
+      // set something sensible here ...
+      // const MAX_PAYLOAD_SIZE = Number.MAX_SAFE_INTEGER; // transmit as EXACTLY one message PERIOD
+      const MAX_PAYLOAD_SIZE = 16376 - JSON.stringify({ // try to intelligently guess the maximum allowed size
+        ...transmission,
+        retry: 1000, packet_num: 1000, total_num_packets: 1000, encoded_path: ''
+      } as SendPathDataMessageI).length - 100; // 'as SendPathDataMessageI' -> typecheck; 100 -> safety margin
+      // const MAX_PAYLOAD_SIZE = 10000; // should be about fine, not too restrictive, not too careless
+
+      const numFragments = Math.ceil(encodedPath.length / MAX_PAYLOAD_SIZE);
+      for (let i = 0; i < numFragments; i++) {
+        const fragment = encodedPath.substring(i * MAX_PAYLOAD_SIZE, (i + 1) * MAX_PAYLOAD_SIZE);
+        this.connection?.send({ ...transmission, retry: i, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
+      }
     } else {
       this.highlightCurrentChunk();
       await this.zoomToBox(this.currentChunk.boundingBox);
