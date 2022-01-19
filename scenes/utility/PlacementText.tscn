@@ -1,17 +1,23 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://scenes/utility/PlacementText.gd" type="Script" id=2]
-[ext_resource path="res://resources/textures/Texture4.tres" type="Texture" id=3]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 light_mode = 2
 
 [sub_resource type="DynamicFont" id=2]
 size = 200
-outline_size = 5
-outline_color = Color( 0.14902, 0.192157, 0.219608, 1 )
+outline_size = 2
+outline_color = Color( 0.0156863, 0.00784314, 0.00784314, 1 )
 font_data = ExtResource( 1 )
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0.0273224, 0.120219, 0.185792, 0.398907, 0.52459, 0.781421, 1 )
+colors = PoolColorArray( 0.0201895, 0.0168414, 0.00370666, 1, 0.990571, 0.965449, 0.866893, 1, 0.0980632, 0.0818011, 0.0180038, 1, 0, 0, 0, 1, 0.941406, 0.78529, 0.172836, 1, 0.952856, 0.827245, 0.334466, 1, 1, 1, 1, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+width = 200
 
 [sub_resource type="CanvasItemMaterial" id=5]
 light_mode = 2
@@ -19,86 +25,41 @@ light_mode = 2
 [sub_resource type="DynamicFont" id=6]
 size = 30
 outline_size = 2
-outline_color = Color( 0.14902, 0.192157, 0.219608, 1 )
+outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 1 )
 
-[sub_resource type="Animation" id=7]
-resource_name = "Change"
-tracks/0/type = "value"
-tracks/0/path = NodePath("CenterContainer:rect_rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 0.90125 ),
-"update": 0,
-"values": [ 0.0, 360.0 ]
-}
-
-[sub_resource type="Animation" id=8]
-length = 0.001
-
 [node name="Node2D" type="Node2D"]
-script = ExtResource( 2 )
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-margin_right = 119.0
+[node name="NumberLabel" type="Label" parent="."]
+light_mask = 2
+material = SubResource( 1 )
+margin_right = 76.0
 margin_bottom = 261.0
-rect_rotation = 360.0
-rect_pivot_offset = Vector2( 55, 120 )
+custom_fonts/font = SubResource( 2 )
+text = "1"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Light2D" type="Light2D" parent="CenterContainer"]
-position = Vector2( 98.1209, 127.668 )
+[node name="Light2D" type="Light2D" parent="."]
+position = Vector2( 58.4158, 129.543 )
 rotation = 1.5708
-scale = Vector2( 0.0770025, 197.569 )
-texture = ExtResource( 3 )
+scale = Vector2( 0.745651, 115.162 )
+texture = SubResource( 4 )
 mode = 2
 range_height = 112.7
 range_layer_max = 2
 range_item_cull_mask = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer"]
-margin_right = 119.0
-margin_bottom = 261.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="NumberLabel" type="Label" parent="CenterContainer/HBoxContainer"]
-light_mask = 2
-material = SubResource( 1 )
-margin_right = 76.0
-margin_bottom = 261.0
-grow_horizontal = 2
-grow_vertical = 2
-rect_pivot_offset = Vector2( 40, 120 )
-custom_fonts/font = SubResource( 2 )
-text = "1"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="EndingLabel" type="Label" parent="CenterContainer/HBoxContainer"]
+[node name="EndingLabel" type="Label" parent="."]
 light_mask = 2
 material = SubResource( 5 )
-margin_left = 80.0
-margin_top = 110.0
-margin_right = 119.0
-margin_bottom = 150.0
+margin_left = 66.0
+margin_top = 166.0
+margin_right = 105.0
+margin_bottom = 206.0
 custom_fonts/font = SubResource( 6 )
 text = "st"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="CenterContainer"]
-root_node = NodePath("../..")
-anims/Change = SubResource( 7 )
-anims/RESET = SubResource( 8 )
