@@ -1,7 +1,7 @@
 .content {
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 475px;
+  height: 250px;
   overflow: hidden;
   /*background-color: lightblue;*/
 }
@@ -142,14 +142,14 @@ scene--cube {
 }
 .scene {
   position: absolute;
-  top: 70px;
+  top: 0px;
   left: 50px;
   transform-origin: bottom;
   animation: scale 1s linear infinite;
 }
 .sceneRoad {
   position: absolute;
-  top: 70px;
+  top: 0px;
   left: 50px;
 }
 .cube {
@@ -164,19 +164,20 @@ scene--cube {
 .cube__face {
   position: absolute;
   border: 2px solid black;
-  line-height: 100px;
-  font-size: 40px;
-  font-weight: bold;
-  color: white;
-  text-align: center;
   background-color: #d43437;
-  color: #d43437;
 }
-.wheelsNew {
+.wheelsNew,
+.party-text {
   position: absolute;
 }
 
-.cube__face--front,
+.cube__face--front {
+  width: 100px;
+  height: 38px;
+  top: 112px;
+  left: 50px;
+}
+
 .cube__face--back {
   width: 100px;
   height: 100px;
@@ -187,6 +188,12 @@ scene--cube {
 .cube__face--right,
 .cube__face--left,
 .wheelsNew {
+  width: 200px;
+  height: 100px;
+  top: 50px;
+}
+
+.party-text {
   width: 200px;
   height: 100px;
   top: 50px;
@@ -285,7 +292,6 @@ scene--cube {
 }
 
 .cube__face--front {
-  clip-path: polygon(100% 63%, 100% 100%, 0% 100%, 0% 63%);
 }
 .cube__face--back {
   clip-path: polygon(100% 50%, 100% 100%, 0% 100%, 0% 50%);
@@ -359,6 +365,10 @@ scene--cube {
 .wheelsNew {
   transform: rotateY(-90deg) translateZ(50px);
 }
+.party-text {
+  transform: rotateY(-90deg) translateZ(40px) translateX(275px)
+    translateY(-25px);
+}
 .cube__face--top {
   transform: rotateX(90deg) translateY(-33px) translateZ(50px);
 }
@@ -395,4 +405,43 @@ scene--cube {
 }
 .cube.show-bottom {
   transform: translateZ(-50px) rotateX(90deg);
+}
+
+.car-text {
+  font-size: 75px;
+  font-style: italic;
+  font-weight: bold;
+  color: black;
+  line-height: 107px;
+  padding-left: 5px;
+}
+.party-text {
+  font-size: 120px;
+  font-style: italic;
+  font-weight: bold;
+  color: black;
+}
+
+.car-window {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(200, 200, 200);
+  clip-path: inset(3px 3px 3px 3px);
+  border: 5px solid #333;
+}
+
+.car-light-left,
+.car-light-right {
+  height: 15px;
+  width: 15px;
+  background-color: gold;
+  position: absolute;
+  top: 5px;
+  border: 2px solid black;
+}
+.car-light-left {
+  left: 5px;
+}
+.car-light-right {
+  right: 5px;
 }
