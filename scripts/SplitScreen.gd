@@ -29,6 +29,7 @@ var player_time_label = {}
 var player_round_label = {}
 var player_standing_label = {}
 var player_standing_ending_label = {}
+var player_countdown_label = {}
 var players_cars_map_local
 var players_camera_visual_layer = {}
 var players_complete_race = {}
@@ -132,6 +133,20 @@ func start_timer(players_cars_map):
 		#player_viewport.add_child(time_label)
 		player_time_label[player_name] = time_label
 
+		# final Countdown 
+		var countdown_label: Label = Label.new()
+		countdown_label.text = ""
+		countdown_label.visible = false
+		countdown_label.add_font_override("font", dynamic_font_2)
+		countdown_label.add_color_override("font_color_shadow", Color.black)
+		countdown_label.add_constant_override("shadow_offset_x",2)
+		countdown_label.add_constant_override("shadow_offset_y",2)
+		countdown_label.add_constant_override("shadow_as_outline",0)
+		countdown_label.rect_position.x = player_viewport.rect_size.x / 5
+		countdown_label.rect_position.y = player_viewport.rect_size.y / 12
+		player_viewport.add_child(countdown_label)
+		player_countdown_label[player_name] = countdown_label
+
 		# Player name
 		var name_label: Label = Label.new()
 		name_label.text = Global.player_names[player_name]
@@ -216,8 +231,8 @@ func start_final_countdown():
 	for player_name in players_complete_race:
 		if players_complete_race[player_name]:
 			continue
-		player_label[player_name].text = str(final_countdown)
-		player_label[player_name].visible = true
+		player_countdown_label[player_name].text = str(final_countdown)
+		player_countdown_label[player_name].visible = true
 		
 	timer = Timer.new()
 	timer.connect("timeout",self,"_on_timer_final_timeout") 
@@ -228,13 +243,13 @@ func start_final_countdown():
 
 func _on_timer_final_timeout():
 	for player_name in players_cars_map_local:
-		if(player_label[player_name].visible):
-			var last_value = int(player_label[player_name].text)
+		if(player_countdown_label[player_name].visible):
+			var last_value = int(player_countdown_label[player_name].text)
 			if last_value-1 <= 0:
-				player_label[player_name].visible = false
+				player_countdown_label[player_name].visible = false
 				timer.stop()
 			else:
-				player_label[player_name].text = str(last_value-1)
+				player_countdown_label[player_name].text = str(last_value-1)
 
 func exit_player(player_id):
 	var dynamic_font : DynamicFont = DynamicFont.new()
