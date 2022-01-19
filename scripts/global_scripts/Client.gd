@@ -144,11 +144,10 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-				send_client_message("color_transmission", Global.player_color[parsed_data.client_id], parsed_data.client_id)
-				start_phase_player("naming", parsed_data.client_id)
-				Global.clients.erase(parsed_data.client_id)
-				Global.player_names.erase(parsed_data.client_id)
-				emit_signal("rmPlayerName",parsed_data.client_id)
+#				Global.clients.erase(parsed_data.client_id)
+#				Global.player_names.erase(parsed_data.client_id)
+				emit_signal("exit_player",parsed_data.client_id)
+#				emit_signal("rmPlayerName",parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
