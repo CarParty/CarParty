@@ -23,6 +23,7 @@ func _setup_client():
 	Global.clients = []
 	Global.player_names = {}
 	_server = WebSocketClient.new()
+	_server.set_buffers(64, 1000, 64, 1000)
 	# Connect base signals to get notified of connection open, close, and errors.
 	Client._server.connect("connection_closed", self, "_closed")
 	Client._server.connect("connection_error", self, "_closed")
@@ -164,7 +165,6 @@ func track_message_handler(data: Dictionary):
 			final_packet += packet.encoded_path
 		var packet_json = JSON.parse(final_packet).result
 		Global.player_path[client_id] = packet_json
-		print(packet_json)
 	
 func _on_data():
 	# Print the received packet, you MUST always use get_peer(1).get_packet
