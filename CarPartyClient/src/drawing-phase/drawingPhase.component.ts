@@ -129,16 +129,19 @@ export class DrawingPhaseComponent extends HTMLElement {
     // request and handle track data
     setTimeout(() => {
       const trackFragments: string[] = [];
-      this.connection?.subscribe('track_transmission', (data) => {
+      const unsubscribe = this.connection?.subscribe('track_transmission', (data) => {
         if (hasOwnProperty(data, 'track')) {
           // old way
           this.setupTrack(data.track);
         } else {
           // new way
           trackFragments.push(data.encoded_message);
-          console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments`, trackFragments);
+          console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments, last received: ${data.packet_num}`, trackFragments);
           if (trackFragments.length === data.total_num_packets) {
             const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
+            if (unsubscribe) {
+              unsubscribe();
+            }
             this.setupTrack(tTrack);
           }
         }
