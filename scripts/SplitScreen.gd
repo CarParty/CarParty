@@ -28,7 +28,7 @@ var player_label = {}
 var player_time_label = {}
 var player_round_label = {}
 var player_standing_label = {}
-var player_standing_st_label = {}
+var player_standing_ending_label = {}
 var players_cars_map_local
 var players_camera_visual_layer = {}
 var players_complete_race = {}
@@ -157,34 +157,13 @@ func start_timer(players_cars_map):
 		player_viewport.add_child(round_count)
 		player_round_label[player_name] = round_count
 		
-		# Progress 
-		var player_standing: Label = Label.new()
-		font_standing.size = player_viewport.rect_size.x / 15
-		player_standing.text = "-"
-		player_standing.add_font_override("font", font_standing)
-		player_standing.add_color_override("font_color_shadow", Color.black)
-		player_standing.add_constant_override("shadow_offset_x",2)
-		player_standing.add_constant_override("shadow_offset_y",2)
-		player_standing.add_constant_override("shadow_as_outline",1)
-		player_standing.valign = Label.VALIGN_BOTTOM
-		player_standing.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 8
-		player_standing.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 5
-		player_viewport.add_child(player_standing)
-		player_standing_label[player_name] = player_standing
 		
-		var player_standing_st: Label = Label.new()
-		font_standing_st.size = player_viewport.rect_size.x / 44
-		player_standing_st.text = ""
-		player_standing_st.add_font_override("font", font_standing_st)
-		player_standing_st.add_color_override("font_color_shadow", Color.black)
-		player_standing_st.add_constant_override("shadow_offset_x",2)
-		player_standing_st.add_constant_override("shadow_offset_y",2)
-		player_standing_st.add_constant_override("shadow_as_outline",1)
-		player_standing_st.valign = Label.VALIGN_BOTTOM
-		player_standing_st.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 10
-		player_standing_st.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 5
-		player_viewport.add_child(player_standing_st)
-		player_standing_st_label[player_name] = player_standing_st
+		var placement_node = load("res://scenes/utility/PlacementText.tscn").instance()
+		placement_node.position = Vector2(player_viewport.rect_size.x / 1920 * 1650,player_viewport.rect_size.x / 1080 * 750)
+		player_standing_label[player_name] = placement_node.get_node("NumberLabel")
+		player_standing_ending_label[player_name] = placement_node.get_node("EndingLabel")
+		player_viewport.add_child(placement_node)
+		
 		
 	timer = Timer.new()
 	timer.connect("timeout",self,"_on_timer_timeout") 
@@ -282,9 +261,13 @@ func update_player_progress(progress):
 	for progress2 in progress_sorted:
 		player_standing_label[reversed_progress[progress2]].text = str(counter)
 		if counter < 2:
-			player_standing_st_label[reversed_progress[progress2]].text = 'st'
+			player_standing_ending_label[reversed_progress[progress2]].text = 'st'
+		elif counter < 3:
+			player_standing_ending_label[reversed_progress[progress2]].text = 'nd'
+		elif counter < 4:
+			player_standing_ending_label[reversed_progress[progress2]].text = 'rd'
 		else:
-			player_standing_st_label[reversed_progress[progress2]].text = 'nd'
+			player_standing_ending_label[reversed_progress[progress2]].text = 'th'
 		counter += 1
 	
 

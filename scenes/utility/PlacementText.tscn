@@ -1,0 +1,65 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=1]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+light_mode = 2
+
+[sub_resource type="DynamicFont" id=2]
+size = 200
+outline_size = 2
+outline_color = Color( 0.0156863, 0.00784314, 0.00784314, 1 )
+font_data = ExtResource( 1 )
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0.0273224, 0.120219, 0.185792, 0.398907, 0.52459, 0.781421, 1 )
+colors = PoolColorArray( 0.0201895, 0.0168414, 0.00370666, 1, 0.990571, 0.965449, 0.866893, 1, 0.0980632, 0.0818011, 0.0180038, 1, 0, 0, 0, 1, 0.941406, 0.78529, 0.172836, 1, 0.952856, 0.827245, 0.334466, 1, 1, 1, 1, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+width = 200
+
+[sub_resource type="CanvasItemMaterial" id=5]
+light_mode = 2
+
+[sub_resource type="DynamicFont" id=6]
+size = 30
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="NumberLabel" type="Label" parent="."]
+light_mask = 2
+material = SubResource( 1 )
+margin_right = 76.0
+margin_bottom = 261.0
+custom_fonts/font = SubResource( 2 )
+text = "1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Light2D" type="Light2D" parent="."]
+position = Vector2( 58.4158, 129.543 )
+rotation = 1.5708
+scale = Vector2( 0.745651, 115.162 )
+texture = SubResource( 4 )
+mode = 2
+range_height = 112.7
+range_layer_max = 2
+range_item_cull_mask = 2
+
+[node name="EndingLabel" type="Label" parent="."]
+light_mask = 2
+material = SubResource( 5 )
+margin_left = 66.0
+margin_top = 166.0
+margin_right = 105.0
+margin_bottom = 206.0
+custom_fonts/font = SubResource( 6 )
+text = "st"
+__meta__ = {
+"_edit_use_anchors_": false
+}
