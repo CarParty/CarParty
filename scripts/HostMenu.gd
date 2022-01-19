@@ -28,6 +28,9 @@ func _ready():
 	Client.connect("addPlayerName", self, "addPlayerName")
 	Client.connect("rmPlayerName", self, "rmPlayerName")
 	
+	if Global.isRestart:
+		Client.restart_at_hostmenu()
+	
 	if OS.is_debug_build():
 		$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link.text = "staging.car-party.de"
 	

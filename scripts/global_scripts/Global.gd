@@ -85,7 +85,7 @@ func restart():
 		player_time_to_finish[player_name]=-1
 	race_time = -1
 	isRestart = true
-	Client.restart_at_hostmenu()
+#	Client.restart_at_hostmenu()
 	
 static func subtract(a: Array, b: Array) -> Array:
 	var result := []

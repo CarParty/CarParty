@@ -142,6 +142,7 @@ func send_global_message_by_chunk(action: String, message: Dictionary):
 			"encoded_message": part_packet
 		}
 		var bytes: PoolByteArray = JSON.print(json).to_utf8()
+#		print(JSON.print(json))
 		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 		_server.get_peer(1).put_packet(bytes)
 		i = next_i
@@ -219,6 +220,8 @@ func _on_data():
 		print("Error: received packet had no action field!")
 	
 func restart_at_hostmenu():
+	partial_packets = {}
+	
 	for client_id in Global.player_names:
 		print("client_id  ",client_id)
 		var player_color = {}
