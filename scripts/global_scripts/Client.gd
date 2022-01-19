@@ -142,6 +142,7 @@ func send_global_message_by_chunk(action: String, message: Dictionary):
 			"encoded_message": part_packet
 		}
 		var bytes: PoolByteArray = JSON.print(json).to_utf8()
+#		print(JSON.print(json))
 		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 		_server.get_peer(1).put_packet(bytes)
 		i = next_i
@@ -164,11 +165,10 @@ func track_message_handler(data: Dictionary):
 			final_packet += packet.encoded_path
 		var packet_json = JSON.parse(final_packet).result
 		Global.player_path[client_id] = packet_json
-		print(packet_json)
 	
 func _on_data():
 	# Print the received packet, you MUST always use get_peer(1).get_packet
-	# to receive data from server, and not get_packet directly when not
+	# to receive data from server, and not get_packet diClient connectedrectly when not
 	# using the MultiplayerAPI.
 	var data = _server.get_peer(1).get_packet()
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
@@ -217,7 +217,18 @@ func _on_data():
 				print("Action not implemented: "+str(parsed_data))
 	else:
 		print("Error: received packet had no action field!")
-		
+	
+func restart_at_hostmenu():
+	partial_packets = {}
+	
+	for client_id in Global.player_names:
+		print("client_id  ",client_id)
+		var player_color = {}
+		player_color["color"] = "#"+Global.player_color[client_id].to_html(false)
+		send_client_message("color_transmission", player_color, client_id)
+		emit_signal("addPlayerName",client_id, Global.player_names[client_id])
+		start_phase_player("waiting", client_id)
+	
 func _process(_delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
 	# emission will only happen when calling this function.

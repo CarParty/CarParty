@@ -88,8 +88,6 @@ func _ready():
 		index += 1
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
-#	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
-#	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 
 func _process(_delta):
 	for client in Global.clients:
@@ -173,7 +171,6 @@ func generate_track():
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = true
 
-		
 func build_racing_tracks():
 	yield()
 	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = false
@@ -188,6 +185,7 @@ func build_racing_tracks():
 	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 	$WorldEnvironment/SplitScreen.start_timer(cars)
 	$WorldEnvironment/TopCamera/Loading.visible = false
+	$WorldEnvironment/TopCamera/ViewportContainer.visible = false
 	$WorldEnvironment/SplitScreen.layer = 2
 	$WorldEnvironment/TopCamera.layer = 1
 	$CountdownPlayer.play()

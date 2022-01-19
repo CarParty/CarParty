@@ -24,13 +24,13 @@ visible = false
 [node name="Path" parent="." index="2"]
 visible = false
 
-[node name="Track Solid" parent="." index="3"]
+[node name="Road" parent="." index="3"]
+visible = false
+
+[node name="Track Solid" parent="." index="4"]
 material/0 = SubResource( 1 )
 
 [node name="StaticBody" type="StaticBody" parent="Track Solid" index="0"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Track Solid/StaticBody" index="0"]
 shape = SubResource( 2 )
-
-[node name="Road" parent="." index="4"]
-visible = false

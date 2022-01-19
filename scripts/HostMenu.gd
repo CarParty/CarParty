@@ -16,15 +16,20 @@ func gen_unique_string(length: int) -> String:
 func _ready():
 	
 	# guess key until we have a valid one
-	Global.key = gen_unique_string(4)
+	if(not Global.isRestart):
+		Global.key = gen_unique_string(4)
 	# QR Code
 	load_qr_code()
 	$HTTPRequest.connect("request_completed", self, "_qrcode_request_completed")
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer2/HBoxContainer/Gamecode.text = Global.key
 	
-	Client.connect_to_url()	
+	if(not Global.isRestart):
+		Client.connect_to_url()	
 	Client.connect("addPlayerName", self, "addPlayerName")
 	Client.connect("rmPlayerName", self, "rmPlayerName")
+	
+	if Global.isRestart:
+		Client.restart_at_hostmenu()
 	
 	if OS.is_debug_build():
 		$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link.text = "staging.car-party.de"
@@ -95,6 +100,7 @@ func _process(_delta):
 	$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer3/HBoxContainer/PlayerAmountNumber.text = str(Global.clients.size())
 
 func addPlayerName(id, name):
+	print(id,"  ",name)
 	var container = HBoxContainer.new()
 	container.name = id
 	print(id)
