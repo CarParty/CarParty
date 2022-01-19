@@ -29,6 +29,8 @@ var clients_ready_for_track_json = []
 var player_path = {}
 var player_time_to_finish = {}
 var race_time = -1
+
+var isRestart = false
 var track = "first"
 
 
@@ -70,17 +72,21 @@ func _deferred_goto_scene(path):
 	get_tree().set_current_scene(current_scene)
 
 func restart():
-	Client.reset_connection()
-	goto_scene("res://scenes/StartMenu.tscn")
-	key = null
-	clients = []
-	player_names = {}
+#	Client.reset_connection()
+	goto_scene("res://scenes/HostMenu.tscn")
+#	clients = []
+#	player_names = {}
 	player_speed = {}
-	player_color = {}
+#	player_color = {}
 	clients_ready_for_track_json = []
 	player_path = {}
 	player_time_to_finish = {}
+	for player_name in player_names:
+		player_speed[player_name]=0
+		player_time_to_finish[player_name]=-1
 	race_time = -1
+	isRestart = true
+#	Client.restart_at_hostmenu()
 	
 static func subtract(a: Array, b: Array) -> Array:
 	var result := []
