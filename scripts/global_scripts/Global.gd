@@ -31,7 +31,7 @@ var player_time_to_finish = {}
 var race_time = -1
 
 var isRestart = false
-var track = "first"
+var track = "First"
 var setting = ""
 
 func _ready():
