@@ -136,6 +136,7 @@ export class DrawingPhaseComponent extends HTMLElement {
         } else {
           // new way
           trackFragments.push(data.encoded_message);
+          console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments`, trackFragments);
           if (trackFragments.length === data.total_num_packets) {
             const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
             this.setupTrack(tTrack);
