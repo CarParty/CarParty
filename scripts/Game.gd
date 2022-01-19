@@ -28,7 +28,7 @@ var player_track_initialized = {}
 var finished_tracks = []
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/"+Global.track+Global.setting+"TrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/"+Global.track+"TrackWithStuff.tscn"
 var track
 
 var current_running_thread = null
@@ -37,25 +37,33 @@ var please_end_process_loop = false
 
 func _ready():
 	track = load(track_path).instance()
-	$WorldEnvironment.add_child(track)
+	self.add_child(track)
+
+	if Global.setting == "Night":
+		var tres = load("resources/environments/NightEnvironment.tres")
+		var world_environment = WorldEnvironment.new()
+		world_environment.set_environment(tres)
+		track.add_child(world_environment)
+		track.get_node("DirectionalLight").visible = false
+
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
 	cameras[0].make_current()
 
-	$WorldEnvironment/SplitScreen.layer = 1
-	$WorldEnvironment/TopCamera.layer = 2
+	$SplitScreen.layer = 1
+	$TopCamera.layer = 2
 	
-	$WorldEnvironment/SplitScreen.final_countdown = final_countdown
+	$SplitScreen.final_countdown = final_countdown
 	
 	var track_camera = track.get_node("Camera")
 	track_camera.current = false
-	$WorldEnvironment/TopCamera/ViewportContainer/Viewport/OverlookingCamera.transform = track_camera.transform
-	$WorldEnvironment/TopCamera/ViewportContainer/Viewport/OverlookingCamera.fov = track_camera.fov
+	$TopCamera/ViewportContainer/Viewport/OverlookingCamera.transform = track_camera.transform
+	$TopCamera/ViewportContainer/Viewport/OverlookingCamera.fov = track_camera.fov
 	
 	for progress_node in track.get_node("ProgressNodes").get_children():
 		progress_node.connect("safepoint_reached", self, "_on_car_progress")
-	$WorldEnvironment.get_node("FellOffTrack").connect("fell_off_track", self, "_respawn_car")
-	$WorldEnvironment/SplitScreen.connect("start_race", self, "_start_racing_game")
+	$FellOffTrack.connect("fell_off_track", self, "_respawn_car")
+	$SplitScreen.connect("start_race", self, "_start_racing_game")
 	Client.connect("respawn_car", self, "_respawn_car_player_id")
 	Client.connect("drift_car", self, "_drift_car")
 	Client.connect("exit_player",self,"_exit_player")
@@ -69,7 +77,7 @@ func _ready():
 		camera_counter = 1
 		var car = preload("res://scenes/Car.tscn").instance()
 		car.color = Global.player_color[client]
-		$WorldEnvironment.add_child(car)
+		self.add_child(car)
 		car.rotation = spawnPoints[index].rotation
 		car.global_transform = spawnPoints[index].global_transform
 		cars[client] = car
@@ -142,12 +150,12 @@ func _process(_delta):
 					break
 			if(track.get_node("DefaultPath").get_node("PathFollow").unit_offset < 0.95):
 				player_progress[client] = car_rounds_completed[client] + track.get_node("DefaultPath").get_node("PathFollow").unit_offset
-		$WorldEnvironment/SplitScreen.update_player_progress(player_progress)
+		$SplitScreen.update_player_progress(player_progress)
 		
 
 func generate_track():
 	yield()
-	$WorldEnvironment/TopCamera/Loading.visible = true
+	$TopCamera/Loading.visible = true
 	var track_meshes = track.get_node("Track").tags_to_meshes
 	for tag in track_meshes:
 		track_meshes[tag] = track.get_node("Track/" + track_meshes[tag])
@@ -168,26 +176,26 @@ func generate_track():
 		yield()
 		sending_result = sending_result.resume()
 
-	$WorldEnvironment/TopCamera/Loading.visible = false
-	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = true
+	$TopCamera/Loading.visible = false
+	$TopCamera/DrawingPhaseOverlay.visible = true
 
 func build_racing_tracks():
 	yield()
-	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = false
-	$WorldEnvironment/TopCamera/Loading.visible = true
+	$TopCamera/DrawingPhaseOverlay.visible = false
+	$TopCamera/Loading.visible = true
 	Client.start_phase_global("racing")
 	for client in Global.clients:
 		var generate_result = generate_path_from_json(client, Global.player_path[client])
 		while generate_result is GDScriptFunctionState and generate_result.is_valid():
 			yield()
 			generate_result = generate_result.resume()
-	$WorldEnvironment/SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
-	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
-	$WorldEnvironment/SplitScreen.start_timer(cars)
-	$WorldEnvironment/TopCamera/Loading.visible = false
-	$WorldEnvironment/TopCamera/ViewportContainer.visible = false
-	$WorldEnvironment/SplitScreen.layer = 2
-	$WorldEnvironment/TopCamera.layer = 1
+	$SplitScreen.setup_for_camera_visual_layer(car_visual_layer)
+	$SplitScreen.setup_for_cars(cars)
+	$SplitScreen.start_timer(cars)
+	$TopCamera/Loading.visible = false
+	$TopCamera/ViewportContainer.visible = false
+	$SplitScreen.layer = 2
+	$TopCamera.layer = 1
 	$CountdownPlayer.play()
 	
 func _start_racing_game():
@@ -208,9 +216,9 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		var tmp_layer = $WorldEnvironment/SplitScreen.layer
-		$WorldEnvironment/SplitScreen.layer = $WorldEnvironment/TopCamera.layer
-		$WorldEnvironment/TopCamera.layer = tmp_layer
+		var tmp_layer = $SplitScreen.layer
+		$SplitScreen.layer = $TopCamera.layer
+		$TopCamera.layer = tmp_layer
 	if event.is_action_pressed("ui_cancel"):
 		for car in cars.values():
 			_respawn_car(car)
@@ -225,14 +233,14 @@ func _on_car_progress(point, car):
 		car_progress_global_transform[id][point] = car.global_transform.translated(Vector3(0,0,0))
 		if point == track.get_node("ProgressNodes").get_children().size() - 1:
 			car_rounds_completed[id] += 1
-			$WorldEnvironment/SplitScreen._increase_round_count(id)
+			$SplitScreen._increase_round_count(id)
 	if car_rounds_completed[id] == 3 and Global.player_time_to_finish[id] == -1:
 		var time = Global.race_time
 		Global.player_time_to_finish[id] = time
 		# let car self-driving
 		# let camera orbit the car
 		car_race_completed[id] = true
-		$WorldEnvironment/SplitScreen.race_complete(id)
+		$SplitScreen.race_complete(id)
 		
 	var all_have_completed = true
 	var completed_count = 0
@@ -322,7 +330,7 @@ func _exit_player(player_id):
 	var flag = true
 	car_rounds_completed[player_id] = m
 	car_race_exit[player_id] = true
-	$WorldEnvironment/SplitScreen.exit_player(player_id)
+	$SplitScreen.exit_player(player_id)
 	for player_id in car_race_exit:
 		if not car_race_exit[player_id]:
 			flag = false

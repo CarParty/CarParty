@@ -218,7 +218,7 @@ func merge_path_to_node(area_map, track_with_stuff_node):
 
 func test_by_draw(path_3d):
 	var draw = ImmediateGeometry.new()
-	get_parent().get_node("WorldEnvironment").add_child(draw)
+	get_parent().add_child(draw)
 	var m = SpatialMaterial.new()
 	m.vertex_color_use_as_albedo = true
 	draw.set_material_override(m)

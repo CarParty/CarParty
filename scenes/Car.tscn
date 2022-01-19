@@ -400,13 +400,13 @@ bus = "Thunk Sounds"
 
 [node name="Light1" type="SpotLight" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.247687, 0.155711, 0.781425 )
-light_energy = 5.0
+light_energy = 2.0
 spot_range = 50.0
 spot_angle = 60.0
 
 [node name="Light2" type="SpotLight" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.248, 0.156, 0.781 )
-light_energy = 5.0
+light_energy = 2.0
 spot_range = 50.0
 spot_angle = 60.0
 
@@ -436,9 +436,11 @@ material/0 = null
 [node name="TailLight1" type="SpotLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.235354, 0.0549148, -0.775355 )
 light_color = Color( 1, 0, 0, 1 )
+light_indirect_energy = 5.0
 
 [node name="TailLight2" type="SpotLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.235, 0.055, -0.775 )
 light_color = Color( 1, 0, 0, 1 )
+light_indirect_energy = 5.0
 
 [connection signal="body_entered" from="." to="." method="_on_Car_body_entered"]
