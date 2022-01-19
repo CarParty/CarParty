@@ -189,6 +189,8 @@ export class DrawingPhaseComponent extends HTMLElement {
       const savedPath = localStorage.getItem('pathTransmission');
       if (savedPath) {
         this.sendPath(JSON.parse(savedPath));
+      } else {
+        setTimeout(() => this.startTrackDrawing(), 2000);
       }
     } else {
       setTimeout(() => this.startTrackDrawing(), 2000);
