@@ -1,4 +1,3 @@
-import { Point, Track } from './drawing-phase/transportTrack';
 
 export type ClientMessage = LoginMessageI
   | SpeedChangeMessageI
@@ -36,9 +35,7 @@ export type PathProgressUpdateMessageI = {
 
 export type SendPathDataMessageI = {
   action: 'path_transmission';
-  path: Record<string, Point[]>;
   order: string[];
-  retry: number;
   packet_num: number;
   total_num_packets: number;
   encoded_path: string;
@@ -73,9 +70,6 @@ export type CarColorMessageI = {
 };
 
 export type TrackDataMessageI = {
-  action: 'track_transmission';
-  track: Track;
-} | {
   action: 'track_transmission';
   packet_num: number;
   total_num_packets: number;

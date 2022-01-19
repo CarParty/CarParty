@@ -1,5 +1,4 @@
 import { Tween, update } from '@tweenjs/tween.js';
-import { hasOwnProperty } from '../additionalTypes';
 import { Connection } from '../connection';
 import { requestFullscreen } from '../fullscreenUtils';
 import { SendPathDataMessageI } from '../messages';
@@ -130,20 +129,14 @@ export class DrawingPhaseComponent extends HTMLElement {
     setTimeout(() => {
       const trackFragments: string[] = [];
       const unsubscribe = this.connection?.subscribe('track_transmission', (data) => {
-        if (hasOwnProperty(data, 'track')) {
-          // old way
-          this.setupTrack(data.track);
-        } else {
-          // new way
-          trackFragments.push(data.encoded_message);
-          console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments, last received: ${data.packet_num}`, trackFragments);
-          if (trackFragments.length === data.total_num_packets) {
-            const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
-            if (unsubscribe) {
-              unsubscribe();
-            }
-            this.setupTrack(tTrack);
+        trackFragments.push(data.encoded_message);
+        console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments, last received: ${data.packet_num}`, trackFragments);
+        if (trackFragments.length === data.total_num_packets) {
+          const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
+          if (unsubscribe) {
+            unsubscribe();
           }
+          this.setupTrack(tTrack);
         }
       });
       this.connection?.send({ action: 'ready_for_track_json' });
@@ -488,7 +481,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       }
 
       const [convertedPath, areaOrder] = this.convertPath(this.partialPaths);
-      const transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'> = {
+      const transmission: Pick<SendPathDataMessageI, 'action' | 'order'> & { path: Record<string, transportTrack.Point[]> } = {
         action: 'path_transmission',
         path: convertedPath,
         order: areaOrder
@@ -509,7 +502,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     }
   }
 
-  private sendPath(transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'>): void {
+  private sendPath(transmission: Pick<SendPathDataMessageI, 'action' | 'order'> & { path: Record<string, transportTrack.Point[]> }): void {
     // -> prepared for path message splitting (backwards-compatible)
     // ---> godot wants smaller websocket packets
     // -----> encode path, split it by length, transmit it fragment by fragment
@@ -528,7 +521,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     const numFragments = Math.ceil(encodedPath.length / MAX_PAYLOAD_SIZE);
     for (let i = 0; i < numFragments; i++) {
       const fragment = encodedPath.substring(i * MAX_PAYLOAD_SIZE, (i + 1) * MAX_PAYLOAD_SIZE);
-      this.connection?.send({ ...transmission, retry: i, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
+      this.connection?.send({ ...transmission, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
     }
   }
 
