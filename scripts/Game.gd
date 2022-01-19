@@ -185,7 +185,7 @@ func build_racing_tracks():
 	$WorldEnvironment/SplitScreen.setup_for_cars(cars)
 	$WorldEnvironment/SplitScreen.start_timer(cars)
 	$WorldEnvironment/TopCamera/Loading.visible = false
-	$WorldEnvironment/TopCamera/ViewportContainer/Viewport/OverlookingCamera.visible = false
+	$WorldEnvironment/TopCamera/ViewportContainer.visible = false
 	$WorldEnvironment/SplitScreen.layer = 2
 	$WorldEnvironment/TopCamera.layer = 1
 	$CountdownPlayer.play()

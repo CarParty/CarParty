@@ -55,6 +55,7 @@ msaa = 2
 render_target_update_mode = 3
 
 [node name="OverlookingCamera" type="Camera" parent="WorldEnvironment/TopCamera/ViewportContainer/Viewport"]
+visible = false
 
 [node name="Loading" parent="WorldEnvironment/TopCamera" instance=ExtResource( 7 )]
 visible = false
