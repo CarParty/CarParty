@@ -23,7 +23,6 @@ func _setup_client():
 	Global.clients = []
 	Global.player_names = {}
 	_server = WebSocketClient.new()
-	_server.set_buffers(64, 1000, 64, 1000)
 	# Connect base signals to get notified of connection open, close, and errors.
 	Client._server.connect("connection_closed", self, "_closed")
 	Client._server.connect("connection_error", self, "_closed")
