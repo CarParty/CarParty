@@ -122,6 +122,7 @@ func _process(_delta):
 		current_running_thread = generate_track()
 	
 	if current_running_thread != null and current_running_thread.is_valid():
+		print("thread running")
 		please_end_process_loop = false
 		var time_start = OS.get_ticks_msec()
 		var time_now = time_start
