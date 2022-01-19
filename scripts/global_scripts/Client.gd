@@ -142,7 +142,6 @@ func send_global_message_by_chunk(action: String, message: Dictionary):
 			"encoded_message": part_packet
 		}
 		var bytes: PoolByteArray = JSON.print(json).to_utf8()
-		print(JSON.print(json))
 		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 		_server.get_peer(1).put_packet(bytes)
 		i = next_i
