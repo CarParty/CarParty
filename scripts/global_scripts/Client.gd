@@ -57,7 +57,6 @@ func send_client_message(action: String, data: Dictionary, client_id: String):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
-	print("Sent message: "+packet.get_string_from_utf8())
 	
 func start_phase_player(phase: String, player_id: String):
 	var message: Dictionary
