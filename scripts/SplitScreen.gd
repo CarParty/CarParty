@@ -28,6 +28,7 @@ var player_label = {}
 var player_time_label = {}
 var player_round_label = {}
 var player_standing_label = {}
+var player_standing_st_label = {}
 var players_cars_map_local
 var players_camera_visual_layer = {}
 var players_complete_race = {}
@@ -91,6 +92,10 @@ func start_timer(players_cars_map):
 	dynamic_font.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
 	var dynamic_font_2 : DynamicFont = DynamicFont.new()
 	dynamic_font_2.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+	var font_standing : DynamicFont = DynamicFont.new()
+	font_standing.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+	var font_standing_st : DynamicFont = DynamicFont.new()
+	font_standing_st.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
 	for player_name in players_cars_map:
 		var player_viewport = player_viewports[player_name]
 		
@@ -119,16 +124,15 @@ func start_timer(players_cars_map):
 		time_label.add_constant_override("shadow_offset_x",2)
 		time_label.add_constant_override("shadow_offset_y",2)
 		time_label.add_constant_override("shadow_as_outline",0)
-		time_label.align = Label.ALIGN_LEFT
-		time_label.valign = Label.VALIGN_BOTTOM
 		# time_label.rect_size = player_viewport.rect_size
 		time_label.margin_left = player_viewport.rect_size.x / 10
 		time_label.margin_right = player_viewport.rect_size.x
 		time_label.margin_top = 0
 		time_label.margin_bottom = player_viewport.rect_size.y - player_viewport.rect_size.y / 10
-		player_viewport.add_child(time_label)
+		#player_viewport.add_child(time_label)
 		player_time_label[player_name] = time_label
 
+		# Player name
 		var name_label: Label = Label.new()
 		name_label.text = Global.player_names[player_name]
 		name_label.add_font_override("font", dynamic_font_2)
@@ -136,14 +140,8 @@ func start_timer(players_cars_map):
 		name_label.add_constant_override("shadow_offset_x",2)
 		name_label.add_constant_override("shadow_offset_y",2)
 		name_label.add_constant_override("shadow_as_outline",0)
-		name_label.align = Label.ALIGN_RIGHT
-		name_label.valign = Label.VALIGN_BOTTOM
-		# name_label.rect_size = player_viewport.rect_size
-		name_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-		name_label.margin_left =  0
-		name_label.margin_right = player_viewport.rect_size.x - player_viewport.rect_size.x / 10
-		name_label.margin_top = 0
-		name_label.margin_bottom = player_viewport.rect_size.y - player_viewport.rect_size.y / 10
+		name_label.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 5
+		name_label.rect_position.y = player_viewport.rect_size.y / 12
 		player_viewport.add_child(name_label)
 		
 		# Round
@@ -154,33 +152,39 @@ func start_timer(players_cars_map):
 		round_count.add_constant_override("shadow_offset_x",2)
 		round_count.add_constant_override("shadow_offset_y",2)
 		round_count.add_constant_override("shadow_as_outline",0)
-		round_count.align = Label.ALIGN_LEFT
-		round_count.valign = Label.VALIGN_TOP
-		round_count.rect_size = player_viewport.rect_size
-		round_count.margin_left = player_viewport.rect_size.x / 10
-		round_count.margin_right = player_viewport.rect_size.x
-		round_count.margin_top = player_viewport.rect_size.y / 10
-		round_count.margin_bottom = player_viewport.rect_size.y
+		round_count.rect_position.x = player_viewport.rect_size.x / 18
+		round_count.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 7
 		player_viewport.add_child(round_count)
 		player_round_label[player_name] = round_count
 		
 		# Progress 
 		var player_standing: Label = Label.new()
+		font_standing.size = player_viewport.rect_size.x / 15
 		player_standing.text = "-"
-		player_standing.add_font_override("font", dynamic_font_2)
+		player_standing.add_font_override("font", font_standing)
 		player_standing.add_color_override("font_color_shadow", Color.black)
 		player_standing.add_constant_override("shadow_offset_x",2)
 		player_standing.add_constant_override("shadow_offset_y",2)
-		player_standing.add_constant_override("shadow_as_outline",0)
-		player_standing.align = Label.ALIGN_LEFT
-		player_standing.valign = Label.VALIGN_TOP
-		player_standing.rect_size = player_viewport.rect_size
-		player_standing.margin_left = player_viewport.rect_size.x / 10
-		player_standing.margin_right = player_viewport.rect_size.x
-		player_standing.margin_top = player_viewport.rect_size.y / 5
-		player_standing.margin_bottom = player_viewport.rect_size.y
+		player_standing.add_constant_override("shadow_as_outline",1)
+		player_standing.valign = Label.VALIGN_BOTTOM
+		player_standing.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 8
+		player_standing.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 5
 		player_viewport.add_child(player_standing)
 		player_standing_label[player_name] = player_standing
+		
+		var player_standing_st: Label = Label.new()
+		font_standing_st.size = player_viewport.rect_size.x / 44
+		player_standing_st.text = ""
+		player_standing_st.add_font_override("font", font_standing_st)
+		player_standing_st.add_color_override("font_color_shadow", Color.black)
+		player_standing_st.add_constant_override("shadow_offset_x",2)
+		player_standing_st.add_constant_override("shadow_offset_y",2)
+		player_standing_st.add_constant_override("shadow_as_outline",1)
+		player_standing_st.valign = Label.VALIGN_BOTTOM
+		player_standing_st.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 10
+		player_standing_st.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 5
+		player_viewport.add_child(player_standing_st)
+		player_standing_st_label[player_name] = player_standing_st
 		
 	timer = Timer.new()
 	timer.connect("timeout",self,"_on_timer_timeout") 
@@ -272,7 +276,11 @@ func update_player_progress(progress):
 	progress_sorted.invert()
 	var counter = 1
 	for progress2 in progress_sorted:
-		player_standing_label[reversed_progress[progress2]].text = str(counter) + "."
+		player_standing_label[reversed_progress[progress2]].text = str(counter)
+		if counter < 2:
+			player_standing_st_label[reversed_progress[progress2]].text = 'st'
+		else:
+			player_standing_st_label[reversed_progress[progress2]].text = 'nd'
 		counter += 1
 	
 
