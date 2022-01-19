@@ -44,6 +44,12 @@ export class NamingPhaseComponent extends HTMLElement {
 
     this.buttonEl.addEventListener('click', this.sendName);
     this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.sendName() : null);
+
+    const suppliedName = new URLSearchParams(window.location.search).get('name');
+    if (suppliedName) {
+      this.inputEl.value = suppliedName;
+      setTimeout(this.sendName);
+    }
   }
 
   private sendName = () => {

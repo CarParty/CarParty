@@ -184,7 +184,15 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     this.drawTrack();
 
-    setTimeout(() => this.startTrackDrawing(), 2000);
+    // debug: load a previously saved path
+    if (new URLSearchParams(window.location.search).get('loadPath')) {
+      const savedPath = localStorage.getItem('pathTransmission');
+      if (savedPath) {
+        this.sendPath(JSON.parse(savedPath));
+      }
+    } else {
+      setTimeout(() => this.startTrackDrawing(), 2000);
+    }
   }
 
   private startDraw = (event: MouseEvent | TouchEvent) => {
@@ -473,32 +481,18 @@ export class DrawingPhaseComponent extends HTMLElement {
         this.zoomToBox(this.trackBoundingBox);
       }
 
-      // send path
-      // -> prepared for path message splitting (backwards-compatible)
-      // ---> godot wants smaller websocket packets
-      // -----> encode path, split it by length, transmit it fragment by fragment
-      // -> remove old remains once godot code is updated
       const [convertedPath, areaOrder] = this.convertPath(this.partialPaths);
       const transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'> = {
         action: 'path_transmission',
         path: convertedPath,
         order: areaOrder
       };
-      const encodedPath = JSON.stringify(convertedPath);
 
-      // set something sensible here ...
-      // const MAX_PAYLOAD_SIZE = Number.MAX_SAFE_INTEGER; // transmit as EXACTLY one message PERIOD
-      const MAX_PAYLOAD_SIZE = 16376 - JSON.stringify({ // try to intelligently guess the maximum allowed size
-        ...transmission,
-        retry: 1000, packet_num: 1000, total_num_packets: 1000, encoded_path: ''
-      } as SendPathDataMessageI).length - 100; // 'as SendPathDataMessageI' -> typecheck; 100 -> safety margin
-      // const MAX_PAYLOAD_SIZE = 10000; // should be about fine, not too restrictive, not too careless
-
-      const numFragments = Math.ceil(encodedPath.length / MAX_PAYLOAD_SIZE);
-      for (let i = 0; i < numFragments; i++) {
-        const fragment = encodedPath.substring(i * MAX_PAYLOAD_SIZE, (i + 1) * MAX_PAYLOAD_SIZE);
-        this.connection?.send({ ...transmission, retry: i, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
+      if (new URLSearchParams(window.location.search).get('savePath')) {
+        localStorage.setItem('pathTransmission', JSON.stringify(transmission));
       }
+
+      this.sendPath(transmission);
     } else {
       this.highlightCurrentChunk();
       await this.zoomToBox(this.currentChunk.boundingBox);
@@ -506,6 +500,29 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.resetCurrentPartialPath();
 
       this.drawingEnabled = true;
+    }
+  }
+
+  private sendPath(transmission: Pick<SendPathDataMessageI, 'action' | 'path' | 'order'>): void {
+    // -> prepared for path message splitting (backwards-compatible)
+    // ---> godot wants smaller websocket packets
+    // -----> encode path, split it by length, transmit it fragment by fragment
+    // -> remove old remains once godot code is updated
+
+    const encodedPath = JSON.stringify(transmission.path);
+
+    // set something sensible here ...
+    // const MAX_PAYLOAD_SIZE = Number.MAX_SAFE_INTEGER; // transmit as EXACTLY one message PERIOD
+    const MAX_PAYLOAD_SIZE = 16376 - JSON.stringify({ // try to intelligently guess the maximum allowed size
+      ...transmission,
+      retry: 1000, packet_num: 1000, total_num_packets: 1000, encoded_path: ''
+    } as SendPathDataMessageI).length - 100; // 'as SendPathDataMessageI' -> typecheck; 100 -> safety margin
+    // const MAX_PAYLOAD_SIZE = 10000; // should be about fine, not too restrictive, not too careless
+
+    const numFragments = Math.ceil(encodedPath.length / MAX_PAYLOAD_SIZE);
+    for (let i = 0; i < numFragments; i++) {
+      const fragment = encodedPath.substring(i * MAX_PAYLOAD_SIZE, (i + 1) * MAX_PAYLOAD_SIZE);
+      this.connection?.send({ ...transmission, retry: i, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
     }
   }
 
