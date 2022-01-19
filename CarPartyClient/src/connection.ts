@@ -6,6 +6,7 @@ export class Connection {
   private ws?: WebSocket;
 
   private listeners = new Map<ServerActions, ((data: any/*ServerMessage*/) => void)[]>();
+  private closeListeners: (() => void)[] = [];
 
   constructor() { }
 
@@ -26,6 +27,12 @@ export class Connection {
 
   private onClose = (event: CloseEvent) => {
     console.log(event);
+    this.closeListeners.forEach(sub => sub());
+  }
+
+  public subscribeToClose(listener: () => void): () => void {
+    this.closeListeners.push(listener);
+    return () => this.closeListeners = this.closeListeners.filter(l => l !== listener);
   }
 
   private onError = (event: Event) => {
