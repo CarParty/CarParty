@@ -143,3 +143,11 @@ func _on_Link_pressed():
 	if OS.is_debug_build():
 		url = "staging.car-party.de"
 	OS.shell_open("http://" + url + "/?room=" + Global.key)
+
+
+func _on_First_pressed():
+	Global.track = "First";
+func _on_Forest_pressed():
+	Global.track = "Forest";
+func _on_Eight_pressed():
+	Global.track = "Eight";

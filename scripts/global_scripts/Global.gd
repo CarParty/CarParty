@@ -29,8 +29,12 @@ var clients_ready_for_track_json = []
 var player_path = {}
 var player_time_to_finish = {}
 var race_time = -1
+<<<<<<< HEAD
 
 var isRestart = false
+=======
+var track = "first"
+>>>>>>> 6249257114015dd5debac3b02dd62039dc26872e
 
 
 func _ready():

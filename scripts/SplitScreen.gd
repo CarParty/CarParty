@@ -57,6 +57,16 @@ func _process(delta):
 				continue
 			player_time_label[player_name].text = str_elapsed
 
+func update_viewport_sizes():
+	var num_players = players_cars_map_local.size()
+	var layout = layouts[num_players]
+	var split_width = self.get_node("GridContainer").rect_size.x / layout[0]
+	var split_height = self.get_node("GridContainer").rect_size.y / layout[1]
+	for viewport_node in self.get_node("GridContainer").get_children():
+		viewport_node.set_size(Vector2(split_width, split_height))
+		# viewport_node.get_node("Viewport").set_size(Vector2(split_width, split_height))
+	
+
 func setup_for_cars(players_cars_map):
 	players_cars_map_local = players_cars_map
 	var num_players = players_cars_map.size()
@@ -67,6 +77,8 @@ func setup_for_cars(players_cars_map):
 	var split_height = self.get_node("GridContainer").rect_size.y / layout[1]
 	
 	self.get_node("GridContainer").columns = layout[0]
+
+	get_tree().get_root().connect("size_changed", self, "update_viewport_sizes")
 
 	for player_name in players_cars_map:
 		var player_viewport = viewport.instance()
