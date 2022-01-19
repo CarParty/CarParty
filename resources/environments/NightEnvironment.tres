@@ -10,3 +10,5 @@ background_mode = 2
 background_sky = SubResource( 22 )
 background_sky_orientation = Basis( 1, 0, 0, 0, 0.34202, 0.939693, 0, -0.939693, 0.34202 )
 background_energy = 0.8
+glow_enabled = true
+glow_hdr_threshold = 2.0
