@@ -13,6 +13,7 @@ var car_race_exit = {}
 var player_progress = {}
 
 var race_started = false
+var draw_finished = false
 
 var cameras = []
 var camera_counter = 0
@@ -111,6 +112,7 @@ func _process(_delta):
 			start_draw_countdown()
 		if finished_tracks.size() == cars.size():
 			draw_isCountdown = false
+			draw_finished = true
 			finished_tracks.clear()
 			current_running_thread = build_racing_tracks()		
 		
@@ -306,6 +308,8 @@ func _drift_car(player_id, pressed):
 		cars[player_id].get_node("Wheel3").set_friction_slip(3)
 
 func _exit_player(player_id):
+	if not draw_finished:
+		return
 	var m = 100
 	var flag = true
 	car_rounds_completed[player_id] = m
