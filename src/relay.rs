@@ -87,7 +87,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
 
     if login_message.action == Login::LoginServer {
         // Create new channels for this sender
-        let (mpsc_sender, mut mpsc_reciever) = mpsc::channel(32);
+        let (mpsc_sender, mut mpsc_reciever) = mpsc::channel(2048);
         let (watch_sender, watch_reciever) = watch::channel(Message::Text("".to_string()));
         // Update channels
         {
