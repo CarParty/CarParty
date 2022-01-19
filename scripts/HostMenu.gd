@@ -28,8 +28,14 @@ func _ready():
 	Client.connect("addPlayerName", self, "addPlayerName")
 	Client.connect("rmPlayerName", self, "rmPlayerName")
 	
+	if OS.is_debug_build():
+		$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link.text = "staging.car-party.de"
+	
 func load_qr_code():
-	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=Q&margin=0&data=https://xn--bci0938m.ml/?room=" + Global.key)
+	var url = "car-party.de"
+	if OS.is_debug_build():
+		url = "staging.car-party.de"
+	$HTTPRequest.request("https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=Q&margin=0&data=https://" + url + "/?room=" + Global.key)
 
 
 func _qrcode_request_completed(result, response_code, _headers, body):
@@ -130,4 +136,7 @@ func rmPlayerName(id):
 
 
 func _on_Link_pressed():
-	OS.shell_open("http://car-party.de/?room=" + Global.key)
+	var url = "car-party.de"
+	if OS.is_debug_build():
+		url = "staging.car-party.de"
+	OS.shell_open("http://" + url + "/?room=" + Global.key)

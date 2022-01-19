@@ -27,12 +27,15 @@ var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
 
+
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/TrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/HillyTrackWithStuff.tscn"
 var track
 
 var current_running_thread = null
+# the thread can request to end the process loop for this _process
+var please_end_process_loop = false
 
 func _ready():
 	track = load(track_path).instance()
@@ -121,11 +124,15 @@ func _process(_delta):
 		current_running_thread = generate_track()
 	
 	if current_running_thread != null and current_running_thread.is_valid():
+		print("thread running")
+		please_end_process_loop = false
 		var time_start = OS.get_ticks_msec()
 		var time_now = time_start
 		while (time_now - time_start) < 10 and current_running_thread is GDScriptFunctionState and current_running_thread.is_valid():
 			current_running_thread = current_running_thread.resume()
 			time_now = OS.get_ticks_msec()
+			if please_end_process_loop:
+				break
 	if race_started:
 		var step = 1
 		var path_step = 0.001
@@ -155,11 +162,16 @@ func generate_track():
 		yield()
 		transform_result = transform_result.resume()
 
-	var track_dict = {"track": transform_result[0]}
+	var track_dict = transform_result[0]
 	
 	$PathGenerator.set_vertices_and_areas(transform_result[1], transform_result[2])
 
-	Client.send_global_message("track_transmission", track_dict)
+	var sending_result = Client.send_global_message_by_chunk("track_transmission", track_dict)
+	while sending_result is GDScriptFunctionState and sending_result.is_valid():
+		please_end_process_loop = true
+		yield()
+		sending_result = sending_result.resume()
+
 	$WorldEnvironment/TopCamera/Loading.visible = false
 	$WorldEnvironment/TopCamera/DrawingPhaseOverlay.visible = true
 

@@ -34,20 +34,20 @@ func transform_track(track_meshes: Dictionary, track_node: Spatial):
 		for area in draw_area_node.get_children():
 			shapes[area.name][tag] = []
 		var mesh = track_meshes[tag].mesh
-		var mdt = MeshDataTool.new()
-		mdt.create_from_surface(mesh, 0)
+		var triangle_mesh = mesh.generate_triangle_mesh()
 		var yield_count = 0
-		for face_id in mdt.get_face_count():
+		var faces = mesh.get_faces()
+		for face_id in range(len(faces) / 3):
+			face_id = face_id * 3
+			var face = [faces[face_id], faces[face_id + 1], faces[face_id + 2]]
+
 			yield_count += 1
 			if yield_count == 500:
 				yield()
 				yield_count = 0
-			#print(mdt.get_face_normal(face_id).y)
-			#if mdt.get_face_normal(face_id).y < 0:
-			#	continue
 			var vertices = []
 			for i in [0, 1, 2]:
-				var vertex_local_space = mdt.get_vertex(mdt.get_face_vertex(face_id, i))
+				var vertex_local_space = face[i]
 				vertices.append(track_meshes[tag].to_global(vertex_local_space))
 			# double for is not quadratic time becuase 3 vertices only
 			for area in draw_area_node.get_children():

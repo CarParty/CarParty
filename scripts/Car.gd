@@ -65,6 +65,7 @@ func change_speed(value):
 		else:
 			brake_mult = 1.0
 
+var previous_closest_offset = null
 func _physics_process(delta):
 	var velocity = self.linear_velocity.length()
 	$MotorNoise.pitch_scale = velocity / 15.0 + 1.0
@@ -83,11 +84,14 @@ func _physics_process(delta):
 	#print(path_follow_translation)
 	
 	var closest_offset = path.curve.get_closest_offset(path.to_local(self.get_global_transform().origin))
-	
-	if engine_force >= -0.5:
-		path_follow.offset = closest_offset + follow_length
-	else:
-		path_follow.offset = closest_offset - follow_length
+	if previous_closest_offset == null:
+		previous_closest_offset = closest_offset
+	if abs(previous_closest_offset - closest_offset) < 10:
+		if engine_force >= -0.5:
+			path_follow.offset = closest_offset + follow_length
+		else:
+			path_follow.offset = closest_offset - follow_length
+	previous_closest_offset = closest_offset
 	
 	# move ahead the pathfollow
 	#while (path_follow_translation - projected_translation).length() < follow_length:

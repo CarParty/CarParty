@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://resources/fonts/Clickuper.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://scripts/HostMenu.gd" type="Script" id=2]
@@ -49,6 +49,9 @@ font_data = ExtResource( 1 )
 [sub_resource type="DynamicFont" id=9]
 size = 30
 font_data = ExtResource( 1 )
+
+[sub_resource type="ButtonGroup" id=14]
+resource_name = "map"
 
 [node name="HostMenu" type="Control"]
 anchor_right = 1.0
@@ -252,6 +255,80 @@ text = "Waiting For 0 .."
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Map Selection" type="MarginContainer" parent="."]
+margin_left = 100.0
+margin_top = 300.0
+margin_right = 500.0
+margin_bottom = 880.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Map Selection"]
+margin_right = 400.0
+margin_bottom = 580.0
+
+[node name="Map Seletion" type="Label" parent="Map Selection/VBoxContainer"]
+margin_right = 400.0
+margin_bottom = 59.0
+size_flags_horizontal = 3
+size_flags_vertical = 0
+custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
+custom_constants/shadow_offset_x = 5
+custom_constants/shadow_offset_y = 5
+custom_fonts/font = SubResource( 8 )
+text = "Map:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Map" type="VBoxContainer" parent="Map Selection/VBoxContainer"]
+margin_top = 63.0
+margin_right = 189.0
+margin_bottom = 580.0
+rect_pivot_offset = Vector2( 99, 85 )
+size_flags_horizontal = 0
+size_flags_vertical = 3
+
+[node name="First" type="Button" parent="Map Selection/VBoxContainer/Map"]
+margin_right = 189.0
+margin_bottom = 46.0
+rect_pivot_offset = Vector2( 189, 119 )
+custom_fonts/font = SubResource( 9 )
+toggle_mode = true
+pressed = true
+group = SubResource( 14 )
+text = "First"
+
+[node name="Forest" type="Button" parent="Map Selection/VBoxContainer/Map"]
+margin_top = 50.0
+margin_right = 189.0
+margin_bottom = 96.0
+rect_pivot_offset = Vector2( 116, -38 )
+custom_fonts/font = SubResource( 9 )
+toggle_mode = true
+group = SubResource( 14 )
+text = "Forest"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Eight" type="Button" parent="Map Selection/VBoxContainer/Map"]
+margin_top = 100.0
+margin_right = 189.0
+margin_bottom = 146.0
+custom_fonts/font = SubResource( 9 )
+toggle_mode = true
+group = SubResource( 14 )
+text = "Eigth"
+
+[node name="Night" type="CheckButton" parent="Map Selection/VBoxContainer/Map"]
+margin_top = 150.0
+margin_right = 189.0
+margin_bottom = 198.0
+custom_fonts/font = SubResource( 9 )
+text = "Night "
 
 [node name="FadeIn" parent="." instance=ExtResource( 5 )]
 visible = false

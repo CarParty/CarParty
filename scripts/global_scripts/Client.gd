@@ -29,6 +29,7 @@ func _setup_client():
 	Client._server.connect("connection_established", self, "_connected")
 	Client._server.connect("data_received", self, "_on_data")
 
+
 func connect_to_url():
 	var err = _server.connect_to_url(websocket_url)
 	if err != OK:
@@ -56,7 +57,6 @@ func send_client_message(action: String, data: Dictionary, client_id: String):
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
-	print("Sent message: "+packet.get_string_from_utf8())
 	
 func start_phase_player(phase: String, player_id: String):
 	var message: Dictionary
@@ -118,8 +118,54 @@ func _connected(proto = ""):
 	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 	_server.get_peer(1).put_packet(packet)
 	# print("Sent message: "+packet.get_string_from_utf8())
+	
+	
+func send_global_message_by_chunk(action: String, message: Dictionary):
+	var packet: String = JSON.print(message)
+	var chars_per_packet = 5000
+	#warning-ignore:integer_division
+	var total_num_packets = (len(packet) / chars_per_packet) + 1
+	var i = 0
+	var poll_counter = 0
+	while i * chars_per_packet < len(packet):
+		if poll_counter >= 1:
+			yield()
+			poll_counter = 0
+		var next_i = i + 1
+		var last_char = min(next_i * chars_per_packet, len(packet))
+		var part_packet = packet.substr(i * chars_per_packet, last_char - (i * chars_per_packet))
+
+		var json = {
+			"action": action,
+			"packet_num": i,
+			"total_num_packets": total_num_packets,
+			"encoded_message": part_packet
+		}
+		var bytes: PoolByteArray = JSON.print(json).to_utf8()
+		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+		_server.get_peer(1).put_packet(bytes)
+		i = next_i
+		poll_counter += 1
 
 
+func sort_packets_by_id(a, b):
+	return a.packet_num < b.packet_num
+
+var partial_packets = {}
+func track_message_handler(data: Dictionary):
+	var client_id = data.client_id
+	if not client_id in partial_packets:
+		partial_packets[client_id] = []
+	partial_packets[client_id].append(data)
+	if len(partial_packets[client_id]) == partial_packets[client_id][0].total_num_packets:
+		partial_packets[client_id].sort_custom(self, "sort_packets_by_id")
+		var final_packet = ""
+		for packet in partial_packets[client_id]:
+			final_packet += packet.encoded_path
+		var packet_json = JSON.parse(final_packet).result
+		Global.player_path[client_id] = packet_json
+		print(packet_json)
+	
 func _on_data():
 	# Print the received packet, you MUST always use get_peer(1).get_packet
 	# to receive data from server, and not get_packet diClient connectedrectly when not
@@ -160,8 +206,7 @@ func _on_data():
 				Global.clients_ready_for_track_json.append(parsed_data.client_id)
 				print("Client ready for track json:", parsed_data.client_id)
 			"path_transmission":
-				Global.player_path[parsed_data.client_id] = parsed_data.path
-				print("Client submited path: "+str(parsed_data.client_id))
+				track_message_handler(parsed_data)
 			"reset_car":
 				emit_signal("respawn_car",parsed_data.client_id)
 			"drift_car":
@@ -172,7 +217,6 @@ func _on_data():
 				print("Action not implemented: "+str(parsed_data))
 	else:
 		print("Error: received packet had no action field!")
-		
 	
 func restart_at_hostmenu():
 	for client_id in Global.player_names:
@@ -182,7 +226,6 @@ func restart_at_hostmenu():
 		send_client_message("color_transmission", player_color, client_id)
 		emit_signal("addPlayerName",client_id, Global.player_names[client_id])
 		start_phase_player("waiting", client_id)
-	
 	
 func _process(_delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
