@@ -56,9 +56,10 @@ export class NamingPhaseComponent extends HTMLElement {
     // try to request full-screen
     requestFullscreen();
 
-    let name = this.inputEl.value;
+    const name = this.inputEl.value;
     if (!name || name.trim().length === 0) {
-      name = navigator.userAgent;
+      this.inputEl.value = navigator.userAgent;
+      return;
     }
     this.appendTextNode(`sending player name ${name}`);
     console.log('sending player name', this.connection);

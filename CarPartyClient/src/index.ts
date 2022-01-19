@@ -1,4 +1,5 @@
 import './car-party.component';
+import './disconnect-modal/disconnectModal.component';
 import './drawing-phase/drawingPhase.component';
 import './drawing-phase/help-modal/helpModal.component';
 import './ending-phase/endingPhase.component';
