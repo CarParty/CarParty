@@ -45,6 +45,13 @@ func _ready():
 		world_environment.set_environment(tres)
 		track.add_child(world_environment)
 		track.get_node("DirectionalLight").visible = false
+	else:
+		var tres = load("resources/environments/DayEnvironment.tres")
+		var world_environment = WorldEnvironment.new()
+		world_environment.set_environment(tres)
+		track.add_child(world_environment)
+		track.get_node("DirectionalLight").visible = true
+		
 
 	spawnPoints = track.get_node("CarPositions").get_children()
 	cameras.append(track.get_node("Camera"))
