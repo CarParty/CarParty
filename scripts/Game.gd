@@ -26,11 +26,9 @@ var draw_isTimeout = false
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
-
-
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/HillyTrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/"+Global.track+"TrackWithStuff.tscn"
 var track
 
 var current_running_thread = null

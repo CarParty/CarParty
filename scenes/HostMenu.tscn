@@ -337,4 +337,7 @@ visible = false
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link" to="." method="_on_Link_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
+[connection signal="pressed" from="Map Selection/VBoxContainer/Map/First" to="." method="_on_First_pressed"]
+[connection signal="pressed" from="Map Selection/VBoxContainer/Map/Forest" to="." method="_on_Forest_pressed"]
+[connection signal="pressed" from="Map Selection/VBoxContainer/Map/Eight" to="." method="_on_Eight_pressed"]
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]

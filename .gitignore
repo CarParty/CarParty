@@ -15,4 +15,4 @@ data_*/
 .DS_Store
 
 # windows...
-.ini
+*.ini
