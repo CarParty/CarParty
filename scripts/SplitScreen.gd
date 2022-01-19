@@ -23,6 +23,8 @@ const layouts = {
 	16: [4, 4],
 }
 
+
+
 var player_viewports = {}
 var player_label = {}
 var player_time_label = {}
@@ -30,6 +32,7 @@ var player_round_label = {}
 var player_standing_label = {}
 var player_standing_ending_label = {}
 var player_countdown_label = {}
+var player_standing_node = {}
 var players_cars_map_local
 var players_camera_visual_layer = {}
 var players_complete_race = {}
@@ -108,12 +111,15 @@ func start_timer(players_cars_map):
 	dynamic_font.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
 	var dynamic_font_2 : DynamicFont = DynamicFont.new()
 	dynamic_font_2.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
-	var font_standing : DynamicFont = DynamicFont.new()
-	font_standing.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
-	var font_standing_st : DynamicFont = DynamicFont.new()
-	font_standing_st.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+	
+	var font_round_count_big : DynamicFont = DynamicFont.new()
+	font_round_count_big.font_data = load("res://resources/fonts/Segment14.otf")
+	var font_round_count_small : DynamicFont = DynamicFont.new()
+	font_round_count_small.font_data = load("res://resources/fonts/Segment14.otf")
 	for player_name in players_cars_map:
 		var player_viewport = player_viewports[player_name]
+		font_round_count_big.size = max(player_viewport.rect_size.y, player_viewport.rect_size.x) / 18
+		font_round_count_small.size = max(player_viewport.rect_size.y, player_viewport.rect_size.x) / 25	
 		
 		# Countdown
 		dynamic_font.size = player_viewport.rect_size.x / 3
@@ -165,33 +171,61 @@ func start_timer(players_cars_map):
 		# Player name
 		var name_label: Label = Label.new()
 		name_label.text = Global.player_names[player_name]
-		name_label.add_font_override("font", dynamic_font_2)
+		name_label.add_font_override("font", font_round_count_big)
 		name_label.add_color_override("font_color_shadow", Color.black)
 		name_label.add_constant_override("shadow_offset_x",2)
 		name_label.add_constant_override("shadow_offset_y",2)
 		name_label.add_constant_override("shadow_as_outline",0)
-		name_label.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 5
+		name_label.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 4
 		name_label.rect_position.y = player_viewport.rect_size.y / 12
 		player_viewport.add_child(name_label)
 		
+		
 		# Round
-		var round_count: Label = Label.new()
-		round_count.text = "1/3"
-		round_count.add_font_override("font", dynamic_font_2)
-		round_count.add_color_override("font_color_shadow", Color.black)
-		round_count.add_constant_override("shadow_offset_x",2)
-		round_count.add_constant_override("shadow_offset_y",2)
-		round_count.add_constant_override("shadow_as_outline",0)
-		round_count.rect_position.x = player_viewport.rect_size.x / 18
-		round_count.rect_position.y = player_viewport.rect_size.y - player_viewport.rect_size.y / 7
+		var round_count = load("res://scenes/utility/RoundCount.tscn").instance()
+		var round_count_label1 = round_count.get_node("PanelContainer/HBoxContainer/VBoxContainer2/Label1")
+		var round_count_label2 = round_count.get_node("PanelContainer/HBoxContainer/VBoxContainer/Label2")
+		var texture_rect: TextureRect = round_count.get_node("PanelContainer/HBoxContainer/TextureRect")
+		texture_rect.rect_min_size.x = player_viewport.rect_size.x / 18
+		texture_rect.rect_min_size.y = player_viewport.rect_size.y / 16
+		round_count_label1.add_font_override("font", font_round_count_big)
+		round_count_label1.add_color_override("font_color_shadow", Color.black)
+		round_count_label1.add_constant_override("shadow_offset_x",2)
+		round_count_label1.add_constant_override("shadow_offset_y",2)
+		round_count_label1.add_constant_override("shadow_as_outline",0)
+		round_count_label2.add_font_override("font", font_round_count_small)
+		round_count_label2.add_color_override("font_color_shadow", Color.black)
+		round_count_label2.add_constant_override("shadow_offset_x",2)
+		round_count_label2.add_constant_override("shadow_offset_y",2)
+		round_count_label2.add_constant_override("shadow_as_outline",0)
+		round_count.position = Vector2(player_viewport.rect_size.x / 20, player_viewport.rect_size.y - player_viewport.rect_size.y / 5)
 		player_viewport.add_child(round_count)
-		player_round_label[player_name] = round_count
+		player_round_label[player_name] = round_count.get_node("PanelContainer/HBoxContainer/VBoxContainer2/Label1")
 		
 		
 		var placement_node = load("res://scenes/utility/PlacementText.tscn").instance()
-		placement_node.position = Vector2(player_viewport.rect_size.x / 1920 * 1650,player_viewport.rect_size.x / 1080 * 750)
-		player_standing_label[player_name] = placement_node.get_node("NumberLabel")
-		player_standing_ending_label[player_name] = placement_node.get_node("EndingLabel")
+		placement_node.position = Vector2(player_viewport.rect_size.x / 1920 * 1650,player_viewport.rect_size.y / 1080 * 750)
+		player_standing_label[player_name] = placement_node.get_node("CenterContainer").get_node("HBoxContainer").get_node("NumberLabel")
+		player_standing_ending_label[player_name] = placement_node.get_node("CenterContainer").get_node("HBoxContainer").get_node("EndingLabel")
+		player_standing_node[player_name] = placement_node
+		player_standing_label[player_name].text = ":"
+		player_standing_ending_label[player_name].text = "-"
+		var font1 : DynamicFont = DynamicFont.new()
+		font1.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+		var font2 : DynamicFont = DynamicFont.new()
+		font2.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
+		font1.size = int(player_viewport.rect_size.x / 10)
+		font2.size = int(player_viewport.rect_size.x / 60)
+		player_standing_label[player_name].add_font_override("font", font1)
+		player_standing_label[player_name].add_color_override("font_color_shadow", Color.black)
+		player_standing_label[player_name].add_constant_override("shadow_offset_x",2)
+		player_standing_label[player_name].add_constant_override("shadow_offset_y",2)
+		player_standing_label[player_name].add_constant_override("shadow_as_outline",1)
+		player_standing_ending_label[player_name].add_font_override("font", font2)
+		player_standing_ending_label[player_name].add_color_override("font_color_shadow", Color.black)
+		player_standing_ending_label[player_name].add_constant_override("shadow_offset_x",2)
+		player_standing_ending_label[player_name].add_constant_override("shadow_offset_y",2)
+		player_standing_ending_label[player_name].add_constant_override("shadow_as_outline",1)
 		player_viewport.add_child(placement_node)
 		
 		
@@ -218,12 +252,12 @@ func _on_timer_timeout():
 func _increase_round_count(player_id):
 	var current_label = player_round_label[player_id].text
 	var resulting_label
-	if current_label == "1/3":
-		resulting_label = "2/3"
-	elif current_label == "2/3":
-		resulting_label = "3/3"
+	if current_label == "1":
+		resulting_label = "2"
+	elif current_label == "2":
+		resulting_label = "3"
 	else:
-		resulting_label = "3/3"
+		resulting_label = "3"
 	
 	player_round_label[player_id].text = resulting_label
 
@@ -289,15 +323,7 @@ func update_player_progress(progress):
 	progress_sorted.invert()
 	var counter = 1
 	for progress2 in progress_sorted:
-		player_standing_label[reversed_progress[progress2]].text = str(counter)
-		if counter < 2:
-			player_standing_ending_label[reversed_progress[progress2]].text = 'st'
-		elif counter < 3:
-			player_standing_ending_label[reversed_progress[progress2]].text = 'nd'
-		elif counter < 4:
-			player_standing_ending_label[reversed_progress[progress2]].text = 'rd'
-		else:
-			player_standing_ending_label[reversed_progress[progress2]].text = 'th'
+		player_standing_node[reversed_progress[progress2]].change_placement(counter)
 		counter += 1
 	
 
