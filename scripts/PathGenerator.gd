@@ -31,7 +31,7 @@ func set_vertices_and_areas(in_vertices, in_areas):
 # tag: see the key of track_meshes in 'WorldEnvironment'
 func generate_path4area(path_2d, area_name):
 	var temp_area = areas[area_name]['Area']
-	var max_y = temp_area.to_global(temp_area.get_node("CollisionShape").shape.extents).y
+	var max_y = temp_area.get_node("CollisionShape").to_global(temp_area.get_node("CollisionShape").shape.extents).y
 	var dir = Vector3(0, -1, 0)
 	
 	var path_3d = []
@@ -52,12 +52,12 @@ func generate_path4area(path_2d, area_name):
 		
 		var final_point = null
 		for triangle in vertices[area_name]:
-			for dimension in [0, 2]:
-				var max_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
-				var min_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
-				var dimension_2d = dimension / 2
-				if max_val < point[dimension_2d] || min_val > point[dimension_2d]:
-					break
+			# for dimension in [0, 2]:
+			# 	var max_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
+			# 	var min_val = max(triangle[0][dimension], max(triangle[1][dimension], triangle[2][dimension]))
+			# 	var dimension_2d = dimension / 2
+			# 	if max_val < point[dimension_2d] || min_val > point[dimension_2d]:
+			# 		break
 			var intersect_point = Geometry.ray_intersects_triangle(point_from, dir, triangle[0], triangle[1], triangle[2])
 			if intersect_point is Vector3:
 				if final_point != null and final_point[1] > intersect_point[1]:
