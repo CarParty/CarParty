@@ -30,7 +30,7 @@ var player_path = {}
 var player_time_to_finish = {}
 var race_time = -1
 var track = "first"
-
+var setting = ""
 
 func _ready():
 	var root = get_tree().get_root()

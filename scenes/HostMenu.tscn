@@ -340,4 +340,5 @@ visible = false
 [connection signal="pressed" from="Map Selection/VBoxContainer/Map/First" to="." method="_on_First_pressed"]
 [connection signal="pressed" from="Map Selection/VBoxContainer/Map/Forest" to="." method="_on_Forest_pressed"]
 [connection signal="pressed" from="Map Selection/VBoxContainer/Map/Eight" to="." method="_on_Eight_pressed"]
+[connection signal="toggled" from="Map Selection/VBoxContainer/Map/Night" to="." method="_on_Night_toggled"]
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]

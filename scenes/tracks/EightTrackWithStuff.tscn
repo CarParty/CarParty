@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://assets/tracks/EightTrack.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/tracks/Finish.gd" type="Script" id=2]
 [ext_resource path="res://scenes/tracks/MidPoint.gd" type="Script" id=3]
 [ext_resource path="res://scripts/TrackWithStuffScript.gd" type="Script" id=4]
+[ext_resource path="res://scripts/Track.gd" type="Script" id=5]
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 11.2983, 2.41439, 10.4107 )
@@ -24,14 +25,21 @@ extents = Vector3( 1, 0.304988, 1 )
 
 [sub_resource type="BoxShape" id=7]
 
+[sub_resource type="Curve3D" id=8]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 1.89579, 0, -5.08129, 0, 0, 0, 0, 0, 0, 1.07853, 0, -13.0806, 0, 0, 0, 0, 0, 0, 4.81815, 0, -20.1141, 0, 0, 0, 0, 0, 0, -0.11631, 0, -27.3261, 0, 0, 0, 0, 0, 0, -6.82782, 0, -21.9519, 0, 0, 0, 0, 0, 0, -4.26378, 0, -13.1149, 0, 0, 0, 0, 0, 0, -7.80528, 0, -3.13429, 0, 0, 0, 0, 0, 0, -3.47701, 0, 1.88674 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0 )
+}
+
 [node name="TrackWithStuff2" type="Spatial"]
 script = ExtResource( 4 )
 first_area = "Area2"
 
 [node name="Track" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.91556, -0.951986, -7.49144 )
+script = ExtResource( 5 )
 tags_to_meshes = {
-"Road": "RootNode/Track"
+"Road": "Road"
 }
 
 [node name="Camera" type="Camera" parent="."]
@@ -130,7 +138,7 @@ shape = SubResource( 5 )
 [node name="Texture" type="Spatial" parent="ProgressNodes/Finish"]
 
 [node name="MeshInstance" type="MeshInstance" parent="ProgressNodes/Finish/Texture"]
-transform = Transform( 0.232844, 0, 0, 0, 0.0020965, 0, 2.14204e-08, 0, 0.199664, 0, 0, 0 )
+transform = Transform( 0.232844, 0, 2.98023e-08, 0, 0.0020965, 0, 2.14204e-08, 0, 0.199664, 0, -0.227823, 0 )
 mesh = SubResource( 6 )
 material/0 = null
 
@@ -143,6 +151,12 @@ script = ExtResource( 3 )
 [node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/MidPoint"]
 transform = Transform( 0.812559, 0, 0, 0, 2.39684, 0, 0, 0, 3.28806, 0, 0, -0.311771 )
 shape = SubResource( 7 )
+
+[node name="DefaultPath" type="Path" parent="."]
+curve = SubResource( 8 )
+
+[node name="PathFollow" type="PathFollow" parent="DefaultPath"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.89579, 0, -5.08129 )
 
 [connection signal="body_entered" from="ProgressNodes/Finish" to="ProgressNodes/Finish" method="_on_Finish_body_entered"]
 [connection signal="body_entered" from="ProgressNodes/MidPoint" to="ProgressNodes/MidPoint" method="_on_MidPoint_body_entered"]

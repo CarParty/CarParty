@@ -28,7 +28,7 @@ var player_track_initialized = {}
 var finished_tracks = []
 var scene_path_to_load
 
-onready var track_path = "res://scenes/tracks/"+Global.track+"TrackWithStuff.tscn"
+onready var track_path = "res://scenes/tracks/"+Global.track+Global.setting+"TrackWithStuff.tscn"
 var track
 
 var current_running_thread = null
