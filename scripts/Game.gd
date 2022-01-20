@@ -18,6 +18,8 @@ var draw_finished = false
 var cameras = []
 var camera_counter = 0
 
+var player_progress_cooldown = 0.0
+
 var final_countdown = 60
 var draw_countdown = 60
 var draw_isCountdown = false
@@ -104,7 +106,7 @@ func _ready():
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
 
-func _process(_delta):
+func _process(delta):
 	for client in Global.clients:
 		# only if the car doesn't compelte the race
 		if car_race_completed[client] || car_race_exit[client]:
@@ -144,19 +146,22 @@ func _process(_delta):
 			if please_end_process_loop:
 				break
 	if race_started:
-		var step = 1
-		var path_step = 0.001
-		for client in Global.clients:
-			var position = track.get_node("DefaultPath").get_curve().get_closest_point(cars[client].translation)
-			var local_change = 0
-			while (track.get_node("DefaultPath").get_node("PathFollow").translation - position).length() > step:
-				track.get_node("DefaultPath").get_node("PathFollow").unit_offset += path_step
-				local_change += path_step
-				if local_change >= 1:
-					break
-			if(track.get_node("DefaultPath").get_node("PathFollow").unit_offset < 0.95):
-				player_progress[client] = car_rounds_completed[client] + track.get_node("DefaultPath").get_node("PathFollow").unit_offset
-		$SplitScreen.update_player_progress(player_progress)
+		player_progress_cooldown += delta
+		if player_progress_cooldown >= 0.5:
+			player_progress_cooldown -= 0.0
+			var step = 1
+			var path_step = 0.001
+			for client in Global.clients:
+				var position = track.get_node("DefaultPath").get_curve().get_closest_point(cars[client].translation)
+				var local_change = 0
+				while (track.get_node("DefaultPath").get_node("PathFollow").translation - position).length() > step:
+					track.get_node("DefaultPath").get_node("PathFollow").unit_offset += path_step
+					local_change += path_step
+					if local_change >= 1:
+						break
+				if(track.get_node("DefaultPath").get_node("PathFollow").unit_offset < 0.95):
+					player_progress[client] = car_rounds_completed[client] + track.get_node("DefaultPath").get_node("PathFollow").unit_offset
+			$SplitScreen.update_player_progress(player_progress)
 		
 
 func generate_track():
@@ -308,8 +313,6 @@ func _respawn_car(car):
 	car.linear_velocity = Vector3.ZERO
 	car.engine_force = 0
 	car.brake = 0
-	car.throttle_mult = 0
-	car.brake_mult = 0
 	car.linear_velocity = Vector3.ZERO
 	car.global_transform = car_progress_global_transform[cars_to_client_id[car]][car_progress[cars_to_client_id[car]]].translated(Vector3(0,.2,0))
 	var velocity = Vector3.ZERO

@@ -90,8 +90,6 @@ func _physics_process(delta):
 	else:
 		engine_force = 0.0
 		brake = BRAKE_FORCE
-	
-	print("engine: ", engine_force, " brake: ", brake)
 		
 	
 	# compute distance between pathfollow and this
