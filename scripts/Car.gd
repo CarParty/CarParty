@@ -81,9 +81,6 @@ func _physics_process(delta):
 	elif last_input < 0.0:
 		target_speed = MAX_TARGET_SPEED_REVERSE * last_input
 	
-	print(last_input)
-	print(target_speed)
-		
 	if target_speed > 0 and forward_velocity > -0.5 and target_speed >= forward_velocity:
 		engine_force = ENGINE_FORCE
 		brake = 0.0
