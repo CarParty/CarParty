@@ -61,16 +61,16 @@ func _process(delta):
 			player_time_label[player_name].text = str_elapsed
 
 func update_viewport_sizes():
-	var window_size = OS.window_size
-	var grid_container = self.get_node("GridContainer")
-	var num_players = players_cars_map_local.size()
-	var layout = layouts[num_players]
-	var split_width = window_size.x / layout[0]
-	var split_height = window_size.y / layout[1]
-	for viewport_node in self.get_node("GridContainer").get_children():
-		viewport_node.set_size(Vector2(split_width, split_height))
-		# viewport_node.get_node("Viewport").set_size(Vector2(split_width, split_height))
-	grid_container.set_size(window_size)
+	pass
+	# var window_size = OS.window_size
+	# var grid_container = self.get_node("GridContainer")
+	# var num_players = players_cars_map_local.size()
+	# var layout = layouts[num_players]
+	# grid_container.set_size(window_size)
+	# var split_width = window_size.x / layout[0]
+	# var split_height = window_size.y / layout[1]
+	# for viewport_node in self.get_node("GridContainer").get_children():
+	# 	viewport_node.set_size(Vector2(split_width, split_height))
 	
 
 func setup_for_cars(players_cars_map):
@@ -133,7 +133,10 @@ func start_timer(players_cars_map):
 		label.add_constant_override("shadow_as_outline",1)
 		center.size_flags_vertical = 3
 		center.add_child(label)
-		center.rect_size = player_viewport.rect_size
+		center.rect_size =player_viewport.rect_size
+		center.size_flags_horizontal = 3
+		center.size_flags_vertical = 3
+
 		player_viewport.add_child(center)
 		player_label[player_name] = label
 		
@@ -151,6 +154,8 @@ func start_timer(players_cars_map):
 		time_label.margin_right = player_viewport.rect_size.x
 		time_label.margin_top = 0
 		time_label.margin_bottom = player_viewport.rect_size.y - player_viewport.rect_size.y / 10
+		time_label.size_flags_horizontal = 3
+		time_label.size_flags_vertical = 3
 		#player_viewport.add_child(time_label)
 		player_time_label[player_name] = time_label
 
@@ -165,6 +170,8 @@ func start_timer(players_cars_map):
 		countdown_label.add_constant_override("shadow_as_outline",0)
 		countdown_label.rect_position.x = player_viewport.rect_size.x / 5
 		countdown_label.rect_position.y = player_viewport.rect_size.y / 12
+		countdown_label.size_flags_horizontal = 3
+		countdown_label.size_flags_vertical = 3
 		player_viewport.add_child(countdown_label)
 		player_countdown_label[player_name] = countdown_label
 
@@ -178,6 +185,8 @@ func start_timer(players_cars_map):
 		name_label.add_constant_override("shadow_as_outline",0)
 		name_label.rect_position.x = player_viewport.rect_size.x - player_viewport.rect_size.x / 4
 		name_label.rect_position.y = player_viewport.rect_size.y / 12
+		name_label.size_flags_horizontal = 3
+		name_label.size_flags_vertical = 3
 		player_viewport.add_child(name_label)
 		
 		

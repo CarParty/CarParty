@@ -30,6 +30,7 @@ window/stretch/aspect="expand"
 [global]
 
 physics=false
+ratio=false
 
 [input]
 
@@ -92,6 +93,12 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+quality/filters/sharpen_intensity=0.5
+quality/reflections/texture_array_reflections=false
+quality/reflections/high_quality_ggx=false
+quality/shading/force_vertex_shading=true
+quality/filters/anisotropic_filter_level=2
+quality/subsurface_scattering/quality=0
 environment/default_clear_color=Color( 0.14902, 0.192157, 0.219608, 1 )
-quality/filters/msaa=1
+quality/filters/use_fxaa=true
 environment/default_environment="res://default_env.tres"
