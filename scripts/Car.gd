@@ -3,9 +3,13 @@ extends VehicleBody
 ############################################################
 # behaviour values
 
-export var MAX_ENGINE_FORCE = 180.0
-export var MAX_BRAKE_FORCE = 5.0
+export var ENGINE_FORCE = 130.0
+export var ENGINE_FORCE_REVERSE = 60.0
+export var BRAKE_FORCE = 3.0
 export var MAX_STEER_ANGLE = 0.6
+# the max target speeds before it's infinity
+export var MAX_TARGET_SPEED_FORWARD = 15.0
+export var MAX_TARGET_SPEED_REVERSE = 5.0
 
 export var steer_speed = 5.0
 
@@ -18,9 +22,8 @@ var steer_target = 0.0
 #export var joy_steering = JOY_ANALOG_LX
 #export var steering_mult = -1.0
 export var joy_throttle = JOY_ANALOG_R2
-export var throttle_mult = 0
 export var joy_brake = JOY_ANALOG_L2
-export var brake_mult = 0
+var last_input = 0.0
 
 export var follow_length = 1.5
 
@@ -55,15 +58,7 @@ func set_path_visual_layer(layer):
 	
 
 func change_speed(value):
-	if value+Global.epsilon >= throttle_mult:
-		throttle_mult = value
-		brake_mult = 0
-	else:
-		if ((self.transform.basis * self.linear_velocity).z < 0.7):
-			brake_mult = 0.15
-			throttle_mult = value
-		else:
-			brake_mult = 1.0
+	last_input = value
 
 var previous_closest_offset = null
 func _physics_process(delta):
@@ -73,9 +68,34 @@ func _physics_process(delta):
 
 	if path_follow == null:
 		return
+
+	var forward_velocity = self.get_global_transform().basis.z.dot(self.linear_velocity)
+	
+	var target_speed = 0.0
+	if last_input > 0.95:
+		target_speed = 1e10
+	elif last_input > 0.0:
+		target_speed = MAX_TARGET_SPEED_FORWARD * last_input
+	elif last_input < -0.95:
+		target_speed = -1e10
+	elif last_input < 0.0:
+		target_speed = MAX_TARGET_SPEED_REVERSE * last_input
+	
+	print(last_input)
+	print(target_speed)
 		
-	engine_force = throttle_mult * MAX_ENGINE_FORCE
-	brake = brake_mult * MAX_BRAKE_FORCE
+	if target_speed > 0 and forward_velocity > -0.5 and target_speed >= forward_velocity:
+		engine_force = ENGINE_FORCE
+		brake = 0.0
+	elif target_speed < 0 and forward_velocity < 0.5 and target_speed < forward_velocity:
+		engine_force = -ENGINE_FORCE_REVERSE
+		brake = 0.0
+	else:
+		engine_force = 0.0
+		brake = BRAKE_FORCE
+	
+	print("engine: ", engine_force, " brake: ", brake)
+		
 	
 	# compute distance between pathfollow and this
 	var projected_translation = Vector2(self.get_global_transform().origin.x, self.get_global_transform().origin.z)
@@ -87,7 +107,7 @@ func _physics_process(delta):
 	if previous_closest_offset == null:
 		previous_closest_offset = closest_offset
 	if abs(previous_closest_offset - closest_offset) < 10:
-		if engine_force >= -0.5:
+		if engine_force >= -0.5 or forward_velocity > 0:
 			path_follow.offset = closest_offset + follow_length
 		else:
 			path_follow.offset = closest_offset - follow_length

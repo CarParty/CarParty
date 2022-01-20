@@ -13,6 +13,8 @@ func draw_with_material(material):
 	var path = get_parent()
 	var curve = path.curve
 	material.vertex_color_use_as_albedo = true
+	material.emission_enabled = true
+	material.emission_energy = 2.5
 	set_material_override(material)
 	begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
 	var width = .1
