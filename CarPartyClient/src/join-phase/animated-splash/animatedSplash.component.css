@@ -6,50 +6,6 @@
   /*background-color: lightblue;*/
 }
 
-.carWrp {
-  perspective: 800px;
-  perspective-origin: 100% 0%;
-}
-
-.carCnt {
-  position: relative;
-  width: 200px;
-  height: 100px;
-  top: 100px;
-  left: 50px;
-
-  transform: translateZ(-100px) rotateX(350deg) rotateY(335deg);
-  transform-style: preserve-3d;
-}
-
-.carBg {
-  background-color: #333;
-  filter: drop-shadow(2px 0px 0px #333) drop-shadow(-2px 0px 0px #333)
-    drop-shadow(0px 2px 0px #333) drop-shadow(0px -2px 0px #333)
-    drop-shadow(2px 2px 0px #333) drop-shadow(-2px -2px 0px #333)
-    drop-shadow(-2px 2px 0px #333) drop-shadow(2px -2px 0px #333);
-}
-
-.car {
-  position: absolute;
-  width: 200px;
-  height: 100px;
-  top: 0px;
-  left: 0px;
-  background-color: #9e2a2b;
-  border-radius: 0 10px 0 0;
-  clip-path: polygon(
-    9% 0%,
-    57% 0%,
-    63% 50%,
-    100% 63%,
-    100% 100%,
-    0% 100%,
-    0% 50%
-  );
-  animation: scale 1s linear infinite;
-}
-
 @keyframes scale {
   0% {
     transform: scaleY(1);
@@ -60,47 +16,6 @@
   100% {
     transform: scaleY(1);
   }
-}
-
-.carFront {
-  transform: rotateY(90deg) translateZ(100px);
-  position: absolute;
-  width: 200px;
-  height: 100px;
-  top: 0px;
-  left: 0px;
-  /**background-color: #9e2a2b;**/
-  background-color: blue;
-  border-radius: 0 10px 0 0;
-  clip-path: polygon(
-    9% 0%,
-    57% 0%,
-    63% 50%,
-    100% 63%,
-    100% 100%,
-    0% 100%,
-    0% 50%
-  );
-  /**animation: scale 1s linear infinite;**/
-}
-
-.wheelBoxes {
-  position: absolute;
-}
-
-.wheelBoxFront {
-  clip-path: circle(15px at 50% 50%);
-  width: 30px;
-  height: 30px;
-  z-index: 1;
-  position: absolute;
-  top: 120px;
-  background-color: #333;
-}
-
-.wheels {
-  position: absolute;
-  z-index: 1;
 }
 
 .front,
@@ -331,26 +246,6 @@ scene--cube {
 }
 .cube__face--road {
 }
-
-/*.cube__face--left::before {
-  content: '';
-  display: block;
-  position: relative;
-  top: 5px;
-  left: 5px;
-  width: 190px;
-  height: 90px;
-  background-color: red;
-  clip-path: polygon(
-    9% 0%,
-    57% 0%,
-    63% 50%,
-    100% 63%,
-    100% 100%,
-    0% 100%,
-    0% 50%
-  );
-}*/
 
 .cube__face--front {
   transform: rotateY(0deg) translateZ(100px);
