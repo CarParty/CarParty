@@ -115,6 +115,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                                 return Ok(());
                             },
                             Ok(Message::Text(text)) => {
+                                println!("Recv from Godot: {:?}", text);
                                 watch_sender.send(Message::Text(text))?;
                             }
                             Ok(Message::Ping(data)) => {
