@@ -6,15 +6,14 @@ use serde_json::value::Value;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::{mpsc, watch};
+use tokio::sync::{mpsc, broadcast};
 use tokio::time::{interval, Duration};
-use tokio_stream::{wrappers::WatchStream};
 use tokio_tungstenite::tungstenite::Message;
 
 lazy_static! {
     static ref CLIENT_SENDERS: Arc<Mutex<HashMap<String, mpsc::Sender<Message>>>> =
         Arc::new(Mutex::new(HashMap::new()));
-    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, watch::Receiver<Message>>>> =
+    static ref CLIENT_RECEIVERS: Arc<Mutex<HashMap<String, broadcast::Sender<Message>>>> =
         Arc::new(Mutex::new(HashMap::new()));
 }
 
@@ -87,8 +86,9 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
 
     if login_message.action == Login::LoginServer {
         // Create new channels for this sender
-        let (mpsc_sender, mut mpsc_reciever) = mpsc::channel(2048);
-        let (watch_sender, watch_reciever) = watch::channel(Message::Text("".to_string()));
+        let (mpsc_sender, mut mpsc_reciever) = mpsc::channel(1024);
+        let (broadcast_sender, _) = broadcast::channel(1024);
+        
         // Update channels
         {
             let mut senders_map = CLIENT_SENDERS.lock().unwrap();
@@ -99,7 +99,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                 return Err(eyre!("code already exists: {}", login_message.server_code));
             }
             senders_map.insert(login_message.server_code.to_string(), mpsc_sender);
-            recievers_map.insert(login_message.server_code.to_string(), watch_reciever);
+            recievers_map.insert(login_message.server_code.to_string(), broadcast_sender.clone());
         }
         // Create a timer for pings and pongs
         let mut ping_timer = interval(Duration::from_secs(1));
@@ -115,8 +115,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                                 return Ok(());
                             },
                             Ok(Message::Text(text)) => {
-                                println!("Recv from Godot: {:?}", text);
-                                watch_sender.send(Message::Text(text))?;
+                                broadcast_sender.send(Message::Text(text))?;
                             }
                             Ok(Message::Ping(data)) => {
                                 write.send(Message::Ping(data)).await?;
@@ -152,7 +151,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             recievers_map.remove(&login_message.server_code);
         }
         // Disconnect clients
-        watch_sender.send(Message::Close(None))?;
+        broadcast_sender.send(Message::Close(None))?;
 
         select_result?;
         // Done :)
@@ -161,7 +160,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             .client_id
             .ok_or_else(|| eyre!("client {} has not set its id", addr))?;
         let sender: mpsc::Sender<Message>;
-        let receiver: watch::Receiver<Message>;
+        let mut receiver: broadcast::Receiver<Message>;
         {
             let senders_map = CLIENT_SENDERS.lock().unwrap();
             let recievers_map = CLIENT_RECEIVERS.lock().unwrap();
@@ -172,7 +171,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             receiver = recievers_map
                 .get(&login_message.server_code)
                 .ok_or_else(|| eyre!("server with this code does not exist: {}"))?
-                .clone();
+                .subscribe();
         }
         sender
             .send(Message::Text(serde_json::to_string(
@@ -184,8 +183,6 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             .await?;
         // Create a timer for pings and pongs
         let mut ping_timer = interval(Duration::from_secs(1));
-        
-        let mut watch_stream = WatchStream::new(receiver);
         // Put this into closure to definitely send the disconnect message
         let select_result: Result<()> = async {
             loop {
@@ -222,7 +219,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                             }
                         }
                     }
-                    Some(message) = watch_stream.next() => {
+                    Ok(message) = receiver.recv() => {
                         // The server can basically send anything and the clients will get it.
                         // But if it specifically sends a json map with the field "receiver_id",
                         // then it is not broadcasted but sent to that specific receiver. This
@@ -230,7 +227,6 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                         // meant.
                         match message {
                             Message::Text(text) => {
-                                println!("Sending to {}: {:?}", client_id, text);
                                 match serde_json::from_str(&text) {
                                     Ok(Value::Object(map)) => {
                                         let map = map.clone();
