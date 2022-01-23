@@ -1,10 +1,11 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://assets/tracks/EightTrack.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/tracks/Finish.gd" type="Script" id=2]
 [ext_resource path="res://scenes/tracks/MidPoint.gd" type="Script" id=3]
 [ext_resource path="res://scripts/TrackWithStuffScript.gd" type="Script" id=4]
 [ext_resource path="res://scripts/Track.gd" type="Script" id=5]
+[ext_resource path="res://resources/images/g891.png" type="Texture" id=6]
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 11.2983, 2.41439, 10.4107 )
@@ -21,7 +22,10 @@ extents = Vector3( 2.38411, 1.76003, 1.2325 )
 [sub_resource type="BoxShape" id=5]
 extents = Vector3( 1, 0.304988, 1 )
 
-[sub_resource type="CubeMesh" id=6]
+[sub_resource type="SpatialMaterial" id=9]
+albedo_texture = ExtResource( 6 )
+
+[sub_resource type="CubeMesh" id=10]
 
 [sub_resource type="BoxShape" id=7]
 
@@ -138,8 +142,9 @@ shape = SubResource( 5 )
 [node name="Texture" type="Spatial" parent="ProgressNodes/Finish"]
 
 [node name="MeshInstance" type="MeshInstance" parent="ProgressNodes/Finish/Texture"]
-transform = Transform( 0.232844, 0, 2.98023e-08, 0, 0.0020965, 0, 2.14204e-08, 0, 0.199664, 0, -0.227823, 0 )
-mesh = SubResource( 6 )
+transform = Transform( -0.00116372, 0, 0.0486808, 0, 0.0273447, 0, -0.0148893, 0, 0.218103, -0.000762761, -0.19607, 0.0202964 )
+material_override = SubResource( 9 )
+mesh = SubResource( 10 )
 material/0 = null
 
 [node name="MidPoint" type="Area" parent="ProgressNodes"]
