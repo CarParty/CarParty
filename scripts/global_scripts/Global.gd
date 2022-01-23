@@ -32,7 +32,9 @@ var race_time = -1
 
 var isRestart = false
 var track = "First"
+# Night or day
 var setting = ""
+var setting_outline_color = { "Night": Color.black, "": Color.black}
 
 func _ready():
 	var root = get_tree().get_root()
