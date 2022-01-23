@@ -230,6 +230,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                         // meant.
                         match message {
                             Message::Text(text) => {
+                                println!("Sending to {}: {:?}", client_id, text);
                                 match serde_json::from_str(&text) {
                                     Ok(Value::Object(map)) => {
                                         let map = map.clone();
