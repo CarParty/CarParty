@@ -1,4 +1,3 @@
-use core::ops::Deref;
 use eyre::{eyre, Result};
 use futures_util::{SinkExt, StreamExt};
 use lazy_static::lazy_static;
@@ -9,6 +8,7 @@ use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{mpsc, watch};
 use tokio::time::{interval, Duration};
+use tokio_stream::{wrappers::WatchStream};
 use tokio_tungstenite::tungstenite::Message;
 
 lazy_static! {
@@ -160,7 +160,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             .client_id
             .ok_or_else(|| eyre!("client {} has not set its id", addr))?;
         let sender: mpsc::Sender<Message>;
-        let mut receiver: watch::Receiver<Message>;
+        let receiver: watch::Receiver<Message>;
         {
             let senders_map = CLIENT_SENDERS.lock().unwrap();
             let recievers_map = CLIENT_RECEIVERS.lock().unwrap();
@@ -183,6 +183,8 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
             .await?;
         // Create a timer for pings and pongs
         let mut ping_timer = interval(Duration::from_secs(1));
+        
+        let mut watch_stream = WatchStream::new(receiver);
         // Put this into closure to definitely send the disconnect message
         let select_result: Result<()> = async {
             loop {
@@ -219,12 +221,7 @@ async fn accept_connection(stream: TcpStream) -> Result<()> {
                             }
                         }
                     }
-                    Ok(_) = receiver.changed() => {
-                        let message: Message;
-                        {
-                            let borrow = receiver.borrow_and_update();
-                            message = borrow.deref().clone();
-                        }
+                    Some(message) = watch_stream.next() => {
                         // The server can basically send anything and the clients will get it.
                         // But if it specifically sends a json map with the field "receiver_id",
                         // then it is not broadcasted but sent to that specific receiver. This
