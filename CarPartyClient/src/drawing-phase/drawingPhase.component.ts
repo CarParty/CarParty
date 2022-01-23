@@ -16,6 +16,11 @@ templateEl.innerHTML = template;
 const cssContainer = document.createElement('style');
 cssContainer.textContent = css;
 
+type SavedPath = {
+  order: string[];
+  path: Record<string, transportTrack.Point[]>;
+};
+
 export class DrawingPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
@@ -127,12 +132,14 @@ export class DrawingPhaseComponent extends HTMLElement {
 
     // request and handle track data
     setTimeout(() => {
-      const trackFragments: string[] = [];
+      const trackFragments = new Map<number, string>();
       const unsubscribe = this.connection?.subscribe('track_transmission', (data) => {
-        trackFragments.push(data.encoded_message);
-        console.log(`Currently got ${trackFragments.length}/${data.total_num_packets} fragments, last received: ${data.packet_num}`, trackFragments);
-        if (trackFragments.length === data.total_num_packets) {
-          const tTrack: transportTrack.Track = JSON.parse(trackFragments.join(''));
+        trackFragments.set(data.packet_num, data.encoded_message);
+        console.log(`Currently got ${trackFragments.size}/${data.total_num_packets} fragments, last received: ${data.packet_num}`);
+        if (trackFragments.size === data.total_num_packets) {
+          const trackFragmentsList: string[] = [];
+          trackFragments.forEach(frag => trackFragmentsList.push(frag));
+          const tTrack: transportTrack.Track = JSON.parse(trackFragmentsList.join(''));
           if (unsubscribe) {
             unsubscribe();
           }
@@ -481,8 +488,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       }
 
       const [convertedPath, areaOrder] = this.convertPath(this.partialPaths);
-      const transmission: Pick<SendPathDataMessageI, 'action' | 'order'> & { path: Record<string, transportTrack.Point[]> } = {
-        action: 'path_transmission',
+      const transmission: SavedPath = {
         path: convertedPath,
         order: areaOrder
       };
@@ -502,7 +508,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     }
   }
 
-  private sendPath(transmission: Pick<SendPathDataMessageI, 'action' | 'order'> & { path: Record<string, transportTrack.Point[]> }): void {
+  private sendPath(transmission: SavedPath): void {
     // -> prepared for path message splitting (backwards-compatible)
     // ---> godot wants smaller websocket packets
     // -----> encode path, split it by length, transmit it fragment by fragment
@@ -513,15 +519,14 @@ export class DrawingPhaseComponent extends HTMLElement {
     // set something sensible here ...
     // const MAX_PAYLOAD_SIZE = Number.MAX_SAFE_INTEGER; // transmit as EXACTLY one message PERIOD
     const MAX_PAYLOAD_SIZE = 16376 - JSON.stringify({ // try to intelligently guess the maximum allowed size
-      ...transmission,
-      retry: 1000, packet_num: 1000, total_num_packets: 1000, encoded_path: ''
+      action: 'path_transmission', order: transmission.order, packet_num: 1000, total_num_packets: 1000, encoded_path: ''
     } as SendPathDataMessageI).length - 100; // 'as SendPathDataMessageI' -> typecheck; 100 -> safety margin
     // const MAX_PAYLOAD_SIZE = 10000; // should be about fine, not too restrictive, not too careless
 
     const numFragments = Math.ceil(encodedPath.length / MAX_PAYLOAD_SIZE);
     for (let i = 0; i < numFragments; i++) {
       const fragment = encodedPath.substring(i * MAX_PAYLOAD_SIZE, (i + 1) * MAX_PAYLOAD_SIZE);
-      this.connection?.send({ ...transmission, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
+      this.connection?.send({ action: 'path_transmission', order: transmission.order, packet_num: i, total_num_packets: numFragments, encoded_path: fragment });
     }
   }
 
