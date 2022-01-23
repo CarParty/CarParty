@@ -58,7 +58,7 @@ export class NamingPhaseComponent extends HTMLElement {
 
     const name = this.inputEl.value;
     if (!name || name.trim().length === 0) {
-      this.inputEl.value = navigator.userAgent;
+      this.inputEl.value = "Player";
       return;
     }
     this.appendTextNode(`sending player name ${name}`);
