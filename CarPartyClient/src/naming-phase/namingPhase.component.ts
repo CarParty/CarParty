@@ -17,6 +17,8 @@ export class NamingPhaseComponent extends HTMLElement {
 
   public connection?: Connection;
 
+  private confirmEmpty = false;
+
   static get observedAttributes(): string[] {
     return [];
   }
@@ -50,16 +52,25 @@ export class NamingPhaseComponent extends HTMLElement {
       this.inputEl.value = suppliedName;
       setTimeout(this.sendName);
     }
+
+    setTimeout(() => this.inputEl.focus());
   }
 
   private sendName = () => {
     // try to request full-screen
     requestFullscreen();
 
-    const name = this.inputEl.value;
+    let name = this.inputEl.value;
     if (!name || name.trim().length === 0) {
-      this.inputEl.value = "Player";
-      return;
+      if (!this.confirmEmpty) {
+        this.buttonEl.textContent = 'Use default name?';
+        this.buttonEl.classList.add('btn-warning');
+        this.buttonEl.classList.remove('btn-primary');
+        this.confirmEmpty = true;
+        return;
+      } else {
+        name = 'Player';
+      }
     }
     this.appendTextNode(`sending player name ${name}`);
     console.log('sending player name', this.connection);
