@@ -40,6 +40,9 @@ var timer
 var is_anyone_complete = false
 #default
 var final_countdown = 60
+var final_countdown_twinkling = 2
+var final_twinkling_count = 0
+
 signal start_race
 
 onready var viewport = load("res://scenes/utility/PlayerViewport.tscn")
@@ -162,18 +165,27 @@ func start_timer(players_cars_map):
 
 		# final Countdown 
 		var countdown_label: Label = Label.new()
-		countdown_label.text = ""
+		countdown_label.text = "60"
 		countdown_label.visible = false
-		countdown_label.add_font_override("font", dynamic_font_2)
+#		countdown_label.add_font_override("font", dynamic_font_2)
+		countdown_label.add_font_override("font", dynamic_font)
 		countdown_label.add_color_override("font_color_shadow", Color.black)
-		countdown_label.add_constant_override("shadow_offset_x",2)
-		countdown_label.add_constant_override("shadow_offset_y",2)
+		countdown_label.add_constant_override("shadow_offset_x",player_viewport.rect_size.x/ 80)
+		countdown_label.add_constant_override("shadow_offset_y",player_viewport.rect_size.x/ 80)
 		countdown_label.add_constant_override("shadow_as_outline",0)
-		countdown_label.rect_position.x = player_viewport.rect_size.x / 5
-		countdown_label.rect_position.y = player_viewport.rect_size.y / 12
+#		countdown_label.rect_position.x = player_viewport.rect_size.x / 5
+#		countdown_label.rect_position.y = player_viewport.rect_size.y / 12
 		countdown_label.size_flags_horizontal = 3
 		countdown_label.size_flags_vertical = 3
-		player_viewport.add_child(countdown_label)
+		var center1 = CenterContainer.new()
+		center1.size_flags_vertical = 3
+		center1.add_child(countdown_label)
+		center1.rect_size =player_viewport.rect_size
+		center1.size_flags_horizontal = 3
+		center1.size_flags_vertical = 3
+		player_viewport.add_child(center1)
+		
+#		player_viewport.add_child(countdown_label)
 		player_countdown_label[player_name] = countdown_label
 
 		# Player name
@@ -302,7 +314,7 @@ func start_final_countdown():
 		
 	timer = Timer.new()
 	timer.connect("timeout",self,"_on_timer_final_timeout") 
-	timer.set_wait_time(1) #value is in seconds: 600 seconds = 10 minutes
+	timer.set_wait_time(0.1) #value is in seconds: 600 seconds = 10 minutes
 	timer.set_one_shot(false)
 	add_child(timer) 
 	timer.start() 
@@ -325,14 +337,19 @@ func _add_finish_label(player_id):
 	
 
 func _on_timer_final_timeout():
+	final_twinkling_count += 1
 	for player_name in players_cars_map_local:
-		if(player_countdown_label[player_name].visible):
-			var last_value = int(player_countdown_label[player_name].text)
-			if last_value-1 <= 0:
+		if(not players_complete_race[player_name]):
+			if final_twinkling_count%10 == 0:
+				var last_value = int(player_countdown_label[player_name].text)
+				if last_value-1 <= 0:
+					player_countdown_label[player_name].visible = false
+					timer.stop()
+				else:
+					player_countdown_label[player_name].text = str(last_value-1)
+					player_countdown_label[player_name].visible = true
+			elif final_twinkling_count%10 == final_countdown_twinkling:
 				player_countdown_label[player_name].visible = false
-				timer.stop()
-			else:
-				player_countdown_label[player_name].text = str(last_value-1)
 
 func exit_player(player_id):
 	var dynamic_font : DynamicFont = DynamicFont.new()
