@@ -42,6 +42,9 @@ func _ready():
 	
 func get_unused_color():
 	var unused_colors = subtract(COLORS, used_colors)
+	if not unused_colors:
+		randomize()
+		return Color.from_hsv(randf(), .7, .79)
 	used_colors.append(unused_colors[0])
 	return unused_colors[0]
 

@@ -87,8 +87,8 @@ func _ready():
 		var car = preload("res://scenes/Car.tscn").instance()
 		car.color = Global.player_color[client]
 		self.add_child(car)
-		car.rotation = spawnPoints[index].rotation
-		car.global_transform = spawnPoints[index].global_transform
+		car.rotation = spawnPoints[min(index,len(spawnPoints)-1)].rotation
+		car.global_transform = spawnPoints[min(index,len(spawnPoints)-1)].global_transform
 		cars[client] = car
 		cars_to_client_id[car] = client
 		player_progress[client] = 0

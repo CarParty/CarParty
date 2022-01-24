@@ -45,7 +45,7 @@ length = 0.001
 script = ExtResource( 2 )
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
-rect_pivot_offset = Vector2( 55, 120 )
+rect_rotation = 360.0
 use_top_left = true
 __meta__ = {
 "_edit_use_anchors_": false
