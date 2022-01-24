@@ -67,6 +67,8 @@ export class JoinPhaseComponent extends HTMLElement {
 
       this.startConnection();
     }
+
+    setTimeout(() => this.inputEl.focus());
   }
 
   private submit = () => {

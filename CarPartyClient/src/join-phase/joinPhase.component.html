@@ -1,9 +1,13 @@
 <div id="root" class="full-height">
   <animated-splash></animated-splash>
-  <div id="roomcodeContainer">
-    <div id="roomcodeWrapper" class="d-grid gap-2">
-      <input type="text" id="roomcode" placeholder="ABCD">
-      <button type="submit" id="submitButton">Join!</button>
+  <div class="row">
+    <div class="d-grid gap-2 col-10 mx-auto">
+      <div class="form-floating">
+        <input type="text" class="form-control form-control-xl" id="roomcode" placeholder="" maxlength="4"
+          autocomplete="off">
+        <label for="roomcode">Enter roomcode (ABCD)</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-xl" id="submitButton">Join!</button>
       <button type="button" id="downloadButton" class="btn btn-outline-info">Download <span class="fw-bold">Car
           Party</span> (for shared screen)!</button>
     </div>
