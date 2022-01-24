@@ -57,6 +57,7 @@ export interface ServerActionsMap { // not great, but at least not completely du
   'phase_change': PhaseChangeMessageI;
   'color_transmission': CarColorMessageI;
   'track_transmission': TrackDataMessageI;
+  'vibrate': VibrateMessageI;
 }
 
 export type PhaseChangeMessageI = {
@@ -74,6 +75,11 @@ export type TrackDataMessageI = {
   packet_num: number;
   total_num_packets: number;
   encoded_message: string;
+};
+
+export type VibrateMessageI = {
+  action: 'vibrate';
+  pattern: number[];
 };
 
 export enum Phase {

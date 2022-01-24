@@ -68,6 +68,12 @@ export class CarPartyComponent extends HTMLElement {
       }
     });
 
+    this.connection.subscribe('vibrate', data => {
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(data.pattern);
+      }
+    });
+
     this.switchPhase('join');
   }
 
