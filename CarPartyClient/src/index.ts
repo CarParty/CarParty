@@ -7,6 +7,7 @@ import './join-phase/animated-splash/animatedSplash.component';
 import './join-phase/download-modal/downloadModal.component';
 import './join-phase/joinPhase.component';
 import './naming-phase/namingPhase.component';
+import './overlay-manager/overlayManager.component';
 import './racing-phase/racingPhase.component';
 import './waiting-phase/waitingPhase.component';
 

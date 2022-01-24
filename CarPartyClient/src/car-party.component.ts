@@ -1,11 +1,11 @@
 import template from './car-party.component.html';
 import { Connection } from './connection';
-import { DisconnectModalComponent } from './disconnect-modal/disconnectModal.component';
 import { DrawingPhaseComponent } from './drawing-phase/drawingPhase.component';
 import { EndingPhaseComponent } from './ending-phase/endingPhase.component';
 import { JoinPhaseComponent } from './join-phase/joinPhase.component';
 import { HexColor, Phase } from './messages';
 import { NamingPhaseComponent } from './naming-phase/namingPhase.component';
+import { OverlayService } from './overlay-manager/overlay.service';
 import { RacingPhaseComponent } from './racing-phase/racingPhase.component';
 import { WaitingPhaseComponent } from './waiting-phase/waitingPhase.component';
 
@@ -17,9 +17,6 @@ export type LocalPhase = Phase | 'join';
 export class CarPartyComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
-
-  private disconnectModal: DisconnectModalComponent;
-  private disconnectModalContainer: HTMLElement | null;
 
   private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | RacingPhaseComponent | EndingPhaseComponent;
 
@@ -44,17 +41,13 @@ export class CarPartyComponent extends HTMLElement {
 
     this.connection = new Connection();
 
-    this.disconnectModal = this.shadow.getElementById('disconnectModal') as DisconnectModalComponent;
-    this.disconnectModalContainer = this.shadow.getElementById('disconnectModalContainer');
-    this.disconnectModal.addEventListener('close', () => this.disconnectModalContainer?.classList.remove('show'));
-
     this.root = shadow.getElementById('root');
     if (!this.root) {
       console.error('root not found');
       return;
     }
 
-    this.connection.subscribeToClose(() => this.disconnectModalContainer?.classList.add('show'));
+    this.connection.subscribeToClose(() => OverlayService.Instance.openAsModal(document.createElement('disconnect-modal')));
 
     this.connection.subscribe('phase_change', data => {
       console.log('phase_change', data.phase);

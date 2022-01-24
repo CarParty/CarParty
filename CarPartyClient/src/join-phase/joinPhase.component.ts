@@ -1,5 +1,5 @@
 import { Connection } from '../connection';
-import { DownloadModalComponent } from './download-modal/downloadModal.component';
+import { OverlayService } from './../overlay-manager/overlay.service';
 import css from './joinPhase.component.css';
 import template from './joinPhase.component.html';
 
@@ -16,9 +16,6 @@ export class JoinPhaseComponent extends HTMLElement {
   private buttonEl: HTMLButtonElement;
   private downloadButtonEl: HTMLButtonElement;
   private versionEl: HTMLDivElement;
-
-  private downloadModal: DownloadModalComponent;
-  private downloadModalContainer: HTMLElement | null;
 
   private roomId: string | null = null;
 
@@ -47,10 +44,6 @@ export class JoinPhaseComponent extends HTMLElement {
 
     this.roomId = new URLSearchParams(window.location.search).get('room');
 
-    this.downloadModal = this.shadow.getElementById('downloadModal') as DownloadModalComponent;
-    this.downloadModalContainer = this.shadow.getElementById('downloadModalContainer');
-    this.downloadModal.addEventListener('close', () => this.downloadModalContainer?.classList.remove('show'));
-
     this.root = shadow.getElementById('root');
     if (!this.root) {
       console.error('root not found');
@@ -58,7 +51,7 @@ export class JoinPhaseComponent extends HTMLElement {
     }
 
     this.buttonEl.addEventListener('click', this.submit);
-    this.downloadButtonEl.addEventListener('click', () => this.downloadModalContainer?.classList.add('show'));
+    this.downloadButtonEl.addEventListener('click', () => OverlayService.Instance.openAsModal(document.createElement('download-modal')));
     this.inputEl.addEventListener('keypress', event => event.key === 'Enter' ? this.submit() : null);
 
     if (this.roomId) {
