@@ -30,6 +30,7 @@ var clients_ready_for_track_json = []
 var player_path = {}
 var player_time_to_finish = {}
 var race_time = -1
+var player_finished = []
 
 var isRestart = false
 var track = "First"
@@ -76,6 +77,13 @@ func _deferred_goto_scene(path):
 
 	# Optionally, to make it compatible with the SceneTree.change_scene() API.
 	get_tree().set_current_scene(current_scene)
+	
+func time_to_string(time):
+	var ms = fmod(time,1)*100
+	var seconds = fmod(time,60)
+	var minutes = fmod(time, 3600) / 60
+	var str_elapsed = "%02d:%02d:%02d" % [minutes, seconds, ms]
+	return str_elapsed
 
 func restart():
 #	Client.reset_connection()
@@ -85,11 +93,13 @@ func restart():
 	player_speed = {}
 #	player_color = {}
 	clients_ready_for_track_json = []
+	player_finished = []
 	player_path = {}
 	player_time_to_finish = {}
 	for player_name in player_names:
 		player_speed[player_name]=0
 		player_time_to_finish[player_name]=-1
+		player_path_progress[player_name] = 0
 	race_time = -1
 	isRestart = true
 #	Client.restart_at_hostmenu()
