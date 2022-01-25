@@ -54,7 +54,7 @@ module.exports = env => {
           ]
         },
         {
-          test: /\.(scss)$/,
+          test: /styles\.(scss)$/,
           use: [
             {
               loader: 'file-loader',
@@ -65,6 +65,24 @@ module.exports = env => {
             }, {
               loader: 'extract-loader'
             }, {
+              // Translate CSS into CommonJS modules
+              loader: 'css-loader',
+              options: {
+                esModule: false // I don't really want to set this, but somehow this now became required
+              }
+            }, {
+              // Run postcss actions
+              loader: 'postcss-loader',
+            }, {
+              // Compile Sass to CSS
+              loader: 'sass-loader'
+            }]
+        },
+        {
+          test: /\.(scss)$/,
+          exclude: /styles/,
+          use: [
+            {
               // Translate CSS into CommonJS modules
               loader: 'css-loader',
               options: {
