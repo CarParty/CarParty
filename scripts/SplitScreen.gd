@@ -322,17 +322,17 @@ func start_final_countdown():
 func _add_finish_label(player_id):
 	var finish_font : DynamicFont = DynamicFont.new()
 	finish_font.font_data = load("res://resources/fonts/Clickuper.ttf")
-	finish_font.size = player_viewports[player_id].rect_size.y / 8
-	finish_font.outline_size = player_viewports[player_id].rect_size.y / 120
+	finish_font.size = player_viewports[player_id].rect_size.y / 12
+	finish_font.outline_size = player_viewports[player_id].rect_size.y / 140
 	
 	var finish_label = load("res://scenes/utility/FinishLabel.tscn").instance()
 	finish_label.get_node("Label").add_font_override("font", finish_font)
 	finish_label.rect_size.x = player_viewports[player_id].rect_size.x
 	finish_label.rect_size.y = player_viewports[player_id].rect_size.y
 	finish_label.get_node("TextureRect").rect_min_size.x = player_viewports[player_id].rect_size.x
-	finish_label.get_node("TextureRect").rect_min_size.y = player_viewports[player_id].rect_size.y / 4
+	finish_label.get_node("TextureRect").rect_min_size.y = player_viewports[player_id].rect_size.y / 6
 	finish_label.get_node("Label").rect_min_size.x = player_viewports[player_id].rect_size.x * 3/4
-	finish_label.get_node("Label").rect_min_size.y = player_viewports[player_id].rect_size.y / 4
+	finish_label.get_node("Label").rect_min_size.y = player_viewports[player_id].rect_size.y / 6
 	player_viewports[player_id].add_child(finish_label)
 	
 

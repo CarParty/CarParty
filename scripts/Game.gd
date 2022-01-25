@@ -11,6 +11,7 @@ var car_visual_layer = {}
 var car_race_completed = {}
 var car_race_exit = {}
 var player_progress = {}
+var player_progress_bar = {}
 
 var race_started = false
 var draw_finished = false
@@ -131,10 +132,15 @@ func _process(delta):
 			draw_finished = true
 			finished_tracks.clear()
 			current_running_thread = build_racing_tracks()		
+	
+	if track_was_sent and not draw_finished and player_progress_bar:
+		for client in Global.clients:
+			player_progress_bar[client].get_node("ProgressBar").value = (Global.player_path_progress[client] - 1) * 100 / (track.get_node("DrawAreas").get_child_count())
+				
 		
 	if send_track_now and not track_was_sent:
-		track_was_sent = true
 		current_running_thread = generate_track()
+		track_was_sent = true
 	
 	if current_running_thread != null and current_running_thread.is_valid():
 		please_end_process_loop = false
@@ -189,6 +195,15 @@ func generate_track():
 
 	$TopCamera/Loading.visible = false
 	$TopCamera/DrawingPhaseOverlay.visible = true
+	
+	for client in Global.clients:
+		var progress_bar = load("res://scenes/utility/DrawProgress.tscn").instance()
+		progress_bar.get_node("Label").text = Global.player_names[client]
+		progress_bar.get_node("Label").add_color_override("font_color_shadow", Global.player_color[client])
+		$TopCamera/DrawingPhaseOverlay/CenterContainer/HBoxContainer/PanelContainer/CenterContainer/VBoxContainer.add_child(progress_bar)
+		player_progress_bar[client] = progress_bar
+		
+	
 
 func build_racing_tracks():
 	yield()

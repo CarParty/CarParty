@@ -182,6 +182,7 @@ func _on_data():
 				Global.clients.append(parsed_data.client_id)
 				Global.player_speed[parsed_data.client_id] = 0
 				Global.player_time_to_finish[parsed_data.client_id] = -1
+				Global.player_path_progress[parsed_data.client_id] = 0
 				randomize()
 				Global.player_color[parsed_data.client_id] = Color(Global.get_unused_color())
 				var player_color = {}
@@ -213,6 +214,9 @@ func _on_data():
 				emit_signal("drift_car",parsed_data.client_id, parsed_data.start)
 			"exit":
 				emit_signal("exit_player",parsed_data.client_id)
+			"path_progress_update":
+				Global.player_path_progress[parsed_data.client_id] += 1 
+				print(str(parsed_data))
 			_:
 				print("Action not implemented: "+str(parsed_data))
 	else:

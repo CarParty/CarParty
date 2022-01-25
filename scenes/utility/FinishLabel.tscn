@@ -17,10 +17,10 @@ __meta__ = {
 
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color( 0.768627, 0.768627, 0.768627, 1 )
-margin_top = 150.0
+margin_top = 162.0
 margin_right = 400.0
-margin_bottom = 250.0
-rect_min_size = Vector2( 400, 100 )
+margin_bottom = 237.0
+rect_min_size = Vector2( 400, 75 )
 texture = ExtResource( 1 )
 expand = true
 stretch_mode = 7

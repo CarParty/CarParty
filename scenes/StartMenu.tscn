@@ -42,49 +42,45 @@ margin_right = 1520.0
 margin_bottom = 860.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/Menu"]
-margin_right = 1520.0
-
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/Menu"]
-margin_top = 4.0
 margin_right = 1520.0
-margin_bottom = 324.0
+margin_bottom = 502.0
 rect_min_size = Vector2( 500, 320 )
 texture = ExtResource( 1 )
-expand = true
 stretch_mode = 4
 
 [node name="CenterRow" type="HBoxContainer" parent="MarginContainer/Menu"]
-margin_top = 328.0
+margin_top = 506.0
 margin_right = 1520.0
 margin_bottom = 860.0
 size_flags_vertical = 3
 
 [node name="Buttons" type="VBoxContainer" parent="MarginContainer/Menu/CenterRow"]
 margin_right = 758.0
-margin_bottom = 532.0
+margin_bottom = 354.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/separation = 20
 alignment = 1
 
 [node name="HostGameButton" parent="MarginContainer/Menu/CenterRow/Buttons" instance=ExtResource( 2 )]
-margin_top = 176.0
+margin_top = 87.0
 margin_right = 758.0
-margin_bottom = 256.0
+margin_bottom = 167.0
 rect_min_size = Vector2( 370, 80 )
 size_flags_horizontal = 1
 size_flags_vertical = 1
 shortcut = SubResource( 2 )
 
 [node name="ExitButton" parent="MarginContainer/Menu/CenterRow/Buttons" instance=ExtResource( 5 )]
-margin_top = 276.0
+margin_top = 187.0
 margin_right = 758.0
-margin_bottom = 356.0
+margin_bottom = 267.0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 shortcut = SubResource( 4 )
@@ -92,7 +88,7 @@ shortcut = SubResource( 4 )
 [node name="CenterContainer" type="CenterContainer" parent="MarginContainer/Menu/CenterRow"]
 margin_left = 762.0
 margin_right = 1520.0
-margin_bottom = 532.0
+margin_bottom = 354.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
