@@ -12,8 +12,10 @@ export class OverlayManagerComponent extends HTMLElement {
   private shadow: ShadowRoot;
 
   private modalContainerEl: HTMLDivElement;
+  private overlayContainerEl: HTMLDivElement;
   private backdropEl: HTMLDivElement;
 
+  private overlayType: 'modal' | 'overlay' = 'modal';
   private overlayEl?: HTMLElement;
 
   static get observedAttributes(): string[] {
@@ -35,19 +37,24 @@ export class OverlayManagerComponent extends HTMLElement {
     this.modalContainerEl.classList.add('overlay', 'slide-in-left', 'slide-in-left-center', 'top-50', 'w-100');
     this.shadow.appendChild(this.modalContainerEl);
 
+    this.overlayContainerEl = document.createElement('div');
+    this.overlayContainerEl.classList.add('overlay', 'position-absolute', 'top-50', 'start-50', 'translate-middle', 'h-100', 'w-100', 'fade', 'd-none');
+    this.shadow.appendChild(this.overlayContainerEl);
+
     this.backdropEl = document.createElement('div');
     this.backdropEl.classList.add('backdrop', 'fade', 'd-none');
-    this.backdropEl.addEventListener('click', this.closeModal);
+    this.backdropEl.addEventListener('click', this.close);
     this.shadow.appendChild(this.backdropEl);
 
     OverlayService.Instance.register({
       openModal: element => {
+        this.overlayType = 'modal';
         if (this.overlayEl) {
           this.overlayEl.remove();
         }
         this.overlayEl = element;
         this.overlayEl.classList.add('w-100');
-        this.overlayEl.addEventListener('close', this.closeModal);
+        this.overlayEl.addEventListener('close', this.close);
         this.modalContainerEl.appendChild(this.overlayEl);
 
         this.backdropEl.classList.remove('d-none');
@@ -55,14 +62,33 @@ export class OverlayManagerComponent extends HTMLElement {
           this.backdropEl.classList.add('show');
           this.modalContainerEl.classList.add('show');
         }, 100);
+      }, openOverlay: element => {
+        this.overlayType = 'overlay';
+        if (this.overlayEl) {
+          this.overlayEl.remove();
+        }
+        this.overlayEl = element;
+        this.overlayEl.addEventListener('close', this.close);
+        this.overlayContainerEl.appendChild(this.overlayEl);
+
+        this.overlayContainerEl.classList.remove('d-none');
+        this.backdropEl.classList.remove('d-none');
+        setTimeout(() => {
+          this.backdropEl.classList.add('show');
+          this.overlayContainerEl.classList.add('show');
+        }, 100);
       }
     });
   }
 
-  private closeModal = () => {
-    this.modalContainerEl.classList.remove('show');
+  private close = () => {
+    if (this.overlayType === 'modal') {
+      this.modalContainerEl.classList.remove('show');
+    }
     this.backdropEl.classList.remove('show');
+    this.overlayContainerEl.classList.remove('show');
     setTimeout(() => {
+      this.overlayContainerEl.classList.add('d-none');
       this.backdropEl.classList.add('d-none');
       this.overlayEl?.remove();
     }, 500);

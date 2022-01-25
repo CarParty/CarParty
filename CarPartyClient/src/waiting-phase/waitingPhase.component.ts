@@ -1,5 +1,6 @@
 import { Alignment, Fit, Layout, Rive } from 'rive-js';
 import { Connection } from '../connection';
+import { OverlayService } from '../overlay-manager/overlay.service';
 import Animation from './carjump.riv';
 import css from './waitingPhase.component.css';
 import template from './waitingPhase.component.html';
@@ -45,6 +46,11 @@ export class WaitingPhaseComponent extends HTMLElement {
     });
     riveAnimation.layout = new Layout({ fit: Fit.Cover, alignment: Alignment.Center });
     console.log(riveAnimation);
+
+    // suggest rotation to landscape
+    if (!window.matchMedia('(orientation: landscape)').matches) {
+      OverlayService.Instance.openAsOverlay(document.createElement('rotate-overlay'));
+    }
   }
 
   private appendTextNode(value: string): void {

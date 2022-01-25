@@ -2,6 +2,7 @@ export class OverlayService {
   private static instance: OverlayService;
 
   private openModal?: (element: HTMLElement) => void;
+  private openOverlay?: (element: HTMLElement) => void;
 
   private constructor() { }
 
@@ -15,8 +16,14 @@ export class OverlayService {
     }
   }
 
-  register({ openModal }: { openModal: (element: HTMLElement) => void }): void {
+  public openAsOverlay(element: HTMLElement): void {
+    if (this.openOverlay) {
+      this.openOverlay(element);
+    }
+  }
+
+  register({ openModal, openOverlay }: { openModal: (element: HTMLElement) => void, openOverlay: (element: HTMLElement) => void }): void {
     this.openModal = openModal;
-    console.log('openModal', this.openModal);
+    this.openOverlay = openOverlay;
   }
 }

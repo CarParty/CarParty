@@ -1,0 +1,27 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#icon {
+  animation: rotate 2.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50%,
+  85% {
+    transform: rotate(-90deg);
+  }
+}
+
+.svg-inline--fa.fa-mobile-notch {
+  transform: scale(1);
+}
+.svg-inline--fa.fa-rotate {
+  transform: scale(-0.5, 0.5);
+}

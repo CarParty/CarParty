@@ -9,5 +9,6 @@ import './join-phase/joinPhase.component';
 import './naming-phase/namingPhase.component';
 import './overlay-manager/overlayManager.component';
 import './racing-phase/racingPhase.component';
+import './rotate-overlay/rotateOverlay.component';
 import './waiting-phase/waitingPhase.component';
 
