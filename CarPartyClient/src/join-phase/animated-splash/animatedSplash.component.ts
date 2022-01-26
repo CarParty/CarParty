@@ -1,5 +1,5 @@
-import css from './animatedSplash.component.css';
 import template from './animatedSplash.component.html';
+import css from './animatedSplash.component.scss';
 
 const templateEl = document.createElement('template');
 templateEl.innerHTML = template;

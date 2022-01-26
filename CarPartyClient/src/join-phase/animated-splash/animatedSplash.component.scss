@@ -1,25 +1,17 @@
+@use 'sass:map';
+
+@import './animations.scss';
+
 .content {
   position: relative;
-  width: 475px;
-  height: 250px;
+  width: 400px;
+  height: 350px;
   overflow: hidden;
-  /*background-color: lightblue;*/
+  // background-color: greenyellow;
 }
 
-@keyframes scale {
-  0% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(0.95);
-  }
-  100% {
-    transform: scaleY(1);
-  }
-}
-
-.front,
-.back {
+.wheel-front,
+.wheel-back {
   position: absolute;
   border: 5px solid #333;
   border-radius: 50%;
@@ -29,59 +21,94 @@
   background-color: #e09f3e;
   box-shadow: inset 2px 2px white;
   z-index: 2;
+  animation: spin 0.5s infinite linear;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
-.front {
+.wheel-front {
   left: 130px;
-  animation: spin 0.5s infinite linear;
 }
 
-.back {
+.wheel-back {
   left: 20px;
-  animation: spin 0.5s infinite linear;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+$defaultSceneRotation: (
+  'y': 50deg,
+  'x': -10deg,
+  'z': -10deg,
+);
+/*$defaultSceneRotation: (
+  'y': 90deg,
+  'x': 0deg,
+  'z': -10deg,
+);*/
 
-scene--cube {
-  width: 200px;
-  height: 200px;
-  perspective: 500px;
-}
 .scene {
-  position: absolute;
-  top: 0px;
-  left: 50px;
-  transform-origin: bottom;
-  animation: scale 1s linear infinite;
-}
-.sceneRoad {
-  position: absolute;
-  top: 0px;
-  left: 50px;
-}
-.cube {
-  width: 200px;
-  height: 100px;
   position: relative;
   transform-style: preserve-3d;
-  /**transform: translateZ(-100px) rotateX(350deg) rotateY(335deg);**/
-  /*transform: translateZ(-100px) rotateY(-90deg);**/
-  transform: translateZ(-100px) rotateY(50deg) rotateX(-10deg) rotateZ(-10deg);
+  transform: rotateY(map.get($defaultSceneRotation, 'y'))
+    rotateX(map.get($defaultSceneRotation, 'x'))
+    rotateZ(map.get($defaultSceneRotation, 'z')); // translateZ(-100px);
+  // transform: rotateY(90deg) rotateX(0deg) rotateZ(-10deg) translateZ(-50px);
+  // transform: rotateY(0deg) rotateX(-1deg) rotateZ(0deg);
+  // transform: rotateY(0deg) rotateX(-90deg) rotateZ(0deg) translateZ(200px);
+}
+
+.cube-car {
+  width: 100px;
+  height: 100px;
+  top: 150px;
+  left: 70px;
+  position: absolute;
+  transform-style: preserve-3d;
+  transform-origin: bottom;
+  animation: scale 1s linear infinite;
+
+  @keyframes scale {
+    0%,
+    100% {
+      transform: translateZ(-30px) scaleY(1);
+    }
+    50% {
+      transform: translateZ(-30px) scaleY(0.95);
+    }
+  }
+}
+
+.cube-text-party {
+  width: 300px;
+  height: 100px;
+  top: 100px;
+  left: 0px;
+  position: absolute;
+  transform-style: preserve-3d;
+  animation: bounce-up-down 2s ease-in-out infinite;
+
+  @keyframes bounce-up-down {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
 }
 .cube__face {
   position: absolute;
   border: 2px solid black;
   background-color: #d43437;
 }
-.wheelsNew,
+.wheels,
 .party-text {
   position: absolute;
 }
@@ -89,82 +116,64 @@ scene--cube {
 .cube__face--front {
   width: 100px;
   height: 38px;
-  top: 112px;
-  left: 50px;
+  top: 62px;
+  left: 0px;
 }
 
 .cube__face--back {
   width: 100px;
   height: 100px;
-  top: 50px;
-  left: 50px;
+  top: 0px;
+  left: 0px;
 }
 
 .cube__face--right,
 .cube__face--left,
-.wheelsNew {
+.wheels {
   width: 200px;
   height: 100px;
-  top: 50px;
+  top: 0px;
+  left: -50px;
 }
 
 .party-text {
   width: 200px;
   height: 100px;
-  top: 50px;
+  top: 0px;
 }
 
 .cube__face--top {
   width: 100px;
-  left: 50px;
+  left: 0px;
   height: 98px;
-  top: 51px;
+  top: 1px;
 }
 
 .cube__face--bottom {
   width: 100px;
   height: 200px;
-  left: 50px;
+  left: 0px;
 }
 
 .cube__face--hood {
   width: 100px;
-  left: 50px;
+  left: 0px;
   height: 76px;
-  top: 62px;
+  top: 12px;
 }
 
 .cube__face--window {
   width: 100px;
-  left: 50px;
+  left: 0px;
   height: 51px;
-  top: 70px;
+  top: 20px;
 }
 
 .cube__face--rearwindow {
   width: 100px;
-  left: 50px;
+  left: 0px;
   height: 50px;
-  top: 75px;
-}
-
-.cube__face--road {
-  width: 300px;
-  left: -30px;
-  height: 1000px;
-  top: -400px;
-}
-
-.cube__face--road::before {
-  content: '';
-  position: absolute;
-  width: 10px;
-  left: 150px;
-  height: 100px;
-  top: 50px;
-  background-color: white;
-  box-shadow: 0px 200px white, 0px 400px white, 0px 600px white;
-  animation: move 1s linear infinite reverse;
+  top: 25px;
 }
 
 @keyframes move {
@@ -202,9 +211,6 @@ scene--cube {
 }
 .cube__face--rearwindow {
 }*/
-.cube__face--road {
-  background-color: grey;
-}
 
 .cube__face--front {
 }
@@ -232,7 +238,6 @@ scene--cube {
     0% 100%,
     0% 50%
   );
-  /*background-color: #333;*/
 }
 .cube__face--top {
 }
@@ -243,8 +248,6 @@ scene--cube {
 .cube__face--window {
 }
 .cube__face--rearwindow {
-}
-.cube__face--road {
 }
 
 .cube__face--front {
@@ -257,18 +260,16 @@ scene--cube {
   transform: rotateY(90deg) translateZ(50px);
 }
 .cube__face--left,
-.wheelsNew {
+.wheels {
   transform: rotateY(-90deg) translateZ(50px);
 }
 .party-text {
-  transform: rotateY(-90deg) translateZ(40px) translateX(275px)
-    translateY(-25px);
 }
 .cube__face--top {
   transform: rotateX(90deg) translateY(-33px) translateZ(50px);
 }
 .cube__face--bottom {
-  transform: rotateX(-90deg) translateZ(50px);
+  transform: rotateX(-90deg) translateZ(0px);
 }
 .cube__face--hood {
   transform: rotateX(-100deg) translateY(-62px) translateZ(-5px);
@@ -278,9 +279,6 @@ scene--cube {
 }
 .cube__face--rearwindow {
   transform: rotateX(-19deg) translateY(6px) translateZ(-95px);
-}
-.cube__face--road {
-  transform: rotateX(-90deg) translateZ(65px);
 }
 
 .cube.show-front {
@@ -302,19 +300,32 @@ scene--cube {
   transform: translateZ(-50px) rotateX(90deg);
 }
 
+@font-face {
+  font-family: Sofia;
+  src: url('https://fonts.googleapis.com/css?family=Sofia');
+}
+
 .car-text {
-  font-size: 75px;
+  font-size: 80px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-style: italic;
   font-weight: bold;
   color: black;
-  line-height: 107px;
+  line-height: 115px;
   padding-left: 5px;
+  transform: rotate(15deg);
 }
 .party-text {
-  font-size: 120px;
-  font-style: italic;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 100px;
+  // font-style: italic;
   font-weight: bold;
   color: black;
+}
+.party-text-positioning {
+  transform-style: preserve-3d;
+  transform: translateZ(190px) translateY(-25px) translateX(-10px)
+    rotateY(-90deg);
 }
 
 .car-window {
@@ -340,3 +351,6 @@ scene--cube {
 .car-light-right {
   right: 5px;
 }
+
+@import './road.scss';
+@import './balloons.scss';

@@ -1,0 +1,40 @@
+.cube-road {
+  position: absolute;
+  width: 300px;
+  height: 100px;
+  top: 185px;
+  left: 0px;
+  transform-style: preserve-3d;
+}
+
+.road-face {
+  position: absolute;
+  width: 300px;
+  height: 1000px;
+  top: -400px;
+  left: 50px;
+}
+
+.road-face {
+  border: 2px solid black;
+  background-color: grey;
+}
+
+.road-face {
+  transform: rotateX(-90deg) translateZ(0px);
+}
+
+.road-face::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  left: 150px;
+  height: 100px;
+  top: 50px;
+}
+
+.road-face::before {
+  background-color: white;
+  box-shadow: 0px 200px white, 0px 400px white, 0px 600px white, 0px 800px white;
+  animation: move 1s linear infinite reverse;
+}
