@@ -154,7 +154,7 @@ func _on_Eight_pressed():
 
 
 func _on_Night_toggled(button_pressed):
-	if Global.setting != "Night":
+	if button_pressed:
 		Global.setting = "Night"
 	else:
 		Global.setting = ""

@@ -283,10 +283,7 @@ func _on_car_progress(point, car):
 	if all_have_completed and not scoreboard:
 		scoreboard = true
 		_show_scoreboard()
-		#scene_path_to_load = "res://scenes/Scoreboard.tscn"
-		#$FadeIn.show()
-		#$FadeIn.fade_in()
-	elif (completed_count==1):
+	elif (completed_count==1) and not scoreboard:
 		start_final_countdown()
 		
 func _show_scoreboard():
@@ -345,11 +342,9 @@ func start_final_countdown():
 
 func _final_timeout():
 	print("timeout")
-	_show_scoreboard()
-	#scene_path_to_load = "res://scenes/Scoreboard.tscn"
-	#$FadeIn.show()
-	#$FadeIn.fade_in()
-	pass
+	if not scoreboard:
+		scoreboard = true
+		_show_scoreboard()
 
 func _respawn_car(car):
 	if car_race_completed[cars_to_client_id[car]]||car_race_exit[cars_to_client_id[car]]:
