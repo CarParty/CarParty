@@ -11,6 +11,7 @@
     rotateY(-1 * map.get($defaultSceneRotation, 'y'));
 }
 
+// modified from https://codepen.io/bennettfeely/pen/nbFCp
 .balloon {
   display: inline-block;
   width: 40px;

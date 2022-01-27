@@ -190,6 +190,15 @@ car-party {
   z-index: $zindex-offcanvas;
 }
 
+@font-face {
+  font-family: clickuper;
+  src: url('./../fonts/Clickuper.ttf') format('ttf');
+}
+
+.font-clickuper {
+  font-family: clickuper;
+}
+
 // copy of '../node_modules/bootstrap/scss/root' with the possibility of applying it to other elements, e.g. the root nodes of custom elements
 .fake-root {
   // Note: Custom variable values only support SassScript inside `#{}`.

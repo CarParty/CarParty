@@ -76,7 +76,8 @@ module.exports = env => {
             }, {
               // Compile Sass to CSS
               loader: 'sass-loader'
-            }]
+            }
+          ]
         },
         {
           test: /\.(scss)$/,
@@ -94,7 +95,8 @@ module.exports = env => {
             }, {
               // Compile Sass to CSS
               loader: 'sass-loader'
-            }]
+            }
+          ]
         },
         {
           test: /\.riv$/,
@@ -115,7 +117,8 @@ module.exports = env => {
     output: {
       chunkFilename: '[name].bundle.js',
       filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'dist')
+      path: path.resolve(__dirname, 'dist'),
+      publicPath: '/' // workaround because between css-loader and file-loader they interpret the default value 'auto' as an actual path
     },
     plugins: [
       new CleanWebpackPlugin(),

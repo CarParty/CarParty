@@ -1,7 +1,3 @@
-$primary: #3e3b46;
-
-@import "bootstrap";
-
 #root {
   display: flex;
   flex-direction: column;
