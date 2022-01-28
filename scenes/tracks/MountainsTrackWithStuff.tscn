@@ -1,0 +1,354 @@
+[gd_scene load_steps=34 format=2]
+
+[ext_resource path="res://assets/tracks/MountainsTrack.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/tracks/MidPoint.gd" type="Script" id=2]
+[ext_resource path="res://scripts/TrackWithStuffScript.gd" type="Script" id=3]
+[ext_resource path="res://scenes/tracks/Finish.gd" type="Script" id=4]
+[ext_resource path="res://scripts/Track.gd" type="Script" id=5]
+
+[sub_resource type="Curve3D" id=46]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 17.7725, 38.4567, 24.0482, 0, 0, 0, 0, 0, 0, 3.2519, 39.4014, 4.79924, 0, 0, 0, 0, 0, 0, -13.2133, 42.3006, -19.4041, 0, 0, 0, 0, 0, 0, -26.9356, 43.1967, -34.9193, 0, 0, 0, 0, 0, 0, -27.7584, 42.4866, -43.6585, 0, 0, 0, 0, 0, 0, -50.5785, 44.2367, -74.1354, 0, 0, 0, 0, 0, 0, -56.5702, 71.8796, -57.296, 0, 0, 0, 0, 0, 0, 10.4885, 69.576, -21.7482, 0, 0, 0, 0, 0, 0, 22.2029, 70.9764, -15.1296, 0, 0, 0, 0, 0, 0, 37.0905, 70.3593, -11.7813, 0, 0, 0, 0, 0, 0, 53.1973, 48.7089, -5.98623, 0, 0, 0, 0, 0, 0, 53.1973, 48.7089, -5.98623, 0, 0, 0, 0, 0, 0, 77.4684, 39.9593, -0.520353, 0, 0, 0, 0, 0, 0, 90.532, 29.0522, 5.49066, 0, 0, 0, 0, 0, 0, 101.055, 24.3191, 22.2039, 0, 0, 0, 0, 0, 0, 94.8969, 24.9008, 37.7662, 0, 0, 0, 0, 0, 0, 83.6075, 26.3329, 51.3982, 0, 0, 0, 0, 0, 0, 73.0783, 27.6372, 58.0701, 0, 0, 0, 0, 0, 0, 65.1493, 28.8208, 61.134, 0, 0, 0, 0, 0, 0, 52.8547, 30.8015, 61.7263, 0, 0, 0, 0, 0, 0, 42.2663, 31.7276, 55.5407, 0, 0, 0, 0, 0, 0, 33.1923, 33.7238, 45.9987, 0, 0, 0, 0, 0, 0, 29.2262, 34.7445, 38.3578 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="BoxShape" id=21]
+extents = Vector3( 25.1142, 11.7322, 8.33932 )
+
+[sub_resource type="BoxShape" id=22]
+extents = Vector3( 1.53209, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=35]
+extents = Vector3( 20.0654, 11.7322, 8.33932 )
+
+[sub_resource type="BoxShape" id=36]
+extents = Vector3( 2.06584, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=37]
+extents = Vector3( 18.3322, 11.7322, 12.979 )
+
+[sub_resource type="BoxShape" id=23]
+extents = Vector3( 2.59838, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=24]
+extents = Vector3( 2.49373, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=25]
+extents = Vector3( 17.724, 11.7719, 18.9807 )
+
+[sub_resource type="BoxShape" id=26]
+extents = Vector3( 2.49605, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=38]
+extents = Vector3( 22.5924, 11.7719, 11.5143 )
+
+[sub_resource type="BoxShape" id=39]
+extents = Vector3( 2.49605, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=42]
+extents = Vector3( 22.5924, 9.66367, 11.5143 )
+
+[sub_resource type="BoxShape" id=43]
+extents = Vector3( 3.21247, 1.2774, 1.51371 )
+
+[sub_resource type="BoxShape" id=27]
+extents = Vector3( 19.741, 24.4462, 16.9619 )
+
+[sub_resource type="BoxShape" id=28]
+extents = Vector3( 2.41475, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=40]
+extents = Vector3( 23.3374, 24.4462, 9.97653 )
+
+[sub_resource type="BoxShape" id=41]
+extents = Vector3( 2.41475, 1.2774, 1.37308 )
+
+[sub_resource type="BoxShape" id=29]
+extents = Vector3( 34.1425, 26.4906, 14.3585 )
+
+[sub_resource type="BoxShape" id=30]
+extents = Vector3( 6.44363, 1.2774, 1.8381 )
+
+[sub_resource type="BoxShape" id=31]
+extents = Vector3( 36.4435, 32.304, 17.6846 )
+
+[sub_resource type="BoxShape" id=32]
+extents = Vector3( 2.46076, 1.2774, 1.8381 )
+
+[sub_resource type="BoxShape" id=33]
+extents = Vector3( 27.3894, 32.304, 10.6824 )
+
+[sub_resource type="BoxShape" id=34]
+extents = Vector3( 2.31835, 1.2774, 1.8381 )
+
+[sub_resource type="BoxShape" id=44]
+extents = Vector3( 27.3894, 32.304, 10.6824 )
+
+[sub_resource type="BoxShape" id=45]
+extents = Vector3( 1.11479, 1.2774, 1.55659 )
+
+[sub_resource type="BoxShape" id=20]
+extents = Vector3( 0.389069, 1, 2.22225 )
+
+[sub_resource type="BoxShape" id=17]
+extents = Vector3( 1, 1.16387, 1.80161 )
+
+[node name="MountainsTrackWithStuff" type="Spatial"]
+script = ExtResource( 3 )
+first_area = "Area1"
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 0.980559, -0.029518, -0.193993, 0.0752751, 0.969569, 0.232957, 0.181213, -0.243031, 0.952942, 5.84581, 123.295, 138.971 )
+current = true
+fov = 48.2
+size = 15.0
+far = 1925.7
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 10.1794, 138.791, -0.614575 )
+light_energy = 1.514
+
+[node name="CarPositions" type="Spatial" parent="."]
+transform = Transform( -0.993572, 0, 0.113203, 0, 1, 0, -0.113203, 0, -0.993572, 0, 1.38798, -1.70758 )
+
+[node name="Position1" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.759373, 0, -0.650655, 0, 1, 0, 0.650655, 0, -0.759373, -35.787, 41.2399, -37.4407 )
+
+[node name="Position2" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.759373, 0, -0.650655, 0, 1, 0, 0.650655, 0, -0.759373, -33.6704, 40.948, -39.234 )
+
+[node name="Position3" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.759373, 0, -0.650655, 0, 1, 0, 0.650655, 0, -0.759373, -35.1202, 40.7868, -41.3402 )
+
+[node name="Position4" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.759373, 0, -0.650655, 0, 1, 0, 0.650655, 0, -0.759373, -37.3631, 40.8598, -39.4183 )
+
+[node name="Position5" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711867, 0, 1, 0, 0.711867, 0, -0.702314, -39.2785, 40.4873, -41.2592 )
+
+[node name="Position6" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711866, 0, 1, 0, 0.711866, 0, -0.702314, -37.2134, 40.6799, -43.3524 )
+
+[node name="Position7" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711866, 0, 1, 0, 0.711866, 0, -0.702314, -38.5423, 40.3888, -45.2253 )
+
+[node name="Position8" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711866, 0, 1, 0, 0.711866, 0, -0.702314, -40.6101, 40.4695, -42.9529 )
+
+[node name="Position9" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711866, 0, 1, 0, 0.711866, 0, -0.702314, -42.154, 40.0427, -44.496 )
+
+[node name="Position10" type="Position3D" parent="CarPositions"]
+transform = Transform( -0.702314, 0, -0.711866, 0, 1, 0, 0.711866, 0, -0.702314, -40.3203, 40.1125, -47.136 )
+
+[node name="DefaultPath" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.75351, 0 )
+curve = SubResource( 46 )
+
+[node name="PathFollow" type="PathFollow" parent="DefaultPath"]
+transform = Transform( 0.357393, 0.396272, -0.845719, -0.760446, -0.40224, -0.509831, -0.542213, 0.825332, 0.157585, 17.7725, 38.4567, 24.0482 )
+
+[node name="DrawAreas" type="Spatial" parent="."]
+
+[node name="Area1" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area1"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Area"]
+transform = Transform( -0.609702, 0, 0.792631, 0, 1, 0, -0.792631, 0, -0.609702, 11.9446, 41.3719, 15.4021 )
+shape = SubResource( 21 )
+
+[node name="Finish#Area8" type="Area" parent="DrawAreas/Area1"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area1/Finish#Area8"]
+transform = Transform( 0.845793, 0, 0.533511, 0, 1, 0, -0.533511, 0, 0.845793, -1.43287, 48.7556, -1.49145 )
+shape = SubResource( 22 )
+
+[node name="Area8" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area8"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area8/Area"]
+transform = Transform( -0.553231, 0, 0.833028, 0, 1, 0, -0.833028, 0, -0.553231, -11.173, 41.3719, -16.1319 )
+shape = SubResource( 35 )
+
+[node name="Finish#Area2" type="Area" parent="DrawAreas/Area8"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area8/Finish#Area2"]
+transform = Transform( 0.845793, 0, 0.533511, 0, 1, 0, -0.533511, 0, 0.845793, -21.347, 48.7556, -30.9993 )
+shape = SubResource( 36 )
+
+[node name="Area2" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Area"]
+transform = Transform( -0.673103, 0, 0.73955, 0, 1, 0, -0.73955, 0, -0.673103, -29.2684, 44.1247, -45.3228 )
+shape = SubResource( 37 )
+
+[node name="Finish#Area3" type="Area" parent="DrawAreas/Area2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Finish#Area3"]
+transform = Transform( 0.66704, 0, 0.745022, 0, 1, 0, -0.745022, 0, 0.66704, -46.417, 52.3135, -51.678 )
+shape = SubResource( 23 )
+
+[node name="Finish#Area4" type="Area" parent="DrawAreas/Area2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area2/Finish#Area4"]
+transform = Transform( 0.877271, 0, 0.479994, 0, 1, 0, -0.479994, 0, 0.877271, -30.091, 54.1374, -59.5959 )
+shape = SubResource( 24 )
+
+[node name="Area3" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area3/Area"]
+transform = Transform( -0.417851, 0, 0.908516, 0, 1, 0, -0.908516, 0, -0.417851, -61.8574, 54.3893, -49.2985 )
+shape = SubResource( 25 )
+
+[node name="Finish#Area9" type="Area" parent="DrawAreas/Area3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area3/Finish#Area9"]
+transform = Transform( 0.919828, 0, 0.392321, 0, 1, 0, -0.392321, 0, 0.919828, -66.9519, 64.9747, -30.9586 )
+shape = SubResource( 26 )
+
+[node name="Area9" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area9"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area9/Area"]
+transform = Transform( -0.78786, 0, 0.615855, 0, 1, 0, -0.615855, 0, -0.78786, -51.0229, 54.3893, -20.5858 )
+shape = SubResource( 38 )
+
+[node name="Finish#Area12" type="Area" parent="DrawAreas/Area9"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area9/Finish#Area12"]
+transform = Transform( 0.149673, 0, 0.988735, 0, 1, 0, -0.988735, 0, 0.149673, -34.5235, 64.9747, -10.4172 )
+shape = SubResource( 39 )
+
+[node name="Area12" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area12"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area12/Area"]
+transform = Transform( -0.990548, 0, -0.137167, 0, 1, 0, 0.137167, 0, -0.990548, -15.1922, 68.6589, -13.8615 )
+shape = SubResource( 42 )
+
+[node name="Finish#Area5" type="Area" parent="DrawAreas/Area12"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area12/Finish#Area5"]
+transform = Transform( -0.0161615, 0, 0.999868, 0, 1, 0, -0.999868, 0, -0.0161615, -0.472341, 69.7084, -16.2771 )
+shape = SubResource( 43 )
+
+[node name="Area4" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area4/Area"]
+transform = Transform( -0.814095, 0, 0.580732, 0, 1, 0, -0.580732, 0, -0.814095, -21.6603, 54.3893, -69.4102 )
+shape = SubResource( 27 )
+
+[node name="Finish#Area10" type="Area" parent="DrawAreas/Area4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area4/Finish#Area10"]
+transform = Transform( 0.391759, 0, 0.920067, 0, 1, 0, -0.920067, 0, 0.391759, -0.596001, 74.9649, -70.3203 )
+shape = SubResource( 28 )
+
+[node name="Area10" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area10"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area10/Area"]
+transform = Transform( -0.455062, 0, 0.89046, 0, 1, 0, -0.89046, 0, -0.455062, 11.1169, 54.3893, -53.3108 )
+shape = SubResource( 40 )
+
+[node name="Finish#Area5" type="Area" parent="DrawAreas/Area10"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area10/Finish#Area5"]
+transform = Transform( 0.995861, 0, -0.0908764, 0, 1, 0, 0.0908764, 0, 0.995861, 15.8923, 74.9649, -34.8315 )
+shape = SubResource( 41 )
+
+[node name="Area5" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area5/Area"]
+transform = Transform( -0.982428, 0, 0.186645, 0, 1, 0, -0.186645, 0, -0.982428, 30.2841, 54.3893, -19.4035 )
+shape = SubResource( 29 )
+
+[node name="Finish#Area6" type="Area" parent="DrawAreas/Area5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area5/Finish#Area6"]
+transform = Transform( 0.206768, 0, 0.978389, 0, 1, 0, -0.978389, 0, 0.206768, 59.334, 57.5363, -7.56682 )
+shape = SubResource( 30 )
+
+[node name="Area6" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area6/Area"]
+transform = Transform( -0.723497, 0, 0.690327, 0, 1, 0, -0.690327, 0, -0.723497, 81.1366, 54.3893, 6.69506 )
+shape = SubResource( 31 )
+
+[node name="Finish#Area7" type="Area" parent="DrawAreas/Area6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area6/Finish#Area7"]
+transform = Transform( 0.799716, 0, -0.600378, 0, 1, 0, 0.600378, 0, 0.799716, 94.1443, 35.9406, 38.7268 )
+shape = SubResource( 32 )
+
+[node name="Area7" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area7"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area7/Area"]
+transform = Transform( -0.960011, 0, -0.279963, 0, 1, 0, 0.279963, 0, -0.960011, 74.7831, 35.3747, 51.4736 )
+shape = SubResource( 33 )
+
+[node name="Finish#Area13" type="Area" parent="DrawAreas/Area7"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area7/Finish#Area13"]
+transform = Transform( -0.210045, 0, -0.977691, 0, 1, 0, 0.977691, 0, -0.210045, 52.482, 45.5178, 61.1556 )
+shape = SubResource( 34 )
+
+[node name="Area13" type="Spatial" parent="DrawAreas"]
+
+[node name="Area" type="Area" parent="DrawAreas/Area13"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area13/Area"]
+transform = Transform( -0.655229, 0, 0.755431, 0, 1, 0, -0.755431, 0, -0.655229, 37.6152, 35.3747, 46.5028 )
+shape = SubResource( 44 )
+
+[node name="Finish#Area1" type="Area" parent="DrawAreas/Area13"]
+
+[node name="CollisionShape" type="CollisionShape" parent="DrawAreas/Area13/Finish#Area1"]
+transform = Transform( -0.817195, 0, -0.576361, 0, 1, 0, 0.576361, 0, -0.817195, 24.0047, 45.5178, 30.2829 )
+shape = SubResource( 45 )
+
+[node name="ProgressNodes" type="Spatial" parent="."]
+
+[node name="Finish" type="Area" parent="ProgressNodes"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/Finish"]
+transform = Transform( 0.569021, 0, -0.957774, 0, 1, 0, 0.822323, 0, 0.662748, 28.8855, 42.2042, 38.1686 )
+shape = SubResource( 20 )
+
+[node name="MidPoint" type="Area" parent="ProgressNodes"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="ProgressNodes/MidPoint"]
+transform = Transform( 0.795359, 0, -0.530757, 0, 2.39684, 0, 0.166304, 0, 2.53837, 20.6239, 78.4905, -14.9299 )
+shape = SubResource( 17 )
+
+[node name="Track" parent="." instance=ExtResource( 1 )]
+script = ExtResource( 5 )
+tags_to_meshes = {
+"Road": "RoadSurface"
+}
+
+[connection signal="body_entered" from="ProgressNodes/Finish" to="ProgressNodes/Finish" method="_on_Finish_body_entered"]
+[connection signal="body_entered" from="ProgressNodes/MidPoint" to="ProgressNodes/MidPoint" method="_on_MidPoint_body_entered"]

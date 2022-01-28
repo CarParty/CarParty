@@ -70,6 +70,7 @@ render_target_update_mode = 3
 
 [node name="OverlookingCamera" type="Camera" parent="TopCamera/ViewportContainer/Viewport"]
 visible = false
+far = 4000.0
 
 [node name="Loading" parent="TopCamera" instance=ExtResource( 7 )]
 visible = false
