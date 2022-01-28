@@ -90,9 +90,10 @@ func _ready():
 	
 	for client in Global.clients:
 		camera_counter = 1
-		var car = models[index%3].instance()
+		var carIndex = randi()%3
+		var car = models[carIndex].instance()
 		car.color = Global.player_color[client]
-		car.material_index = material_indices[index%3]
+		car.material_index = material_indices[carIndex]
 		self.add_child(car)
 		car.rotation = spawnPoints[min(index,len(spawnPoints)-1)].rotation
 		car.global_transform = spawnPoints[min(index,len(spawnPoints)-1)].global_transform
