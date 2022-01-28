@@ -86,7 +86,7 @@ func _ready():
 	var index = 0
 	
 	var models = [preload("res://scenes/FirstCar.tscn"), preload("res://scenes/Transporter.tscn"), preload("res://scenes/Forklift.tscn")]
-	var material_indices = [0,3,3]
+	var material_indices = [1,3,3]
 	
 	for client in Global.clients:
 		camera_counter = 1
