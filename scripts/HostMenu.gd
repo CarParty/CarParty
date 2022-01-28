@@ -14,6 +14,9 @@ func gen_unique_string(length: int) -> String:
 	return result
 
 func _ready():
+	$MapSelection/VBoxContainer/Map.get_node(Global.track).set_pressed(true)
+	if(Global.setting == "Night"):
+		$MapSelection/VBoxContainer/Map/Night.set_pressed(true)
 	
 	# guess key until we have a valid one
 	if(not Global.isRestart):
@@ -33,6 +36,7 @@ func _ready():
 	
 	if OS.is_debug_build():
 		$MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link.text = "staging.car-party.de"
+		
 	
 func load_qr_code():
 	var url = "car-party.de"
@@ -119,7 +123,7 @@ func addPlayerName(id, name):
 	
 	var kickButton = Button.new()
 	kickButton.name = id
-	kickButton.text = "kick?"
+	kickButton.text = "kick"
 	kickButton.set("custom_fonts/font", font2)
 	kickButton.size_flags_vertical = false;
 	kickButton.connect("pressed", self, "_kickButton_pressed", [kickButton])
@@ -149,10 +153,10 @@ func _on_First_pressed():
 	Global.track = "First";
 func _on_Forest_pressed():
 	Global.track = "Forest";
+func _on_Mountains_pressed():
+	Global.track = "Mountains";
 func _on_Eight_pressed():
 	Global.track = "Eight";
-func _on_Mountain_pressed():
-	Global.track = "Mountains";
 
 
 func _on_Night_toggled(button_pressed):
