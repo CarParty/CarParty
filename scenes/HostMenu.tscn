@@ -256,7 +256,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Map Selection" type="MarginContainer" parent="."]
+[node name="MapSelection" type="MarginContainer" parent="."]
 margin_left = 100.0
 margin_top = 300.0
 margin_right = 500.0
@@ -265,13 +265,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Map Selection"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MapSelection"]
 margin_right = 400.0
 margin_bottom = 580.0
 
-[node name="Map Seletion" type="Label" parent="Map Selection/VBoxContainer"]
+[node name="MapSeletion" type="Label" parent="MapSelection/VBoxContainer"]
 margin_right = 400.0
 margin_bottom = 59.0
+rect_pivot_offset = Vector2( 156, 197 )
 size_flags_horizontal = 3
 size_flags_vertical = 0
 custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
@@ -283,27 +284,26 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Map" type="VBoxContainer" parent="Map Selection/VBoxContainer"]
+[node name="Map" type="VBoxContainer" parent="MapSelection/VBoxContainer"]
 margin_top = 63.0
-margin_right = 189.0
+margin_right = 191.0
 margin_bottom = 580.0
 rect_pivot_offset = Vector2( 99, 85 )
 size_flags_horizontal = 0
 size_flags_vertical = 3
 
-[node name="First" type="Button" parent="Map Selection/VBoxContainer/Map"]
-margin_right = 189.0
+[node name="First" type="Button" parent="MapSelection/VBoxContainer/Map"]
+margin_right = 191.0
 margin_bottom = 46.0
 rect_pivot_offset = Vector2( 189, 119 )
 custom_fonts/font = SubResource( 9 )
 toggle_mode = true
-pressed = true
 group = SubResource( 14 )
 text = "First"
 
-[node name="Forest" type="Button" parent="Map Selection/VBoxContainer/Map"]
+[node name="Forest" type="Button" parent="MapSelection/VBoxContainer/Map"]
 margin_top = 50.0
-margin_right = 189.0
+margin_right = 191.0
 margin_bottom = 96.0
 rect_pivot_offset = Vector2( 116, -38 )
 custom_fonts/font = SubResource( 9 )
@@ -314,19 +314,29 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Eight" type="Button" parent="Map Selection/VBoxContainer/Map"]
+[node name="Mountains" type="Button" parent="MapSelection/VBoxContainer/Map"]
 margin_top = 100.0
-margin_right = 189.0
+margin_right = 191.0
 margin_bottom = 146.0
+rect_pivot_offset = Vector2( 143, -75 )
 custom_fonts/font = SubResource( 9 )
 toggle_mode = true
 group = SubResource( 14 )
-text = "Eigth"
+text = "Mountain"
 
-[node name="Night" type="CheckButton" parent="Map Selection/VBoxContainer/Map"]
+[node name="Eight" type="Button" parent="MapSelection/VBoxContainer/Map"]
 margin_top = 150.0
-margin_right = 189.0
-margin_bottom = 198.0
+margin_right = 191.0
+margin_bottom = 196.0
+custom_fonts/font = SubResource( 9 )
+toggle_mode = true
+group = SubResource( 14 )
+text = "Eight"
+
+[node name="Night" type="CheckButton" parent="MapSelection/VBoxContainer/Map"]
+margin_top = 200.0
+margin_right = 191.0
+margin_bottom = 248.0
 custom_fonts/font = SubResource( 9 )
 text = "Night "
 
@@ -337,8 +347,9 @@ visible = false
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer2/VBoxContainer/CenterContainer4/HBoxContainer/Link" to="." method="_on_Link_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer2/HBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
-[connection signal="pressed" from="Map Selection/VBoxContainer/Map/First" to="." method="_on_First_pressed"]
-[connection signal="pressed" from="Map Selection/VBoxContainer/Map/Forest" to="." method="_on_Forest_pressed"]
-[connection signal="pressed" from="Map Selection/VBoxContainer/Map/Eight" to="." method="_on_Eight_pressed"]
-[connection signal="toggled" from="Map Selection/VBoxContainer/Map/Night" to="." method="_on_Night_toggled"]
+[connection signal="pressed" from="MapSelection/VBoxContainer/Map/First" to="." method="_on_First_pressed"]
+[connection signal="pressed" from="MapSelection/VBoxContainer/Map/Forest" to="." method="_on_Forest_pressed"]
+[connection signal="pressed" from="MapSelection/VBoxContainer/Map/Mountains" to="." method="_on_Mountains_pressed"]
+[connection signal="pressed" from="MapSelection/VBoxContainer/Map/Eight" to="." method="_on_Eight_pressed"]
+[connection signal="toggled" from="MapSelection/VBoxContainer/Map/Night" to="." method="_on_Night_toggled"]
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]

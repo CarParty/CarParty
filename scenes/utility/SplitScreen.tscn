@@ -8,7 +8,7 @@ layer = 2
 script = ExtResource( 1 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = -3
+layer = -5
 
 [node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
 visible = false

@@ -291,6 +291,7 @@ func _increase_round_count(player_id):
 
 func race_complete(player_id):
 	_add_finish_label(player_id)
+	Global.player_finished.append(player_id)
 	players_complete_race[player_id] = true
 	rotate_camera(player_id)
 	var time = Global.player_time_to_finish[player_id]
@@ -343,6 +344,7 @@ func _on_timer_final_timeout():
 			if final_twinkling_count%10 == 0:
 				var last_value = int(player_countdown_label[player_name].text)
 				if last_value-1 <= 0:
+					Global.player_finished.append(player_name)
 					player_countdown_label[player_name].visible = false
 					timer.stop()
 				else:

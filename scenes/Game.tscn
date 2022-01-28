@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://scenes/tracks/FellOffTrack.gd" type="Script" id=1]
 [ext_resource path="res://scripts/Game.gd" type="Script" id=2]
@@ -19,6 +19,10 @@ size = 80
 font_data = ExtResource( 9 )
 
 [sub_resource type="DynamicFont" id=7]
+size = 50
+font_data = ExtResource( 9 )
+
+[sub_resource type="DynamicFont" id=8]
 size = 50
 font_data = ExtResource( 9 )
 
@@ -50,8 +54,10 @@ shape = SubResource( 4 )
 [node name="TopCamera" type="CanvasLayer" parent="."]
 
 [node name="ViewportContainer" type="ViewportContainer" parent="TopCamera"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+margin_right = 1920.0
+margin_bottom = 1080.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -64,14 +70,15 @@ render_target_update_mode = 3
 
 [node name="OverlookingCamera" type="Camera" parent="TopCamera/ViewportContainer/Viewport"]
 visible = false
+far = 4000.0
 
 [node name="Loading" parent="TopCamera" instance=ExtResource( 7 )]
 visible = false
+anchor_right = 0.0
+anchor_bottom = 0.0
 
 [node name="DrawingPhaseOverlay" type="Control" parent="TopCamera"]
 visible = false
-margin_right = 40.0
-margin_bottom = 40.0
 rect_pivot_offset = Vector2( 506, 524 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -144,5 +151,66 @@ custom_constants/shadow_offset_y = 5
 custom_fonts/font = SubResource( 7 )
 text = "Player Progress"
 
+[node name="FinishPhaseOverlay" type="Control" parent="TopCamera"]
+visible = false
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopCamera/FinishPhaseOverlay"]
+margin_left = 250.0
+margin_top = 175.0
+margin_right = 755.0
+margin_bottom = 322.0
+rect_pivot_offset = Vector2( -1329, -293 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 50
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PanelContainer" type="PanelContainer" parent="TopCamera/FinishPhaseOverlay/VBoxContainer"]
+margin_right = 505.0
+margin_bottom = 66.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_styles/panel = ExtResource( 10 )
+
+[node name="CenterContainer" type="CenterContainer" parent="TopCamera/FinishPhaseOverlay/VBoxContainer/PanelContainer"]
+margin_right = 505.0
+margin_bottom = 66.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopCamera/FinishPhaseOverlay/VBoxContainer/PanelContainer/CenterContainer"]
+margin_right = 505.0
+margin_bottom = 66.0
+
+[node name="Label" type="Label" parent="TopCamera/FinishPhaseOverlay/VBoxContainer/PanelContainer/CenterContainer/VBoxContainer"]
+margin_right = 505.0
+margin_bottom = 66.0
+custom_colors/font_color_shadow = Color( 0.278431, 0.490196, 0.352941, 1 )
+custom_constants/shadow_offset_x = 5
+custom_constants/shadow_offset_y = 5
+custom_constants/shadow_as_outline = 1
+custom_fonts/font = SubResource( 7 )
+text = "Congratulations"
+
+[node name="RestartContainer" type="CenterContainer" parent="TopCamera/FinishPhaseOverlay"]
+margin_right = 1920.0
+margin_bottom = 72.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Restart" type="Button" parent="TopCamera/FinishPhaseOverlay/RestartContainer"]
+margin_left = 837.0
+margin_right = 1082.0
+margin_bottom = 72.0
+custom_fonts/font = SubResource( 8 )
+text = "Restart"
+
 [connection signal="fade_finished" from="FadeIn" to="." method="_on_FadeIn_fade_finished"]
 [connection signal="body_entered" from="FellOffTrack" to="FellOffTrack" method="_on_FellOffTrack_body_entered"]
+[connection signal="pressed" from="TopCamera/FinishPhaseOverlay/RestartContainer/Restart" to="." method="_on_Restart_pressed"]

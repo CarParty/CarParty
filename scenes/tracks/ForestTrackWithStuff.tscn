@@ -57,7 +57,7 @@ extents = Vector3( 0.389069, 1, 1.99901 )
 [sub_resource type="BoxShape" id=17]
 extents = Vector3( 1, 1, 1.08685 )
 
-[node name="HillyTrackWithStuff" type="Spatial"]
+[node name="ForestTrackWithStuff" type="Spatial"]
 script = ExtResource( 4 )
 first_area = "Area1"
 

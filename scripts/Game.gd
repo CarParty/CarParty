@@ -31,6 +31,8 @@ var player_track_initialized = {}
 var finished_tracks = []
 var scene_path_to_load
 
+var scoreboard = false
+
 onready var track_path = "res://scenes/tracks/"+Global.track+"TrackWithStuff.tscn"
 var track
 
@@ -135,7 +137,7 @@ func _process(delta):
 	
 	if track_was_sent and not draw_finished and player_progress_bar:
 		for client in Global.clients:
-			player_progress_bar[client].get_node("ProgressBar").value = (Global.player_path_progress[client] - 1) * 100 / (track.get_node("DrawAreas").get_child_count())
+			player_progress_bar[client].get_node("AspectRatioContainer/ProgressBar").value = (Global.player_path_progress[client] - 1) * 100 / (track.get_node("DrawAreas").get_child_count())
 				
 		
 	if send_track_now and not track_was_sent:
@@ -242,13 +244,16 @@ func generate_path_from_json(client, path):
 
 func _input(event):
 	if event.is_action_pressed("ui_focus_next"):
-		var tmp_layer = $SplitScreen.layer
-		$SplitScreen.layer = $TopCamera.layer
-		$TopCamera.layer = tmp_layer
+		_change_camera()
 	if event.is_action_pressed("ui_cancel"):
 		for car in cars.values():
 			_respawn_car(car)
 		
+func _change_camera():
+	var tmp_layer = $SplitScreen.layer
+	$SplitScreen.layer = $TopCamera.layer
+	$TopCamera.layer = tmp_layer
+
 func _on_car_progress(point, car):
 	var id = cars_to_client_id[car]
 	
@@ -275,12 +280,32 @@ func _on_car_progress(point, car):
 			all_have_completed = false
 		elif not car_race_exit[client]:
 			completed_count += 1
-	if all_have_completed:
-		scene_path_to_load = "res://scenes/Scoreboard.tscn"
-		$FadeIn.show()
-		$FadeIn.fade_in()
-	elif (completed_count==1):
+	if all_have_completed and not scoreboard:
+		scoreboard = true
+		_show_scoreboard()
+	elif (completed_count==1) and not scoreboard:
 		start_final_countdown()
+		
+func _show_scoreboard():
+	_change_camera()
+	var i = 0
+	for client in Global.player_finished:
+		i += 1
+		cars[client].get_node("MotorNoise").set_stream_paused(true)
+		cars[client].get_node("ThunkNoise").set_stream_paused(true)
+		
+		var player_container = load("res://scenes/utility/PlayerContainer.tscn").instance()
+		player_container.get_node("HBoxContainer/AspectRatioContainer/Label3").text = str(i)
+		player_container.get_node("HBoxContainer/AspectRatioContainer2/Label3").text = Global.player_names[client]
+		if Global.player_time_to_finish[client] > 0:
+			player_container.get_node("HBoxContainer/AspectRatioContainer3/Label3").text = Global.time_to_string(Global.player_time_to_finish[client])
+		else:
+			player_container.get_node("HBoxContainer/AspectRatioContainer3/Label3").text = "unfinished"
+		$TopCamera/FinishPhaseOverlay/VBoxContainer.add_child(player_container)		
+		
+	$SplitScreen/GridContainer.visible = false
+	$TopCamera/ViewportContainer.visible = true
+	$TopCamera/FinishPhaseOverlay.visible = true
 
 func start_draw_countdown():
 	draw_isCountdown = true
@@ -317,10 +342,9 @@ func start_final_countdown():
 
 func _final_timeout():
 	print("timeout")
-	scene_path_to_load = "res://scenes/Scoreboard.tscn"
-	$FadeIn.show()
-	$FadeIn.fade_in()
-	pass
+	if not scoreboard:
+		scoreboard = true
+		_show_scoreboard()
 
 func _respawn_car(car):
 	if car_race_completed[cars_to_client_id[car]]||car_race_exit[cars_to_client_id[car]]:
@@ -366,4 +390,15 @@ func _exit_player(player_id):
 	pass
 
 func _on_FadeIn_fade_finished():
-	Global.goto_scene(scene_path_to_load)
+	if scene_path_to_load == "restart":
+		Global.restart()
+	else:
+		Global.goto_scene(scene_path_to_load)
+
+
+func _on_Restart_pressed():
+	scene_path_to_load = "restart"
+	print('restart')
+	$FadeIn.show()
+	$FadeIn.fade_in()
+
