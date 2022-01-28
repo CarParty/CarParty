@@ -28,12 +28,29 @@ export class Rectangle {
   public width: number;
   public height: number;
 
-  get x2(): number {
-    return this.x + this.width;
+  get p1(): Point {
+    return { x: this.x, y: this.y };
   }
 
-  get y2(): number {
-    return this.y + this.height;
+  get p2(): Point {
+    return {
+      x: this.x + this.width * Math.cos(-this.rotation),
+      y: this.y + this.width * Math.sin(-this.rotation)
+    };
+  }
+
+  get p3(): Point {
+    return {
+      x: this.x + this.width * Math.cos(-this.rotation) + this.height * Math.sin(this.rotation),
+      y: this.y + this.width * Math.sin(-this.rotation) + this.height * Math.cos(-this.rotation)
+    };
+  }
+
+  get p4(): Point {
+    return {
+      x: this.x + this.height * Math.sin(this.rotation),
+      y: this.y + this.height * Math.cos(-this.rotation)
+    };
   }
 
   constructor(values: PositionAndSize | BoundingPositions, public rotation: number = 0) {

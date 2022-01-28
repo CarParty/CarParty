@@ -43,19 +43,10 @@ export function convertTransportTrack(tTrack: transportTrack.Track): Track {
       // rotation origin is (x,y)
       // please note that the angle is inverted !
       finish.boundingPolygon = [
-        { x: finish.boundingBox.x, y: finish.boundingBox.y },
-        {
-          x: finish.boundingBox.x + finish.boundingBox.width * Math.cos(-finish.boundingBox.rotation),
-          y: finish.boundingBox.y + finish.boundingBox.width * Math.sin(-finish.boundingBox.rotation)
-        },
-        {
-          x: finish.boundingBox.x + finish.boundingBox.width * Math.cos(-finish.boundingBox.rotation) + finish.boundingBox.height * Math.sin(finish.boundingBox.rotation),
-          y: finish.boundingBox.y + finish.boundingBox.width * Math.sin(-finish.boundingBox.rotation) + finish.boundingBox.height * Math.cos(-finish.boundingBox.rotation)
-        },
-        {
-          x: finish.boundingBox.x + finish.boundingBox.height * Math.sin(finish.boundingBox.rotation),
-          y: finish.boundingBox.y + finish.boundingBox.height * Math.cos(-finish.boundingBox.rotation)
-        },
+        finish.boundingBox.p1,
+        finish.boundingBox.p2,
+        finish.boundingBox.p3,
+        finish.boundingBox.p4,
       ]
     )
   );

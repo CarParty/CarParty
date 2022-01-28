@@ -172,10 +172,10 @@ export class DrawingPhaseComponent extends HTMLElement {
     const boundingBoxes: Rectangle[] = [];
     this.track.chunks.forEach(chunk => boundingBoxes.push(chunk.boundingBox));
     this.trackBoundingBox = boundingBoxes.reduce((r1, r2) => new Rectangle({
-      x1: Math.min(r1.x, r2.x),
-      y1: Math.min(r1.y, r2.y),
-      x2: Math.max(r1.x2, r2.y2),
-      y2: Math.max(r1.y2, r2.y2)
+      x1: Math.min(r1.p1.x, r1.p2.x, r1.p3.x, r1.p4.x, r2.p1.x, r2.p2.x, r2.p3.x, r2.p4.x),
+      y1: Math.min(r1.p1.y, r1.p2.y, r1.p3.y, r1.p4.y, r2.p1.y, r2.p2.y, r2.p3.y, r2.p4.y),
+      x2: Math.max(r1.p1.x, r1.p2.x, r1.p3.x, r1.p4.x, r2.p1.x, r2.p2.x, r2.p3.x, r2.p4.x),
+      y2: Math.max(r1.p1.y, r1.p2.y, r1.p3.y, r1.p4.y, r2.p1.y, r2.p2.y, r2.p3.y, r2.p4.y)
     }));
     this.zoomToBox(this.trackBoundingBox);
 
@@ -258,8 +258,8 @@ export class DrawingPhaseComponent extends HTMLElement {
         const areas = this.track.start.start[0].finish.filter(finish => finish.from === this.track?.start);
         const startBox = areas.length > 0 ? areas[0].boundingBox : undefined ?? this.track.start.boundingBox;
         this.currentPartialPath = [{
-          x: startBox.x + 0.5 * startBox.width,
-          y: startBox.y + 0.5 * startBox.height
+          x: 0.25 * startBox.p1.x + 0.25 * startBox.p2.x + 0.25 * startBox.p3.x + 0.25 * startBox.p4.x,
+          y: 0.25 * startBox.p1.y + 0.25 * startBox.p2.y + 0.25 * startBox.p3.y + 0.25 * startBox.p4.y
         }];
       } else {
         this.currentPartialPath = [];
