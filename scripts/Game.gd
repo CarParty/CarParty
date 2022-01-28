@@ -85,9 +85,11 @@ func _ready():
 	
 	var index = 0
 	
+	var models = [preload("res://scenes/FirstCar.tscn"), preload("res://scenes/Transporter.tscn"), preload("res://scenes/Forklift.tscn")]
+	
 	for client in Global.clients:
 		camera_counter = 1
-		var car = preload("res://scenes/Car.tscn").instance()
+		var car = models[index%3].instance()
 		car.color = Global.player_color[client]
 		self.add_child(car)
 		car.rotation = spawnPoints[min(index,len(spawnPoints)-1)].rotation
