@@ -303,7 +303,7 @@ surfaces/0 = {
 "vertex_count": 46
 }
 
-[node name="Car" type="VehicleBody"]
+[node name="Car2" type="VehicleBody"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
 collision_layer = 2
 collision_mask = 3
@@ -362,10 +362,10 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9.85786e-05, 0 )
 [node name="Body1" type="MeshInstance" parent="CarBody1/CarBody"]
 transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
 mesh = SubResource( 9 )
-material/0 = ExtResource( 5 )
+material/0 = null
 material/1 = null
 material/2 = null
-material/3 = null
+material/3 = ExtResource( 5 )
 
 [node name="NumberPlate1" type="Spatial" parent="."]
 transform = Transform( -1, 8.74228e-08, 7.64274e-15, 8.74228e-08, 1, 8.74228e-08, 0, 8.74228e-08, -1, 0, 0.169901, -0.750001 )
