@@ -63,7 +63,8 @@ func generate_path4area(path_2d, area_name):
 				if final_point != null and final_point[1] > intersect_point[1]:
 					continue
 				final_point = intersect_point
-		path_3d.append(final_point)
+		if final_point != null:
+			path_3d.append(final_point)
 
 # 		var res = null
 # 		if count < 2*TRISEARCHLENGTH:

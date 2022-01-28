@@ -158,6 +158,7 @@ func track_message_handler(data: Dictionary):
 	if not client_id in partial_packets:
 		partial_packets[client_id] = []
 	partial_packets[client_id].append(data)
+	print("Got ", len(partial_packets[client_id]), " packets for ", client_id)
 	if len(partial_packets[client_id]) == partial_packets[client_id][0].total_num_packets:
 		partial_packets[client_id].sort_custom(self, "sort_packets_by_id")
 		var final_packet = ""
@@ -174,7 +175,6 @@ func _on_data():
 	var parsed_data: Dictionary = JSON.parse(data.get_string_from_utf8()).result
 	
 	if parsed_data.has("action"):
-		# print("Received with action: ", parsed_data.action)
 		match parsed_data.action:
 			"connect":
 				if Global.current_scene.name != "HostMenu":

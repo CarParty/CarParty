@@ -151,6 +151,8 @@ func _on_Forest_pressed():
 	Global.track = "Forest";
 func _on_Eight_pressed():
 	Global.track = "Eight";
+func _on_Mountain_pressed():
+	Global.track = "Mountains";
 
 
 func _on_Night_toggled(button_pressed):

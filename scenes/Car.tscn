@@ -218,7 +218,7 @@ surfaces/0 = {
 }
 
 [sub_resource type="BoxShape" id=8]
-extents = Vector3( 0.286114, 0.27505, 0.712902 )
+extents = Vector3( 0.310999, 0.27505, 0.712902 )
 
 [sub_resource type="ArrayMesh" id=9]
 blend_shape_mode = 0
@@ -260,6 +260,7 @@ mass = 100.0
 contacts_reported = 4
 contact_monitor = true
 script = ExtResource( 7 )
+ENGINE_FORCE = 180.0
 
 [node name="CarBody1" type="Spatial" parent="."]
 transform = Transform( 20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0 )

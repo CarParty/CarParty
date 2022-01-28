@@ -21,4 +21,5 @@ render_target_update_mode = 3
 audio_listener_enable_3d = true
 
 [node name="Camera" type="Camera" parent="Viewport"]
+far = 500.0
 script = ExtResource( 1 )
