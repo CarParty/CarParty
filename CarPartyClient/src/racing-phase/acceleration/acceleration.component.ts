@@ -42,8 +42,8 @@ export class AccelerationComponent extends HTMLElement {
 
     this.root.addEventListener('mousedown', event => this.onThrottleMove(event.clientY));
     this.root.addEventListener('mousemove', event => this.onThrottleMove(event.clientY));
-    this.root.addEventListener('touchstart', event => this.onThrottleMove(event.touches[0].clientY));
-    this.root.addEventListener('touchmove', event => this.onThrottleMove(event.touches[0].clientY));
+    this.root.addEventListener('touchstart', event => event.touches.length > 0 ? this.onThrottleMove(event.touches[0].clientY) : 0);
+    this.root.addEventListener('touchmove', event => event.touches.length > 0 ? this.onThrottleMove(event.touches[0].clientY) : 0);
   }
 
   private onThrottleMove(value: number): void {
