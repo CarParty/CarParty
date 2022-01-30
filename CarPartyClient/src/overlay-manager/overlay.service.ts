@@ -3,6 +3,7 @@ export class OverlayService {
 
   private openModal?: (element: HTMLElement) => void;
   private openOverlay?: (element: HTMLElement) => void;
+  private close?: () => void;
 
   private constructor() { }
 
@@ -22,8 +23,19 @@ export class OverlayService {
     }
   }
 
-  register({ openModal, openOverlay }: { openModal: (element: HTMLElement) => void, openOverlay: (element: HTMLElement) => void }): void {
+  public closeOverlay(): void {
+    if (this.close) {
+      this.close();
+    }
+  }
+
+  register({ openModal, openOverlay, close }: {
+    openModal: (element: HTMLElement) => void,
+    openOverlay: (element: HTMLElement) => void,
+    close: () => void
+  }): void {
     this.openModal = openModal;
     this.openOverlay = openOverlay;
+    this.close = close;
   }
 }

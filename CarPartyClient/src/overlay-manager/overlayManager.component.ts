@@ -77,7 +77,7 @@ export class OverlayManagerComponent extends HTMLElement {
           this.backdropEl.classList.add('show');
           this.overlayContainerEl.classList.add('show');
         }, 100);
-      }
+      }, close: this.close
     });
   }
 
