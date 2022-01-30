@@ -6,8 +6,8 @@ import { SVG_NAMESPACE } from './../constants';
 import { OverlayService } from './../overlay-manager/overlay.service';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
-import { Chunk, Point, Polygon, Rectangle, Track } from './track';
-import { augmentPolygonWithIndex, chopSharpSpikes, convertTransportTrack, enlargeInlay, offsetPolygon, optimizeTrack, splitCrossingPolygons, transformCoordinateSystem } from './trackUtils';
+import { Chunk, Point, Rectangle, Track } from './track';
+import { augmentPolygonWithIndex, chopSharpSpikes, convertTransportTrack, enlargeInlay, offsetPolygon, optimizeTrack, pointInConvexPolygon, pointInPolygon, splitCrossingPolygons, transformCoordinateSystem } from './trackUtils';
 import * as transportTrack from './transportTrack';
 
 const templateEl = document.createElement('template');
@@ -274,7 +274,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     if (this.currentChunk) {
       for (const finish of this.currentChunk.finish) {
         if (finish.boundingPolygon) {
-          if (this.pointInConvexPolygon(point, finish.boundingPolygon)) {
+          if (pointInConvexPolygon(point, finish.boundingPolygon)) {
             this.moveToNextChunk(finish.from);
             return true;
           }
@@ -335,7 +335,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     if (!this.currentChunk) {
       return false;
     }
-    return this.currentChunk.road.some(poly => this.pointInPolygon(point, poly));
+    return this.currentChunk.road.some(poly => pointInPolygon(point, poly));
   }
 
   private pointCloseToLast(point: Point): boolean {
@@ -354,53 +354,6 @@ export class DrawingPhaseComponent extends HTMLElement {
       path = pathFragmentCollector[pathFragmentCollector.length - 2];
     }
     return path[path.length - 1];
-  }
-
-  private pointInConvexPolygon(point: Point, polygon: Polygon): boolean {
-    let posSign = 0;
-    let negSign = 0;
-
-    for (let i = 0; i < polygon.length; i++) {
-      const polyPoint = polygon[i];
-      if (point.x === polyPoint.x && point.y === polyPoint.y) {
-        return true;
-      }
-
-      const polyPoint2 = polygon[(i + 1) % polygon.length];
-
-      // cross product
-      const d = (point.x - polyPoint.x) * (polyPoint2.y - polyPoint.y) - (point.y - polyPoint.y) * (polyPoint2.x - polyPoint.x);
-
-      if (d > 0) { posSign++; }
-      if (d < 0) { negSign++; }
-
-      // both signs present -> point outside
-      if (posSign > 0 && negSign > 0) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private pointInPolygon(p: Point, polygon: Polygon): boolean {
-    // based on https://stackoverflow.com/a/29915728
-    // which references https://github.com/substack/point-in-polygon
-    // which is based on https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
-
-    let inside = false;
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      const pi = polygon[i];
-      const pj = polygon[j];
-
-      const intersect = ((pi.y > p.y) !== (pj.y > p.y))
-        && (p.x < (pj.x - pi.x) * (p.y - pi.y) / (pj.y - pi.y) + pi.x);
-      if (intersect) {
-        inside = !inside;
-      }
-    }
-
-    return inside;
   }
 
   private highlightCurrentChunk(): void {
@@ -569,7 +522,7 @@ export class DrawingPhaseComponent extends HTMLElement {
         const polygonChopped = chopSharpSpikes(oPolygon.reverse());
         console.log('working on', chunk.name, 'chop done');
         const splitted = splitCrossingPolygons(augmentPolygonWithIndex(offsetPolygon(polygonChopped, 10, 1)))
-          .filter(fPoly => fPoly.every(point => this.pointInPolygon(point, oPolygon)))
+          .filter(fPoly => fPoly.every(point => pointInPolygon(point, oPolygon)))
           .filter(fPoly => fPoly.length > 3);
         // const splitted = [augmentPolygonWithIndex(offsetPolygon(polygonChopped, 10, 1))];
         console.log('splitted', splitted);

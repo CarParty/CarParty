@@ -505,18 +505,19 @@ export function splitCrossingPolygons(polygon: PolygonWithIndex): PolygonWithInd
 export function windingOrder(polygon: Polygon): boolean {
   // find point with smallest y (and largest x in case of ties)
   // -> point is definitely on convex hull
-  const point = polygon.reduce((bestIndex, currentPoint, currentIndex) => polygon[bestIndex].y < currentPoint.y
-    ? bestIndex
-    : currentPoint.y < polygon[bestIndex].y
-      ? currentIndex
-      : polygon[bestIndex].x > currentPoint.x
-        ? bestIndex
-        : currentPoint.x > polygon[bestIndex].x
-          ? currentIndex
-          : bestIndex,
+  const point = polygon.reduce((bestIndex, currentPoint, currentIndex) =>
+    polygon[bestIndex].y < currentPoint.y
+      ? bestIndex
+      : currentPoint.y < polygon[bestIndex].y
+        ? currentIndex
+        : polygon[bestIndex].x > currentPoint.x
+          ? bestIndex
+          : currentPoint.x > polygon[bestIndex].x
+            ? currentIndex
+            : bestIndex,
     0);
 
-  const a = polygon[(point - 1) % polygon.length];
+  const a = polygon[(point - 1 + polygon.length) % polygon.length];
   const b = polygon[point];
   const c = polygon[(point + 1) % polygon.length];
 
@@ -569,7 +570,34 @@ export function enlargeInlay(track: Track, chopped: Polygon, offseted: PolygonWi
   return offseted;
 }
 
-function pointInPolygon(p: Point, polygon: Polygon): boolean {
+export function pointInConvexPolygon(point: Point, polygon: Polygon): boolean {
+  let posSign = 0;
+  let negSign = 0;
+
+  for (let i = 0; i < polygon.length; i++) {
+    const polyPoint = polygon[i];
+    if (point.x === polyPoint.x && point.y === polyPoint.y) {
+      return true;
+    }
+
+    const polyPoint2 = polygon[(i + 1) % polygon.length];
+
+    // cross product
+    const d = (point.x - polyPoint.x) * (polyPoint2.y - polyPoint.y) - (point.y - polyPoint.y) * (polyPoint2.x - polyPoint.x);
+
+    if (d > 0) { posSign++; }
+    if (d < 0) { negSign++; }
+
+    // both signs present -> point outside
+    if (posSign > 0 && negSign > 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function pointInPolygon(p: Point, polygon: Polygon): boolean {
   // based on https://stackoverflow.com/a/29915728
   // which references https://github.com/substack/point-in-polygon
   // which is based on https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
