@@ -1,0 +1,22 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#icon {
+  animation: rotate 2s linear infinite reverse;
+}
+
+.svg-inline--fa.fa-rotate {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
