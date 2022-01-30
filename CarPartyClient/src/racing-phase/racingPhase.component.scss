@@ -1,0 +1,77 @@
+#root {
+  display: flex;
+}
+
+#main {
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#resetRow {
+  display: flex;
+  justify-content: center;
+}
+
+car-acceleration {
+  /*width: 30%;
+  float: right;*/
+  flex-grow: 1;
+}
+
+#resetButton {
+  font-size: 4em;
+  border-radius: 10px;
+  margin-top: 0.2em;
+  @media (orientation: portrait) {
+    font-size: 3.5em;
+  }
+}
+
+#driftButton {
+  font-size: 6em;
+  padding: 0.2em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  background-color: rgb(25, 25, 255);
+  border: 5px solid black;
+  border-radius: 10px;
+  @media (orientation: portrait) {
+    font-size: 2.5em;
+  }
+}
+
+#driftButton:hover {
+  background-color: rgb(25, 25, 139);
+}
+
+.metal {
+  background-image: repeating-linear-gradient(
+      to right,
+      hsla(0, 0%, 100%, 0) 0%,
+      hsla(0, 0%, 100%, 0) 6%,
+      hsla(0, 0%, 100%, 0.1) 7.5%
+    ),
+    repeating-linear-gradient(
+      to right,
+      hsla(0, 0%, 0%, 0) 0%,
+      hsla(0, 0%, 0%, 0) 4%,
+      hsla(0, 0%, 0%, 0.03) 4.5%
+    ),
+    repeating-linear-gradient(
+      to right,
+      hsla(0, 0%, 100%, 0) 0%,
+      hsla(0, 0%, 100%, 0) 1.2%,
+      hsla(0, 0%, 100%, 0.15) 2.2%
+    ),
+    linear-gradient(
+      180deg,
+      hsl(0, 0%, 78%) 0%,
+      hsl(0, 0%, 90%) 47%,
+      hsl(0, 0%, 78%) 53%,
+      hsl(0, 0%, 70%) 100%
+    );
+}
+
+@import './screws.scss';

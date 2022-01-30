@@ -1,0 +1,52 @@
+.screw {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50px;
+  background: linear-gradient(
+    135deg,
+    #adadad 0%,
+    #e1e1e1 51%,
+    #dddddd 68%,
+    #f6f6f6 100%
+  );
+  box-shadow: 0px 2px 4px #000, -1px -1px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.indent {
+  height: 10px;
+  width: 33px;
+  margin-top: 10px;
+  box-shadow: inset 0px 1px 8px #222;
+  border-radius: 2px;
+  margin-left: -2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.screw.tl {
+  top: 0.5em;
+  left: 0.5em;
+}
+.screw.tr {
+  top: 0.5em;
+  right: 0.5em;
+}
+.screw.bl {
+  bottom: 0.5em;
+  left: 0.5em;
+}
+.screw.br {
+  bottom: 0.5em;
+  right: 0.5em;
+}
+.tl .indent {
+  transform: rotate(150deg);
+}
+.tr .indent {
+  transform: rotate(110deg);
+}
+.bl .indent {
+  transform: rotate(50deg);
+}
+.br .indent {
+  transform: rotate(170deg);
+}

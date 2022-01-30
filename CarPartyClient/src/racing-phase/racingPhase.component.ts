@@ -1,8 +1,8 @@
 import { Connection } from '../connection';
 import './acceleration/acceleration.component';
 import { AccelerationComponent } from './acceleration/acceleration.component';
-import css from './racingPhase.component.css';
 import template from './racingPhase.component.html';
+import css from './racingPhase.component.scss';
 
 const templateEl = document.createElement('template');
 templateEl.innerHTML = template;
