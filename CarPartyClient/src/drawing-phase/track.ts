@@ -6,6 +6,7 @@ export type Track = {
 export type Chunk = {
   name: string;
   road: Polygon[];
+  holes: Polygon[];
   boundingBox: Rectangle;
   finish: {
     from?: Chunk;
@@ -17,6 +18,7 @@ export type Chunk = {
   start: Chunk[];
   roadSvgContainerEl?: SVGGElement;
   roadSvgEls?: SVGPolygonElement[];
+  roadBorderSvgEls?: SVGPolygonElement[];
 };
 
 type PositionAndSize = { x: number, y: number, width: number, height: number };

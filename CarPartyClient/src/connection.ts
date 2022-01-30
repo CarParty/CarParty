@@ -40,8 +40,8 @@ export class Connection {
   }
 
   private onMessage = (event: MessageEvent<any>) => {
-    console.log(event);
     const message: ServerMessage = JSON.parse(event.data);
+    console.log(message.action);
     this.listeners.get(message.action)?.forEach(sub => sub(message));
   }
 

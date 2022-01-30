@@ -8,6 +8,7 @@ describe('Check track optimizations', () => {
     const chunk: Chunk = {
       name: 'test',
       road: [],
+      holes: [],
       boundingBox: zeroRectangle,
       finish: [],
       start: []
