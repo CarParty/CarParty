@@ -6,6 +6,7 @@ import { SVG_NAMESPACE } from './../constants';
 import { OverlayService } from './../overlay-manager/overlay.service';
 import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
+import { LoadingOverlayComponent } from './loading-overlay/loadingOverlay.component';
 import { Chunk, Point, Rectangle, Track } from './track';
 import { augmentPolygonWithIndex, chopSharpSpikes, convertTransportTrack, enlargeInlay, offsetPolygon, optimizeTrack, pointInConvexPolygon, pointInPolygon, splitCrossingPolygons, transformCoordinateSystem } from './trackUtils';
 import * as transportTrack from './transportTrack';
@@ -45,7 +46,7 @@ export class DrawingPhaseComponent extends HTMLElement {
   private complete = false;
   private currentRotationInverse: DOMMatrix;
 
-  private repeatedPathSend?: NodeJS.Timer;
+  private loadingOverlay: LoadingOverlayComponent;
 
   private readonly TRACK_PRE_TRANSFORM = { scale: { x: 50, y: 50 }, translate: { x: 0, y: 0 } };
   private readonly MAXIMUM_DRAW_DISTANCE = 25000;
@@ -111,6 +112,10 @@ export class DrawingPhaseComponent extends HTMLElement {
       OverlayService.Instance.openAsModal(document.createElement('help-modal'));
     });
 
+    this.loadingOverlay = document.createElement('drawing-loading-overlay');
+    setTimeout(() => OverlayService.Instance.openAsOverlay(this.loadingOverlay));
+    setTimeout(() => this.loadingOverlay.updateStatus('Establishing car connection', ''));
+
     if (!this.svgRoot) {
       console.error('root not found');
       return;
@@ -129,6 +134,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       const unsubscribe = this.connection?.subscribe('track_transmission', (data) => {
         trackFragments.set(data.packet_num, data.encoded_message);
         console.log(`Currently got ${trackFragments.size}/${data.total_num_packets} fragments, last received: ${data.packet_num}`);
+        this.loadingOverlay.updateStatus('Receiving environment', `${trackFragments.size}/${data.total_num_packets}`);
         if (trackFragments.size === data.total_num_packets) {
           const trackFragmentsList: string[] = [];
           trackFragments.forEach(frag => trackFragmentsList.push(frag));
@@ -144,7 +150,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     // uncomment below for quicker testing
     // this.setupTrack(TEST_TRACK);
     // this.setupTrack(TEST_TRACK5);
-    // this.setupTrack(TEST_TRACK_VISUAL);
+    // setTimeout(() => this.setupTrack(TEST_TRACK_VISUAL));
 
     // setup mouse events
     this.svgRoot.addEventListener('mousedown', this.startDraw);
@@ -161,11 +167,15 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   private setupTrack(track: transportTrack.Track): void {
     console.log(track);
+    this.loadingOverlay.updateStatus('Loading environment', '');
     this.track = convertTransportTrack(track);
+    this.loadingOverlay.updateStatus('Loading environment', 'done!');
 
     this.track.chunks.forEach(chunk => console.log('#Triangles', chunk.road.length));
+    this.loadingOverlay.updateStatus('Optimizing environment', '');
     optimizeTrack(this.track);
     transformCoordinateSystem(this.track, this.TRACK_PRE_TRANSFORM);
+    this.loadingOverlay.updateStatus('Optimizing environment', 'done!');
     this.track.chunks.forEach(chunk => console.log('#Polygons', chunk.road.length));
     console.log(this.track);
 
@@ -181,6 +191,8 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.zoomToBox(this.trackBoundingBox);
 
     this.drawTrack();
+
+    this.loadingOverlay.updateStatus('Get ready to draw', '');
 
     // debug: load a previously saved path
     if (new URLSearchParams(window.location.search).get('loadPath')) {
@@ -239,7 +251,9 @@ export class DrawingPhaseComponent extends HTMLElement {
     this.redrawButtonEl.disabled = true;
     if (this.currentPartialPath.length > 0) {
       // reset path for *current* area
+      const copy = this.currentPartialPath; // copy current fragment to rewind it
       this.resetCurrentPartialPath();
+      await this.rewindPath(copy);
     } else {
       // reset path for *previous* area
       if (!this.currentChunk) {
@@ -248,7 +262,12 @@ export class DrawingPhaseComponent extends HTMLElement {
       this.partialPaths.delete(this.currentChunk.name);
       const areaKeyCollector: string[] = [];
       this.partialPaths.forEach((_, key) => areaKeyCollector.push(key));
-      await this.moveToNextChunk(this.track?.chunks.get(areaKeyCollector[areaKeyCollector.length - 1]), false);
+      const previousChunkName = areaKeyCollector[areaKeyCollector.length - 1];
+      const copy = this.partialPaths.get(previousChunkName); // copy previous fragment to rewind it
+      await this.moveToNextChunk(this.track?.chunks.get(previousChunkName), false);
+      if (copy) {
+        await this.rewindPath(copy);
+      }
     }
     this.redrawButtonEl.disabled = false;
   }
@@ -408,6 +427,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     await this.moveToNextChunk(this.track.start, false);
 
     this.currentPosMarkerEl.style.display = ''; // show position marker
+    OverlayService.Instance.openAsOverlay(document.createElement('drawing-instructions-overlay'));
   }
 
   private async moveToNextChunk(nextChunk?: Chunk, canBeFinal = true): Promise<void> {
@@ -477,16 +497,54 @@ export class DrawingPhaseComponent extends HTMLElement {
     }
   }
 
-  private drawPath(): void {
+  private buildCurrentPath(): Point[] {
     const pathFragmentCollector: Point[][] = [];
     this.partialPaths.forEach(fragment => pathFragmentCollector.push(fragment));
     const fullPath = pathFragmentCollector.flat();
     if (this.complete) {
       fullPath.push(fullPath[0]); // complete loop visually with first position
     }
+    return fullPath;
+  }
+
+  private drawPath(): void {
+    const fullPath = this.buildCurrentPath();
     this.pathEl.setAttribute('d', `M${fullPath.map(point => `${point.x},${point.y}`).join(' L')}`);
     this.currentPosMarkerEl.cx.baseVal.value = fullPath[fullPath.length - 1].x;
     this.currentPosMarkerEl.cy.baseVal.value = fullPath[fullPath.length - 1].y;
+  }
+
+  /**
+   * Used during redraw, animates the deletion of the supplied segment as a suffix of the normal path.
+   */
+  private async rewindPath(rewindSegment: Point[]): Promise<void> {
+    const fullPath = this.buildCurrentPath();
+    const fullPathString = `M${fullPath.map(point => `${point.x},${point.y}`).join(' L')}`;
+    const additionalPoints = rewindSegment.map(point => `${point.x},${point.y}`);
+
+    return new Promise<void>((resolve, reject) => {
+      new Tween({ i: additionalPoints.length }).to({ i: 0 }, 1000)
+        .onUpdate(upd => {
+          const progress = Math.round(upd.i);
+          const [pathString, markerPos] =
+            (progress > 0) ? [
+              `${fullPathString} L${additionalPoints.slice(0, progress).join(' L')}`,
+              rewindSegment[progress - 1]
+            ] : [
+              fullPathString,
+              fullPath[fullPath.length - 1]
+            ];
+
+          this.pathEl.setAttribute('d', pathString);
+          this.currentPosMarkerEl.cx.baseVal.value = markerPos.x;
+          this.currentPosMarkerEl.cy.baseVal.value = markerPos.y;
+        })
+        .start()
+        .onComplete(() => {
+          this.drawPath();
+          resolve();
+        });
+    });
   }
 
   private drawTrack(): void {
@@ -494,7 +552,10 @@ export class DrawingPhaseComponent extends HTMLElement {
       return;
     }
 
+    let chunkCounter = 0;
     this.track.chunks.forEach(chunk => {
+      chunkCounter++;
+      this.loadingOverlay.updateStatus('Realizing environment', `${chunkCounter}/${this.track?.chunks.size}`);
 
       const road = document.createElementNS(SVG_NAMESPACE, 'g');
       chunk.roadSvgContainerEl = road;
@@ -664,13 +725,7 @@ export class DrawingPhaseComponent extends HTMLElement {
 
   public connectedCallback(): void { }
 
-  public disconnectedCallback(): void {
-    // stop sending path once leaving this phase
-    if (this.repeatedPathSend) {
-      clearInterval(this.repeatedPathSend);
-      this.repeatedPathSend = undefined;
-    }
-  }
+  public disconnectedCallback(): void { }
 }
 
 window.customElements.define('drawing-phase', DrawingPhaseComponent);

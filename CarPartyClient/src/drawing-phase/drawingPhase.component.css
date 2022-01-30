@@ -7,6 +7,12 @@
   border-color: red;
 }
 
+.svg-inline--fa.fa-question,
+.svg-inline--fa.fa-eraser {
+  height: 1em;
+  transform: translateY(-2px);
+}
+
 .pulse {
   animation: pulse 1s ease-in-out 0s infinite alternate both;
 }
