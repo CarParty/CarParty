@@ -24,6 +24,7 @@ export class RotateOverlayComponent extends HTMLElement {
     this.shadow.appendChild(link);
     this.shadow.appendChild(templateEl.content.cloneNode(true));
     this.shadow.appendChild(cssContainer.cloneNode(true));
+    this.shadow.getElementById('root')?.addEventListener('click', this.close);
     this.shadow.addEventListener('click', this.close);
 
     // auto-close once rotated
