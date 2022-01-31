@@ -1,4 +1,5 @@
 import template from './car-party.component.html';
+import css from './car-party.component.scss';
 import { Connection } from './connection';
 import { DrawingPhaseComponent } from './drawing-phase/drawingPhase.component';
 import { EndingPhaseComponent } from './ending-phase/endingPhase.component';
@@ -12,11 +13,16 @@ import { WaitingPhaseComponent } from './waiting-phase/waitingPhase.component';
 const templateEl = document.createElement('template');
 templateEl.innerHTML = template;
 
+const cssContainer = document.createElement('style');
+cssContainer.textContent = css;
+
 export type LocalPhase = Phase | 'join';
 
 export class CarPartyComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
+  private dividerEl: HTMLDivElement;
+  private outletSmallEl: HTMLDivElement;
 
   private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | RacingPhaseComponent | EndingPhaseComponent;
 
@@ -31,17 +37,20 @@ export class CarPartyComponent extends HTMLElement {
   constructor() {
     super();
 
-    const shadow = this.attachShadow({ mode: 'closed' });
-    this.shadow = shadow;
+    this.shadow = this.attachShadow({ mode: 'closed' });
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'assets/styles.css';
     this.shadow.appendChild(link);
-    shadow.appendChild(templateEl.content.cloneNode(true));
+    this.shadow.appendChild(templateEl.content.cloneNode(true));
+    this.shadow.appendChild(cssContainer.cloneNode(true));
 
     this.connection = new Connection();
 
-    this.root = shadow.getElementById('root');
+    this.dividerEl = this.shadow.getElementById('divider') as HTMLDivElement;
+    this.outletSmallEl = this.shadow.getElementById('outletSmall') as HTMLDivElement;
+
+    this.root = this.shadow.getElementById('root');
     if (!this.root) {
       console.error('root not found');
       return;
@@ -72,9 +81,11 @@ export class CarPartyComponent extends HTMLElement {
 
   private switchPhase = (phase: LocalPhase) => {
     this.currentPhaseView?.remove();
+    let useLargeOutlet = true;
     switch (phase) {
       case 'join':
         this.currentPhaseView = document.createElement('join-phase');
+        useLargeOutlet = false;
         break;
       case Phase.naming:
         this.currentPhaseView = document.createElement('naming-phase');
@@ -101,7 +112,13 @@ export class CarPartyComponent extends HTMLElement {
     if (this.carColor) {
       this.currentPhaseView.setAttribute('color', this.carColor);
     }
-    this.root?.appendChild(this.currentPhaseView);
+    if (useLargeOutlet) {
+      this.dividerEl.classList.add('d-none');
+      this.root?.appendChild(this.currentPhaseView);
+    } else {
+      this.dividerEl.classList.remove('d-none');
+      this.outletSmallEl.appendChild(this.currentPhaseView);
+    }
   }
 
   public connectedCallback(): void {
