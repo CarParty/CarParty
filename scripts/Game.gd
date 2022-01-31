@@ -291,6 +291,7 @@ func show_scoreboard_if_completed():
 	
 		
 func _show_scoreboard():
+	Client.start_phase_global("ending")
 	scoreboard = true
 	_change_camera()
 	var i = 0
