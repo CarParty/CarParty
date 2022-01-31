@@ -41,6 +41,9 @@ func _ready():
 	$CarBody1/CarBody/Body1.set_surface_material(material_index, material)
 	brake = 1
 	$MotorNoise.playing = true
+	if Global.setting == "Day":
+		$Light1.visible = false
+		$Light2.visible = false
 
 func set_path(new_path: Path):
 	self.path = new_path

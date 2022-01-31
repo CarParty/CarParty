@@ -50,12 +50,14 @@ func _ready():
 		world_environment.set_environment(tres)
 		track.add_child(world_environment)
 		track.get_node("DirectionalLight").visible = false
+		$NightMusic.play()
 	else:
 		var tres = load("resources/environments/DayEnvironment.tres")
 		var world_environment = WorldEnvironment.new()
 		world_environment.set_environment(tres)
 		track.add_child(world_environment)
 		track.get_node("DirectionalLight").visible = true
+		$DayMusic.play()
 		
 
 	spawnPoints = track.get_node("CarPositions").get_children()
