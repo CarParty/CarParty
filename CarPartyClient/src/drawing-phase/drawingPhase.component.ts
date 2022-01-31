@@ -8,7 +8,7 @@ import css from './drawingPhase.component.css';
 import template from './drawingPhase.component.html';
 import { LoadingOverlayComponent } from './loading-overlay/loadingOverlay.component';
 import { Chunk, Point, Rectangle, Track } from './track';
-import { augmentPolygonWithIndex, chopSharpSpikes, convertTransportTrack, enlargeInlay, offsetPolygon, optimizeTrack, pointInConvexPolygon, pointInPolygon, splitCrossingPolygons, transformCoordinateSystem } from './trackUtils';
+import { augmentPolygonWithIndex, chopSharpSpikes, convertTransportTrack, enlargeInlay, generateBorderPairs, offsetPolygon, optimizeTrack, pointInConvexPolygon, pointInPolygon, splitCrossingPolygons, transformCoordinateSystem } from './trackUtils';
 import * as transportTrack from './transportTrack';
 
 const templateEl = document.createElement('template');
@@ -204,6 +204,7 @@ export class DrawingPhaseComponent extends HTMLElement {
       }
     } else {
       setTimeout(() => this.startTrackDrawing(), 2000);
+      // OverlayService.Instance.closeOverlay();
     }
   }
 
@@ -560,41 +561,77 @@ export class DrawingPhaseComponent extends HTMLElement {
       const road = document.createElementNS(SVG_NAMESPACE, 'g');
       chunk.roadSvgContainerEl = road;
 
+      const roadChopped = chunk.road.map(polygon => chopSharpSpikes(polygon.reverse()));
+      const innerRoadPolygons = roadChopped.map((chopped, index) => {
+        const splitted = splitCrossingPolygons(augmentPolygonWithIndex(offsetPolygon(chopped, 10, 1)))
+          .filter(fPoly => fPoly.every(point => pointInPolygon(point, chunk.road[index])))
+          .filter(fPoly => fPoly.length > 3);
+        // const splitted = [augmentPolygonWithIndex(offsetPolygon(polygonChopped, 10, 1))];
+        // console.log('splitted', splitted);
+        return this.track ? enlargeInlay(this.track, chopped, splitted[0]) : splitted[0];
+      });
+
       chunk.roadBorderSvgEls = [];
       this.roadEl.appendChild(road);
-      for (const polygon of chunk.road) {
-        const poly = document.createElementNS(SVG_NAMESPACE, 'polygon');
-        poly.style.stroke = 'url(#pattern-checkers)';
-        poly.style.fill = 'url(#pattern-checkers)';
-        poly.style.strokeWidth = '1';
+      chunk.road.forEach((polygon, index) => {
+        /*const polyOld = document.createElementNS(SVG_NAMESPACE, 'polygon');
+        polyOld.style.stroke = 'green';
+        polyOld.style.fill = 'green';
+        polyOld.style.strokeWidth = '1';
         polygon.forEach(({ x, y }) => {
           const svgPoint = this.svgRoot.createSVGPoint();
           svgPoint.x = x;
           svgPoint.y = y;
-          poly.points.appendItem(svgPoint);
+          polyOld.points.appendItem(svgPoint);
         });
-        road.appendChild(poly);
-        chunk.roadBorderSvgEls.push(poly);
-      }
+        road.appendChild(polyOld);
+        chunk.roadBorderSvgEls.push(polyOld);*/
+
+        const pairs = generateBorderPairs(innerRoadPolygons[index], roadChopped[index]);
+
+        const pathRed = pairs.map(seg => {
+          const temp = seg.filter((_, i) => seg.length % 2 === 0 || i !== seg.length - 1)
+            .map(([p1, p2], i) =>
+              i % 2 === 0
+                ? `M${p1.x},${p1.y} L${p2.x},${p2.y}`
+                : `L${p2.x},${p2.y} L${p1.x},${p1.y} Z`
+            );
+          return temp.join(' ');
+        }).join(' ');
+        const pathWhite = pairs.map(seg => {
+          const temp = seg.filter((_, i) => i !== 0 && (seg.length % 2 === 1 || i !== seg.length - 1))
+            .map(([p1, p2], i) =>
+              i % 2 === 0
+                ? `M${p1.x},${p1.y} L${p2.x},${p2.y}`
+                : `L${p2.x},${p2.y} L${p1.x},${p1.y} Z`
+            );
+          return temp.join(' ');
+        }).join(' ');
+
+        const polyRed = document.createElementNS(SVG_NAMESPACE, 'path');
+        polyRed.style.stroke = 'red';
+        polyRed.style.fill = 'red';
+        polyRed.style.strokeWidth = '1';
+        polyRed.setAttribute('d', pathRed);
+        road.appendChild(polyRed);
+        chunk.roadBorderSvgEls?.push(polyRed);
+        const polyWhite = document.createElementNS(SVG_NAMESPACE, 'path');
+        polyWhite.style.stroke = 'white';
+        polyWhite.style.fill = 'white';
+        polyWhite.style.strokeWidth = '1';
+        polyWhite.setAttribute('d', pathWhite);
+        road.appendChild(polyWhite);
+        chunk.roadBorderSvgEls?.push(polyWhite);
+      });
 
       chunk.roadSvgEls = [];
-      for (const oPolygon of chunk.road) {
-        console.log('working on', chunk.name);
-        const polygonChopped = chopSharpSpikes(oPolygon.reverse());
-        console.log('working on', chunk.name, 'chop done');
-        const splitted = splitCrossingPolygons(augmentPolygonWithIndex(offsetPolygon(polygonChopped, 10, 1)))
-          .filter(fPoly => fPoly.every(point => pointInPolygon(point, oPolygon)))
-          .filter(fPoly => fPoly.length > 3);
-        // const splitted = [augmentPolygonWithIndex(offsetPolygon(polygonChopped, 10, 1))];
-        console.log('splitted', splitted);
-        const polygon = this.track ? enlargeInlay(this.track, polygonChopped, splitted[0]) : splitted[0];
-        console.log(polygon, polygonChopped, oPolygon);
+      for (const innerRoadPolygon of innerRoadPolygons) {
         const poly = document.createElementNS(SVG_NAMESPACE, 'polygon');
         poly.style.stroke = 'black';
         poly.style.fill = 'lightgray';
         poly.style.strokeWidth = '1';
         // poly.style.opacity = '0.25';
-        polygon.forEach(({ x, y }) => {
+        innerRoadPolygon.forEach(({ x, y }) => {
           const svgPoint = this.svgRoot.createSVGPoint();
           svgPoint.x = x;
           svgPoint.y = y;

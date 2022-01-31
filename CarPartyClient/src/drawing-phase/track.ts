@@ -18,7 +18,7 @@ export type Chunk = {
   start: Chunk[];
   roadSvgContainerEl?: SVGGElement;
   roadSvgEls?: SVGPolygonElement[];
-  roadBorderSvgEls?: SVGPolygonElement[];
+  roadBorderSvgEls?: SVGPathElement[];
 };
 
 type PositionAndSize = { x: number, y: number, width: number, height: number };

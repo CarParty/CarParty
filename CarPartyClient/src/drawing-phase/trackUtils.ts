@@ -471,7 +471,7 @@ function angle(a: Point, b: Point, c: Point): number {
   return Math.acos((bc * bc + ab * ab - ac * ac) / (2 * bc * ab));
 }
 
-export type PointWithIndex = Point & { index: number };
+export type PointWithIndex = Point & { index: number, adjusted?: boolean };
 export type PolygonWithIndex = PointWithIndex[];
 export function augmentPolygonWithIndex(polygon: Polygon): PolygonWithIndex {
   return polygon.map((p, i) => ({ ...p, index: i }));
@@ -480,7 +480,6 @@ export function augmentPolygonWithIndex(polygon: Polygon): PolygonWithIndex {
 export function splitCrossingPolygons(polygon: PolygonWithIndex): PolygonWithIndex[] {
   const collect: PolygonWithIndex[] = [];
   base: for (let i = 0; i < polygon.length; i++) {
-    console.log('split', i);
     const iS = (i + 1) % polygon.length;
     for (let j = iS + 1; j < polygon.length; j++) {
       const jS = (j + 1) % polygon.length;
@@ -527,7 +526,6 @@ export function windingOrder(polygon: Polygon): boolean {
 export function enlargeInlay(track: Track, chopped: Polygon, offseted: PolygonWithIndex): PolygonWithIndex {
 
   for (let i = 0; i < offseted.length; i++) {
-    console.log(i);
     const iS = (i + 1) % offseted.length;
 
     const o = offseted[i].index;
@@ -562,12 +560,90 @@ export function enlargeInlay(track: Track, chopped: Polygon, offseted: PolygonWi
     if (found && found2) {
       // offseted[i] = { ...closestPointOnLine(c2, c3, offseted[i]), index: o };
       // offseted[iS] = { ...closestPointOnLine(c2, c3, offseted[iS]), index: oS };
-      offseted[i] = { ...c2, index: o };
-      offseted[iS] = { ...c3, index: oS };
+      offseted[i] = { ...c2, index: o, adjusted: true };
+      offseted[iS] = { ...c3, index: oS, adjusted: true };
     }
   }
 
   return offseted;
+}
+
+export function generateBorderPairs(inner: PolygonWithIndex, outer: Polygon): [Point, Point][][] {
+  const TARGET_LENGTH = 50;
+  let index = 0;
+  let currentLength = 0;
+  const pairs: [Point, Point][][] = [];
+  let currentSegment: [Point, Point][] | null = null;
+  while (index < inner.length) {
+    const nextInnerPoint = inner[index];
+    let nextOuterPoint: Point;
+    if (nextInnerPoint.index === -1 /*|| nextInnerPoint.adjusted*/) {
+      /*if (currentSegment !== null) {
+        currentSegment = null;
+      }*/
+      const suggest = inner.find((v, i) => v.index !== -1 && i > index);
+      if (suggest && currentSegment && currentSegment.length > 0) {
+        nextOuterPoint = closestPointOnLine(currentSegment[currentSegment.length - 1][1], outer[suggest.index], nextInnerPoint);
+      }
+    }
+    nextOuterPoint = outer[nextInnerPoint.index];
+    if (nextOuterPoint) {
+      if (currentSegment === null) {
+        currentSegment = [];
+        pairs.push(currentSegment);
+      }
+      const lastPointPair = currentSegment[currentSegment.length - 1];
+      if (currentSegment.length > 0 && distanceSquared(lastPointPair[0], nextInnerPoint) > TARGET_LENGTH * TARGET_LENGTH) {
+        const dir = normalizeVector(minus(nextInnerPoint, lastPointPair[0]));
+        const distance = Math.sqrt(distanceSquared(lastPointPair[0], nextInnerPoint));
+        for (let progress = 0; progress < distance;
+          progress += (distance - progress >= 1.5 * TARGET_LENGTH) || distance - progress < TARGET_LENGTH
+            ? TARGET_LENGTH
+            : Math.max((distance - progress) / 2, TARGET_LENGTH / 2)) { // complex update function get nicely spaced segments
+          console.log(progress, distance);
+          if (progress === 0) {
+            // just makes the math simpler
+            continue;
+          }
+          const intermediateInnerPoint = add(lastPointPair[0], multiply(progress, dir));
+          const intermediateOuterPoint = closestPointOnLine(lastPointPair[1], nextOuterPoint, intermediateInnerPoint);
+          currentSegment.push([intermediateInnerPoint, intermediateOuterPoint]);
+        }
+        currentSegment.push([nextInnerPoint, nextOuterPoint]);
+      } else {
+        currentSegment.push([nextInnerPoint, nextOuterPoint]);
+      }
+    }
+    index++;
+  }
+
+  // close segments
+  pairs.forEach(segment => {
+    const first = segment[0];
+    const last = segment[segment.length - 1];
+    if (distanceSquared(last[0], first[0]) > TARGET_LENGTH * TARGET_LENGTH) {
+      const dir = normalizeVector(minus(first[0], last[0]));
+      const distance = Math.sqrt(distanceSquared(last[0], first[0]));
+      for (let progress = 0; progress < distance;
+        progress += (distance - progress >= 1.5 * TARGET_LENGTH) || distance - progress < TARGET_LENGTH
+          ? TARGET_LENGTH
+          : Math.max((distance - progress) / 2, TARGET_LENGTH / 2)) { // complex update function get nicely spaced segments
+        console.log(progress, distance);
+        if (progress === 0) {
+          // just makes the math simpler
+          continue;
+        }
+        const intermediateInnerPoint = add(last[0], multiply(progress, dir));
+        const intermediateOuterPoint = closestPointOnLine(last[1], first[1], intermediateInnerPoint);
+        segment.push([intermediateInnerPoint, intermediateOuterPoint]);
+      }
+      segment.push([first[0], first[1]]);
+    } else {
+      segment.push([first[0], first[1]]);
+    }
+  });
+
+  return pairs;
 }
 
 export function pointInConvexPolygon(point: Point, polygon: Polygon): boolean {

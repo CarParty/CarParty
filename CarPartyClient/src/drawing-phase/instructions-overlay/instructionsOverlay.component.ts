@@ -25,6 +25,7 @@ export class InstructionsOverlayComponent extends HTMLElement {
     this.shadow.appendChild(templateEl.content.cloneNode(true));
     this.shadow.appendChild(cssContainer.cloneNode(true));
     this.shadow.addEventListener('click', this.close);
+    this.shadow.addEventListener('touch', this.close);
   }
 
   public close = () => {
