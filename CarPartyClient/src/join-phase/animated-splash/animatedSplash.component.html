@@ -2,44 +2,94 @@
   <div class="content mx-auto">
     <div class="scene">
       <div class="cube-road">
-        <div class="road-face"></div>
-      </div>
-      <div class="cube-text-party">
-        <div class="party-text-positioning">
-          <div class="balloon-container">
-            <div class="reverse-scene-rotation">
-              <div class="balloon one"></div>
-            </div>
-            <div class="reverse-scene-rotation">
-              <div class="balloon five"></div>
-            </div>
-            <div class="reverse-scene-rotation">
-              <div class="balloon three"></div>
+        <div class="road-face">
+          <div class="road-path">
+            <div id="path" style="transform: translateY(550px);">
+              <div class="path-element">
+                <div id="path0" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path1" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path2" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path3" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path4" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path5" class="path-marker"></div>
+              </div>
+              <div class="path-element">
+                <div id="path6" class="path-marker"></div>
+              </div>
             </div>
           </div>
-          <div class="party-text">Party</div>
         </div>
       </div>
-      <div class="cube-car">
-        <div class="cube__face cube__face--front">
-          <div class="car-light-left"></div>
-          <div class="car-light-right"></div>
+      <div id="party" class="text-party-pos" style="transform: translateY(-250px);">
+        <div class="cube-text-party">
+          <div class="party-text-positioning">
+            <div class="balloon-container">
+              <div class="reverse-balloon-text-rotation">
+                <div class="reverse-scene-rotation">
+                  <div class="balloon one"></div>
+                </div>
+              </div>
+              <div class="reverse-balloon-text-rotation">
+                <div class="reverse-scene-rotation">
+                  <div class="balloon five"></div>
+                </div>
+              </div>
+              <div class="reverse-balloon-text-rotation">
+                <div class="reverse-scene-rotation">
+                  <div class="balloon three"></div>
+                </div>
+              </div>
+            </div>
+            <div class="party-text">Party</div>
+          </div>
         </div>
-        <div class="cube__face cube__face--back"></div>
-        <div class="cube__face cube__face--right"></div>
-        <div class="cube__face cube__face--left">
-          <div class="car-text">Car</div>
+      </div>
+      <div id="car" class="car-pos" style="transform: translateZ(-310px);">
+        <div class="cube-car">
+          <div class="cube__face cube__face--front">
+            <div class="car-light-left"></div>
+            <div class="car-light-right"></div>
+          </div>
+          <div class="cube__face cube__face--back"></div>
+          <div class="cube__face cube__face--right"></div>
+          <div class="cube__face cube__face--left">
+            <div class="car-text">Car</div>
+          </div>
+          <div class="cube__face cube__face--top"></div>
+          <div class="cube__face cube__face--bottom"></div>
+          <div class="cube__face cube__face--hood"></div>
+          <div class="cube__face cube__face--window">
+            <div class="car-window"></div>
+          </div>
+          <div class="cube__face cube__face--rearwindow"></div>
+          <div class="wheels">
+            <div class="wheel-front"></div>
+            <div class="wheel-back"></div>
+          </div>
         </div>
-        <div class="cube__face cube__face--top"></div>
-        <div class="cube__face cube__face--bottom"></div>
-        <div class="cube__face cube__face--hood"></div>
-        <div class="cube__face cube__face--window">
-          <div class="car-window"></div>
+      </div>
+      <!--<div class="cube-path">
+        <div class="path-positioning">
+          <div class="path"></div>
         </div>
-        <div class="cube__face cube__face--rearwindow"></div>
-        <div class="wheels">
-          <div class="wheel-front"></div>
-          <div class="wheel-back"></div>
+      </div>-->
+      <div id="pen" class="cube-pen" style="transform: translateZ(-550px);">
+        <div class="pen-bounce">
+          <div class="pen-positioning">
+            <div class="reverse-scene-rotation">
+              <div class="pen"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

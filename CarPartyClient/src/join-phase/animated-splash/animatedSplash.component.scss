@@ -63,6 +63,10 @@ $defaultSceneRotation: (
   // transform: rotateY(0deg) rotateX(-90deg) rotateZ(0deg) translateZ(200px);
 }
 
+.car-pos {
+  transform-style: preserve-3d;
+}
+
 .cube-car {
   width: 100px;
   height: 100px;
@@ -103,6 +107,70 @@ $defaultSceneRotation: (
     }
   }
 }
+
+.text-party-pos {
+  transform-style: preserve-3d;
+}
+
+.cube-path {
+  width: 300px;
+  height: 100px;
+  top: 185px;
+  left: 0px;
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.path-positioning {
+  transform-style: preserve-3d;
+}
+
+.path {
+  width: 200px;
+  height: 10px;
+  background: coral;
+  transform: translateZ(140px) translateY(70px) translateX(58px) rotateY(-90deg);
+}
+
+.cube-pen {
+  width: 300px;
+  height: 100px;
+  top: 185px;
+  left: 0px;
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.pen-positioning {
+  transform-style: preserve-3d;
+  transform: translateX(150px) translateY(-10px) translateZ(300px);
+}
+
+.pen {
+  width: 20px;
+  height: 100px;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%);
+  transform-origin: bottom center;
+  transform: rotate(20deg);
+  background: coral;
+  border: 1px solid black;
+}
+
+.pen-bounce {
+  transform-style: preserve-3d;
+  animation: bounce-up-down 1.75s ease-in-out infinite;
+
+  @keyframes bounce-up-down {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
+}
+
 .cube__face {
   position: absolute;
   border: 2px solid black;

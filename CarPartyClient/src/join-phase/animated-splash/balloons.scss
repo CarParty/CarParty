@@ -4,9 +4,14 @@
   transform: translateY(-80px) translateX(-20px);
 }
 
+.reverse-balloon-text-rotation {
+  transform-style: preserve-3d;
+  transform: rotateY(90deg);
+}
+
 .reverse-scene-rotation {
   transform-style: preserve-3d;
-  transform: rotateY(90deg) rotateZ(-1 * map.get($defaultSceneRotation, 'z'))
+  transform: rotateZ(-1 * map.get($defaultSceneRotation, 'z'))
     rotateX(-1 * map.get($defaultSceneRotation, 'x'))
     rotateY(-1 * map.get($defaultSceneRotation, 'y'));
 }
