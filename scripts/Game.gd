@@ -284,7 +284,7 @@ func show_scoreboard_if_completed():
 	if all_have_completed and not scoreboard:
 		_show_scoreboard()
 	#warning-ignore:integer_division
-	elif (completed_count >= len(Global.clients) / 2) and not scoreboard:
+	elif (len(Global.clients) > 1 and completed_count >= len(Global.clients) / 2) and not scoreboard:
 		start_final_countdown()
 	
 		
