@@ -86,24 +86,8 @@ func start_phase_player(phase: String, player_id: String):
 
 
 func start_phase_global(phase: String):
-	var message: Dictionary
-	match phase:
-		"naming":
-			message = {"action": "phase_change","phase": "naming"}
-		"drawing":
-			message = {"action": "phase_change","phase": "drawing"}
-		"racing":
-			message = {"action": "phase_change","phase": "racing"}
-		"waiting":
-			message = {"action": "phase_change","phase": "waiting"}
-		"ending":
-			message = {"action": "phase_change","phase": "ending"}
-		_:
-			print("Wtf is a "+phase+" phase?!?")
-	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	send_packet(packet)
-	print("Sent message: "+packet.get_string_from_utf8())
-
+	for player in Global.clients:
+		start_phase_player(phase, player)
 
 func _closed(was_clean = false):
 	# was_clean will tell you if the disconnection was correctly notified
