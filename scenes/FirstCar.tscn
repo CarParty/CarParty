@@ -11,7 +11,7 @@
 [ext_resource path="res://resources/audio/robbemanthunk.wav" type="AudioStream" id=9]
 [ext_resource path="res://resources/cars/LED (Red).material" type="Material" id=10]
 [ext_resource path="res://resources/cars/Plastic - Glossy (White).material" type="Material" id=11]
-[ext_resource path="res://resources/audio/honk.wav" type="AudioStream" id=12]
+[ext_resource path="res://resources/audio/bikehorn.wav" type="AudioStream" id=12]
 
 [sub_resource type="ArrayMesh" id=9]
 blend_shape_mode = 0
@@ -535,6 +535,8 @@ material/0 = null
 
 [node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 12 )
-unit_db = 70.164
+unit_db = 20.0
+bus = "Thunk Sounds"
+doppler_tracking = 2
 
 [connection signal="body_entered" from="." to="." method="_on_Car_body_entered"]

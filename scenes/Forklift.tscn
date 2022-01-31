@@ -10,7 +10,7 @@
 [ext_resource path="res://resources/audio/motor.wav" type="AudioStream" id=8]
 [ext_resource path="res://resources/audio/robbemanthunk.wav" type="AudioStream" id=9]
 [ext_resource path="res://resources/cars/LED (Red).material" type="Material" id=10]
-[ext_resource path="res://resources/audio/honk.wav" type="AudioStream" id=11]
+[ext_resource path="res://resources/audio/quack.wav" type="AudioStream" id=11]
 
 [sub_resource type="BoxShape" id=8]
 extents = Vector3( 0.286114, 0.27505, 0.712902 )
@@ -562,6 +562,7 @@ material/0 = null
 
 [node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 11 )
-unit_db = 70.164
+unit_db = 24.0
+doppler_tracking = 2
 
 [connection signal="body_entered" from="." to="." method="_on_Car_body_entered"]

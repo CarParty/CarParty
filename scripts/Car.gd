@@ -63,7 +63,7 @@ var previous_closest_offset = null
 func _physics_process(delta):
 	var velocity = self.linear_velocity.length()
 	$MotorNoise.pitch_scale = velocity / 15.0 + 1.0
-	$MotorNoise.unit_db = velocity / 8.0
+	$MotorNoise.unit_db = velocity / 8.0 + 10.0
 
 	if path_follow == null:
 		return
