@@ -86,12 +86,8 @@ func time_to_string(time):
 	return str_elapsed
 
 func restart():
-#	Client.reset_connection()
 	goto_scene("res://scenes/HostMenu.tscn")
-#	clients = []
-#	player_names = {}
 	player_speed = {}
-#	player_color = {}
 	clients_ready_for_track_json = []
 	player_finished = []
 	player_path = {}
@@ -102,7 +98,7 @@ func restart():
 		player_path_progress[player_name] = 0
 	race_time = -1
 	isRestart = true
-#	Client.restart_at_hostmenu()
+	used_colors = []
 	
 static func subtract(a: Array, b: Array) -> Array:
 	var result := []

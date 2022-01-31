@@ -8,9 +8,9 @@ var car_rounds_completed = {}
 var car_progress_global_transform = {}
 var car_paths = {}
 var car_visual_layer = {}
-var car_race_completed = {}
-var car_race_exit = {}
+# in game progress
 var player_progress = {}
+# drawing phase progress bar
 var player_progress_bar = {}
 
 var race_started = false
@@ -90,7 +90,7 @@ func _ready():
 	
 	for client in Global.clients:
 		camera_counter = 1
-		var carIndex = randi()%3
+		var carIndex = randi() % 3
 		var car = models[carIndex].instance()
 		car.color = Global.player_color[client]
 		car.material_index = material_indices[carIndex]
@@ -102,8 +102,6 @@ func _ready():
 		player_progress[client] = 0
 		car_progress[client] = -1
 		car_rounds_completed[client] = 0
-		car_race_completed[client] = false
-		car_race_exit[client] = false
 		car_progress_global_transform[client] = {}
 		car_progress_global_transform[client][-1] = car.global_transform
 		#set layer mask and cull mask!!!
@@ -114,14 +112,17 @@ func _ready():
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
 
+func is_not_racing_anymore(car):
+	return car in car_rounds_completed and car_rounds_completed[car] >= 3
+
 func _process(delta):
 	for client in Global.clients:
 		# only if the car doesn't compelte the race
-		if car_race_completed[client] || car_race_exit[client]:
+		if is_not_racing_anymore(client):
 			continue
 		cars[client].change_speed(float(Global.player_speed[client]))
 		
-	var send_track_now = true
+	var send_track_now = len(Global.clients) != 0
 	for client in Global.clients:
 		if not player_track_initialized[client] and client in Global.player_path:
 			player_track_initialized[client] = true
@@ -131,20 +132,16 @@ func _process(delta):
 #	if finished_tracks.size() == cars.size() and finished_tracks.size() != 0:
 #		finished_tracks.clear()	
 #		current_running_thread = build_racing_tracks()
-	if finished_tracks.size() != 0:
-		if finished_tracks.size() >= (cars.size()/2) and draw_isCountdown == false:
-			start_draw_countdown()
-		if finished_tracks.size() == cars.size():
-			draw_isCountdown = false
-			draw_finished = true
-			finished_tracks.clear()
-			current_running_thread = build_racing_tracks()		
+	if finished_tracks.size() != 0 and finished_tracks.size() == cars.size():
+		draw_isCountdown = false
+		draw_finished = true
+		finished_tracks.clear()
+		current_running_thread = build_racing_tracks()		
 	
 	if track_was_sent and not draw_finished and player_progress_bar:
 		for client in Global.clients:
 			player_progress_bar[client].get_node("AspectRatioContainer/ProgressBar").value = (Global.player_path_progress[client] - 1) * 100 / (track.get_node("DrawAreas").get_child_count())
 				
-		
 	if send_track_now and not track_was_sent:
 		current_running_thread = generate_track()
 		track_was_sent = true
@@ -270,28 +267,29 @@ func _on_car_progress(point, car):
 		if point == track.get_node("ProgressNodes").get_children().size() - 1:
 			car_rounds_completed[id] += 1
 			$SplitScreen._increase_round_count(id)
-	if car_rounds_completed[id] == 3 and Global.player_time_to_finish[id] == -1:
+	if is_not_racing_anymore(id) and Global.player_time_to_finish[id] == -1:
 		var time = Global.race_time
 		Global.player_time_to_finish[id] = time
 		# let car self-driving
 		# let camera orbit the car
-		car_race_completed[id] = true
 		$SplitScreen.race_complete(id)
-		
-	var all_have_completed = true
+	show_scoreboard_if_completed()
+
+func show_scoreboard_if_completed():
 	var completed_count = 0
 	for client in Global.clients:
-		if car_rounds_completed[client] < 3:
-			all_have_completed = false
-		elif not car_race_exit[client]:
+		if is_not_racing_anymore(client):
 			completed_count += 1
+	var all_have_completed = completed_count == len(Global.clients)
 	if all_have_completed and not scoreboard:
-		scoreboard = true
 		_show_scoreboard()
-	elif (completed_count==1) and not scoreboard:
+	#warning-ignore:integer_division
+	elif (completed_count >= len(Global.clients) / 2) and not scoreboard:
 		start_final_countdown()
+	
 		
 func _show_scoreboard():
+	scoreboard = true
 	_change_camera()
 	var i = 0
 	for client in Global.player_finished:
@@ -312,30 +310,6 @@ func _show_scoreboard():
 	$TopCamera/ViewportContainer.visible = true
 	$TopCamera/FinishPhaseOverlay.visible = true
 
-func start_draw_countdown():
-	draw_isCountdown = true
-	var draw_timer = Timer.new()
-	add_child((draw_timer))
-	draw_timer.one_shot = true
-	draw_timer.wait_time = draw_countdown
-	draw_timer.connect("timeout",self,"_draw_timeout")
-	draw_timer.start()
-	print("timer start")
-	pass
-
-func _draw_timeout():
-	if(not draw_isCountdown):
-		return
-	for car in cars:
-		if not finished_tracks.has(car):
-			Global.clients.erase(car)
-			Global.player_names.erase(car)
-			cars.erase(car)
-			player_progress.erase(car)
-			print("kick " + car)
-	draw_isTimeout = true
-	print("time out")
-
 func start_final_countdown():
 	var race_timer = Timer.new()
 	add_child((race_timer))
@@ -348,11 +322,10 @@ func start_final_countdown():
 func _final_timeout():
 	print("timeout")
 	if not scoreboard:
-		scoreboard = true
 		_show_scoreboard()
 
 func _respawn_car(car):
-	if car_race_completed[cars_to_client_id[car]]||car_race_exit[cars_to_client_id[car]]:
+	if is_not_racing_anymore(cars_to_client_id[car]) or not race_started:
 		return
 	car.linear_velocity = Vector3.ZERO
 	car.engine_force = 0
@@ -367,28 +340,23 @@ func _respawn_car_player_id(player_id):
 	_respawn_car(cars[player_id])
 	
 func _honk(player_id, pressed):
-	if car_race_completed[player_id] or car_race_exit[player_id]:
-		return
 	if pressed:
-		cars[player_id].honk()	
+		cars[player_id].honk()
 
 func _exit_player(player_id):
-	if not draw_finished:
-		return
+	# set car rounds completed to big number to make sure that exited player
+	# does not count as racing
 	var m = 100
-	var flag = true
 	car_rounds_completed[player_id] = m
-	car_race_exit[player_id] = true
-	$SplitScreen.exit_player(player_id)
-	for player_id in car_race_exit:
-		if not car_race_exit[player_id]:
-			flag = false
-			break
-	if flag:
-		scene_path_to_load = "res://scenes/Scoreboard.tscn"
-		$FadeIn.show()
-		$FadeIn.fade_in()
-	pass
+	if draw_finished:
+		$SplitScreen.exit_player(player_id)
+	else:
+		self.remove_child(cars[player_id])
+		cars.erase(player_id)
+		player_progress.erase(player_id)
+		if player_id in player_progress_bar:
+			player_progress_bar[player_id].get_parent().remove_child(player_progress_bar[player_id])
+	show_scoreboard_if_completed()
 
 func _on_FadeIn_fade_finished():
 	if scene_path_to_load == "restart":

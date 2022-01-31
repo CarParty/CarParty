@@ -1,7 +1,7 @@
 extends Node
 
 export var websocket_url = "wss://cp.linus.space/ws"
-var _server = WebSocketClient.new()
+var _server = null
 
 signal addPlayerName(client_id, client_name)
 signal rmPlayerName(client_id)
@@ -18,8 +18,15 @@ signal exit_player(client_id)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	_setup_client()
+
+func send_packet(bytes):
+	if _server.get_peer(1).is_connected_to_host():
+		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
+		_server.get_peer(1).put_packet(bytes)
 	
 func _setup_client():
+	if(not Global.isRestart):
+		Global.key = gen_random_string(4)
 	Global.clients = []
 	Global.player_names = {}
 	_server = WebSocketClient.new()
@@ -28,13 +35,15 @@ func _setup_client():
 	Client._server.connect("connection_error", self, "_closed")
 	Client._server.connect("connection_established", self, "_connected")
 	Client._server.connect("data_received", self, "_on_data")
-
+	print("Created a new server!!")
 
 func connect_to_url():
 	var err = _server.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
+	else:
+		print("Connected to URL!!! " + websocket_url)
 		
 func reset_connection():
 	_setup_client()
@@ -45,8 +54,7 @@ func send_global_message(action: String, data: Dictionary):
 	for key in data:
 		message[key] = data[key]
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-	_server.get_peer(1).put_packet(packet)
+	send_packet(packet)
 	# print("Sent message: "+packet.get_string_from_utf8())
 	
 func send_client_message(action: String, data: Dictionary, client_id: String):
@@ -55,8 +63,7 @@ func send_client_message(action: String, data: Dictionary, client_id: String):
 	for key in data:
 		message[key] = data[key]
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-	_server.get_peer(1).put_packet(packet)
+	send_packet(packet)
 	
 func start_phase_player(phase: String, player_id: String):
 	var message: Dictionary
@@ -74,8 +81,7 @@ func start_phase_player(phase: String, player_id: String):
 		_:
 			print("Wtf is a "+phase+" phase?!?")
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-	_server.get_peer(1).put_packet(packet)
+	send_packet(packet)
 	print("Sent message: "+packet.get_string_from_utf8())
 
 
@@ -95,8 +101,7 @@ func start_phase_global(phase: String):
 		_:
 			print("Wtf is a "+phase+" phase?!?")
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-	_server.get_peer(1).put_packet(packet)
+	send_packet(packet)
 	print("Sent message: "+packet.get_string_from_utf8())
 
 
@@ -108,6 +113,7 @@ func _closed(was_clean = false):
 
 
 func _connected(proto = ""):
+	# guess key until we have a valid one
 	# This is called on connection, "proto" will be the selected WebSocket
 	# sub-protocol (which is optional)
 	print("Connected with protocol: ", proto)
@@ -115,9 +121,8 @@ func _connected(proto = ""):
 	# and not put_packet directly when not using the MultiplayerAPI.
 	var message: Dictionary = {"action": "login_server","server_code": Global.key}
 	var packet: PoolByteArray = JSON.print(message).to_utf8()
-	_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-	_server.get_peer(1).put_packet(packet)
-	# print("Sent message: "+packet.get_string_from_utf8())
+	send_packet(packet)
+	print("Sent message: "+packet.get_string_from_utf8())
 	
 	
 func send_global_message_by_chunk(action: String, message: Dictionary):
@@ -143,8 +148,7 @@ func send_global_message_by_chunk(action: String, message: Dictionary):
 		}
 		var bytes: PoolByteArray = JSON.print(json).to_utf8()
 #		print(JSON.print(json))
-		_server.get_peer(1).set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
-		_server.get_peer(1).put_packet(bytes)
+		send_packet(bytes)
 		i = next_i
 		poll_counter += 1
 
@@ -191,10 +195,10 @@ func _on_data():
 				start_phase_player("naming", parsed_data.client_id)
 				print("Client connected "+parsed_data.client_id)
 			"disconnect":
-#				Global.clients.erase(parsed_data.client_id)
-#				Global.player_names.erase(parsed_data.client_id)
+				Global.clients.erase(parsed_data.client_id)
+				Global.player_names.erase(parsed_data.client_id)
 				emit_signal("exit_player",parsed_data.client_id)
-#				emit_signal("rmPlayerName",parsed_data.client_id)
+				emit_signal("rmPlayerName",parsed_data.client_id)
 				print("Client disconnected "+parsed_data.client_id)
 			"player_name":
 				Global.player_names[parsed_data.client_id] = parsed_data.name
@@ -208,6 +212,7 @@ func _on_data():
 				Global.clients_ready_for_track_json.append(parsed_data.client_id)
 				print("Client ready for track json:", parsed_data.client_id)
 			"path_transmission":
+				Global.player_path_progress[parsed_data.client_id] = 100000
 				track_message_handler(parsed_data)
 			"reset_car":
 				emit_signal("respawn_car",parsed_data.client_id)
@@ -238,3 +243,13 @@ func _process(_delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
 	# emission will only happen when calling this function.
 	_server.poll()
+
+
+const ascii_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+func gen_random_string(length: int) -> String:
+	var result = ""
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	for _i in range(length):
+		result += ascii_letters[rng.randi_range(0, ascii_letters.length()-1)]
+	return result

@@ -30,7 +30,6 @@ export var follow_length = 1.5
 var path: Path = null
 var path_follow: PathFollow = null
 
-onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
 onready var line_drawer = load("scenes/utility/LineDrawer.tscn").instance()
 
 var color: Color
@@ -49,7 +48,6 @@ func set_path(new_path: Path):
 	path.add_child(path_follow)
 	path_follow.offset = 0.0
 	path_follow.loop = true
-	path_follow.add_child(debug_sphere)
 	path.add_child(line_drawer)
 	line_drawer.draw_with_material($CarBody1/CarBody/Body1.get_surface_material(material_index).duplicate())
 
@@ -102,7 +100,7 @@ func _physics_process(delta):
 	var closest_offset = path.curve.get_closest_offset(path.to_local(self.get_global_transform().origin))
 	if previous_closest_offset == null:
 		previous_closest_offset = closest_offset
-	if abs(previous_closest_offset - closest_offset) < 10:
+	if abs(previous_closest_offset - closest_offset) < 3:
 		if engine_force >= -0.5 or forward_velocity > 0:
 			path_follow.offset = closest_offset + follow_length
 		else:

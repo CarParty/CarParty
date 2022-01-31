@@ -1,26 +1,13 @@
 extends Control
 
-# Code creation
-const ascii_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 var scene_path_to_load
 
-func gen_unique_string(length: int) -> String:
-	var result = ""
-	var rng = RandomNumberGenerator.new()
-	rng.randomize()
-	for _i in range(length):
-		result += ascii_letters[rng.randi_range(0, ascii_letters.length()-1)]
-	return result
 
 func _ready():
 	$MapSelection/VBoxContainer/Map.get_node(Global.track).set_pressed(true)
 	if(Global.setting == "Night"):
 		$MapSelection/VBoxContainer/Map/Night.set_pressed(true)
 	
-	# guess key until we have a valid one
-	if(not Global.isRestart):
-		Global.key = gen_unique_string(4)
 	# QR Code
 	load_qr_code()
 	$HTTPRequest.connect("request_completed", self, "_qrcode_request_completed")
@@ -66,6 +53,7 @@ func get_resized_texture(t: Texture, width: int = 0, height: int = 0):
 	return itex
 
 func _on_BackButton_pressed():
+	Global.isRestart = false
 	Client.reset_connection()
 	Global.goto_scene("res://scenes/StartMenu.tscn")
 	

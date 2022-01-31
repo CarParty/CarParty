@@ -399,9 +399,6 @@ unit_db = 4.684
 pitch_scale = 0.46
 bus = "Thunk Sounds"
 
-[node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource( 11 )
-
 [node name="Light1" type="SpotLight" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.247687, 0.155711, 0.781425 )
 light_energy = 2.0
@@ -446,5 +443,9 @@ light_indirect_energy = 5.0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.235, 0.055, -0.775 )
 light_color = Color( 1, 0, 0, 1 )
 light_indirect_energy = 5.0
+
+[node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource( 11 )
+unit_db = 70.164
 
 [connection signal="body_entered" from="." to="." method="_on_Car_body_entered"]
