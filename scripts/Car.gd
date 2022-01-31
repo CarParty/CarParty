@@ -34,11 +34,12 @@ onready var debug_sphere = load("scenes/DebugSphere.tscn").instance()
 onready var line_drawer = load("scenes/utility/LineDrawer.tscn").instance()
 
 var color: Color
+var material_index = 0
 
 func _ready():
-	var material = $CarBody1/CarBody/Body1.get_surface_material(0).duplicate()
+	var material = $CarBody1/CarBody/Body1.get_surface_material(material_index).duplicate()
 	material.albedo_color = color
-	$CarBody1/CarBody/Body1.set_surface_material(0, material)
+	$CarBody1/CarBody/Body1.set_surface_material(material_index, material)
 	brake = 1
 	$MotorNoise.playing = true
 
@@ -50,7 +51,7 @@ func set_path(new_path: Path):
 	path_follow.loop = true
 	path_follow.add_child(debug_sphere)
 	path.add_child(line_drawer)
-	line_drawer.draw_with_material($CarBody1/CarBody/Body1.get_surface_material(0).duplicate())
+	line_drawer.draw_with_material($CarBody1/CarBody/Body1.get_surface_material(material_index).duplicate())
 
 func set_path_visual_layer(layer):
 	line_drawer.set_layer_mask_bit(layer, true)
