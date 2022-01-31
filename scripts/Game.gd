@@ -77,7 +77,7 @@ func _ready():
 	$FellOffTrack.connect("fell_off_track", self, "_respawn_car")
 	$SplitScreen.connect("start_race", self, "_start_racing_game")
 	Client.connect("respawn_car", self, "_respawn_car_player_id")
-	Client.connect("drift_car", self, "_drift_car")
+	Client.connect("drift_car", self, "_honk")
 	Client.connect("exit_player",self,"_exit_player")
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Motor Sounds"), -5 * Global.clients.size())
@@ -361,15 +361,11 @@ func _respawn_car(car):
 func _respawn_car_player_id(player_id):
 	_respawn_car(cars[player_id])
 	
-func _drift_car(player_id, pressed):
-	if car_race_completed[player_id]||car_race_exit[player_id]:
+func _honk(player_id, pressed):
+	if car_race_completed[player_id] or car_race_exit[player_id]:
 		return
 	if pressed:
-		cars[player_id].get_node("Wheel2").set_friction_slip(1)
-		cars[player_id].get_node("Wheel3").set_friction_slip(1)
-	else:
-		cars[player_id].get_node("Wheel2").set_friction_slip(3)
-		cars[player_id].get_node("Wheel3").set_friction_slip(3)
+		cars[player_id].honk()	
 
 func _exit_player(player_id):
 	if not draw_finished:

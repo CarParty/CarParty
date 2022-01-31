@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://resources/cars/Plastic - Matte (Red).material" type="Material" id=1]
 [ext_resource path="res://resources/cars/Plastic - Matte (Black).material" type="Material" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://resources/audio/motor.wav" type="AudioStream" id=8]
 [ext_resource path="res://resources/audio/robbemanthunk.wav" type="AudioStream" id=9]
 [ext_resource path="res://resources/cars/LED (Red).material" type="Material" id=10]
+[ext_resource path="res://resources/audio/honk.wav" type="AudioStream" id=11]
 
 [sub_resource type="ArrayMesh" id=1]
 blend_shape_mode = 0
@@ -397,6 +398,9 @@ stream = ExtResource( 9 )
 unit_db = 4.684
 pitch_scale = 0.46
 bus = "Thunk Sounds"
+
+[node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource( 11 )
 
 [node name="Light1" type="SpotLight" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.247687, 0.155711, 0.781425 )

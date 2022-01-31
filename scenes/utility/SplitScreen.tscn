@@ -11,7 +11,6 @@ script = ExtResource( 1 )
 layer = -5
 
 [node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource( 2 )

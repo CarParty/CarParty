@@ -202,7 +202,8 @@ func _on_data():
 				start_phase_player("waiting", parsed_data.client_id)
 				print("Player connected: "+Global.player_names[parsed_data.client_id])
 			"speed_change":
-				Global.player_speed[parsed_data.client_id] = parsed_data.value
+				if parsed_data.value != null:
+					Global.player_speed[parsed_data.client_id] = parsed_data.value
 			"ready_for_track_json":
 				Global.clients_ready_for_track_json.append(parsed_data.client_id)
 				print("Client ready for track json:", parsed_data.client_id)

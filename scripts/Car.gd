@@ -138,5 +138,7 @@ func _physics_process(delta):
 
 
 func _on_Car_body_entered(_body):
-	print("entered")
 	$ThunkNoise.play()
+
+func honk():
+	$HonkNoise.play()
