@@ -11,9 +11,17 @@
 
 .reverse-scene-rotation {
   transform-style: preserve-3d;
+  transition: transform 2s;
+}
+.scene.default-rotation .reverse-scene-rotation {
   transform: rotateZ(-1 * map.get($defaultSceneRotation, 'z'))
     rotateX(-1 * map.get($defaultSceneRotation, 'x'))
     rotateY(-1 * map.get($defaultSceneRotation, 'y'));
+}
+.scene.side-rotation .reverse-scene-rotation {
+  transform: rotateZ(-1 * map.get($sideSceneRotation, 'z'))
+    rotateX(-1 * map.get($sideSceneRotation, 'x'))
+    rotateY(-1 * map.get($sideSceneRotation, 'y'));
 }
 
 // modified from https://codepen.io/bennettfeely/pen/nbFCp

@@ -1,6 +1,6 @@
 <div id="root">
   <div class="content mx-auto">
-    <div class="scene">
+    <div id="scene" class="scene default-rotation">
       <div class="cube-road">
         <div class="road-face">
           <div class="road-path">
@@ -28,6 +28,11 @@
               </div>
             </div>
           </div>
+        </div>
+        <div id="ramp" class="ramp d-none" style="transform: translateZ(410px);">
+          <div class="road-face-ramp"></div>
+          <div class="road-ramp-back"></div>
+          <div class="road-ramp"></div>
         </div>
       </div>
       <div id="party" class="text-party-pos" style="transform: translateY(-260px);">
@@ -92,6 +97,55 @@
           </div>
         </div>
       </div>
+
+      <div id="paintbucket" class="cube-paintbucket d-none" style="transform: translateZ(190px);">
+        <div class="paintbucket-position">
+          <div class="paintBucket">
+            <div class="paintBucketLeft"></div>
+
+            <div class="middle">
+              <div class="bigArrow">
+                <div class="smallArrow"></div>
+              </div>
+              <div class="middleLeft"></div>
+              <div class="middleRight"></div>
+            </div>
+
+            <div class="paintBucketRight"></div>
+
+            <div class="lid">
+              <div class="handle"></div>
+
+              <div class="shadow"></div>
+
+              <div class="paintHelp"></div>
+              <div class="paint">
+                <div class="paintSetUp">
+                  <div class="paintDripLeft"></div>
+                  <div class="paintDripLong"></div>
+                  <div class="paintDrip">
+                    <div class="paintDripInset"></div>
+                  </div>
+                  <div class="paintDripConnect"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="splat" class="splatter d-none">
+      <div id="splat0" class="paintSplat"></div>
+      <div id="splat1" class="paintSplat"></div>
+      <div id="splat2" class="paintSplat"></div>
+      <div id="splat3" class="paintSplat"></div>
+      <div id="splat4" class="paintSplat"></div>
+      <div id="splat5" class="paintSplat"></div>
+      <div id="splat6" class="paintSplat"></div>
+      <div id="splat7" class="paintSplat"></div>
     </div>
   </div>
 </div>

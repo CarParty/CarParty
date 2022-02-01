@@ -2,6 +2,11 @@
 
 @import './animations.scss';
 
+#root {
+  --car-color: #d43437;
+  --new-car-color: #d43437;
+}
+
 .content {
   position: relative;
   width: 400px;
@@ -51,16 +56,29 @@ $defaultSceneRotation: (
   'x': 0deg,
   'z': -10deg,
 );*/
+$sideSceneRotation: (
+  'y': 90deg,
+  'x': 0deg,
+  'z': -10deg,
+);
 
 .scene {
   position: relative;
   transform-style: preserve-3d;
+  transition: transform 2s;
+}
+.scene.default-rotation {
   transform: rotateY(map.get($defaultSceneRotation, 'y'))
     rotateX(map.get($defaultSceneRotation, 'x'))
     rotateZ(map.get($defaultSceneRotation, 'z')); // translateZ(-100px);
   // transform: rotateY(90deg) rotateX(0deg) rotateZ(-10deg) translateZ(-50px);
   // transform: rotateY(0deg) rotateX(-1deg) rotateZ(0deg);
   // transform: rotateY(0deg) rotateX(-90deg) rotateZ(0deg) translateZ(200px);
+}
+.scene.side-rotation {
+  transform: rotateY(map.get($sideSceneRotation, 'y'))
+    rotateX(map.get($sideSceneRotation, 'x'))
+    rotateZ(map.get($sideSceneRotation, 'z')) translateZ(-50px);
 }
 
 .car-pos {
@@ -128,7 +146,7 @@ $defaultSceneRotation: (
 .path {
   width: 200px;
   height: 10px;
-  background: coral;
+  background: var(--car-color);
   transform: translateZ(140px) translateY(70px) translateX(58px) rotateY(-90deg);
 }
 
@@ -152,7 +170,7 @@ $defaultSceneRotation: (
   clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%);
   transform-origin: bottom center;
   transform: rotate(20deg);
-  background: coral;
+  background: var(--car-color);
   border: 1px solid black;
 }
 
@@ -174,7 +192,7 @@ $defaultSceneRotation: (
 .cube__face {
   position: absolute;
   border: 2px solid black;
-  background-color: #d43437;
+  background-color: var(--car-color);
 }
 .wheels,
 .party-text {
@@ -420,5 +438,21 @@ $defaultSceneRotation: (
   right: 5px;
 }
 
+.scene.enable-transitions #path,
+.scene.enable-transitions .path-marker,
+.scene.enable-transitions #car,
+.scene.enable-transitions #pen {
+  transition: transform 2s;
+}
+
+.scene.enable-fast-transitions #path,
+.scene.enable-fast-transitions .path-marker,
+.scene.enable-fast-transitions #car,
+.scene.enable-fast-transitions #pen {
+  transition: transform 0.1s;
+}
+
 @import './road.scss';
 @import './balloons.scss';
+@import './paintbucket.scss';
+@import './splatter.scss';

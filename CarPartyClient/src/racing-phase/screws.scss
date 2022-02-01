@@ -38,15 +38,15 @@
   bottom: 0.5em;
   right: 0.5em;
 }
-.tl .indent {
+.tl > .indent {
   transform: rotate(150deg);
 }
-.tr .indent {
+.tr > .indent {
   transform: rotate(110deg);
 }
-.bl .indent {
+.bl > .indent {
   transform: rotate(50deg);
 }
-.br .indent {
+.br > .indent {
   transform: rotate(170deg);
 }

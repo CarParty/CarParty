@@ -1,0 +1,44 @@
+.splatter {
+  position: absolute;
+  width: 400px;
+  height: 350px;
+  transform: translateY(-0px);
+}
+
+.splatter.clear {
+  transition: opacity 3s;
+  opacity: 0;
+}
+
+.paintSplat {
+  position: absolute;
+  width: 50px;
+  height: 400px;
+  background-color: var(--new-car-color);
+  border-radius: 0px 0px 50px 50px;
+  transform: translateY(-400px);
+}
+.paintSplat:nth-child(1) {
+  left: 0px;
+}
+.paintSplat:nth-child(2) {
+  left: 50px;
+}
+.paintSplat:nth-child(3) {
+  left: 100px;
+}
+.paintSplat:nth-child(4) {
+  left: 150px;
+}
+.paintSplat:nth-child(5) {
+  left: 200px;
+}
+.paintSplat:nth-child(6) {
+  left: 250px;
+}
+.paintSplat:nth-child(7) {
+  left: 300px;
+}
+.paintSplat:nth-child(8) {
+  left: 350px;
+}

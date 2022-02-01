@@ -64,7 +64,7 @@ export class WaitingPhaseComponent extends HTMLElement {
     switch (name) {
       case 'color':
         if (this.root) {
-          this.root.style.backgroundColor = newValue;
+          // this.root.style.backgroundColor = newValue;
         }
         break;
     }

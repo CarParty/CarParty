@@ -1,3 +1,4 @@
+import { AnimatedSplashComponent } from './animated-splash/animatedSplash.component';
 import template from './car-party.component.html';
 import css from './car-party.component.scss';
 import { Connection } from './connection';
@@ -24,6 +25,7 @@ export class CarPartyComponent extends HTMLElement {
   private dividerEl: HTMLDivElement;
   private outletSmallEl: HTMLDivElement;
 
+  private splashEl: AnimatedSplashComponent;
   private currentPhaseView?: JoinPhaseComponent | NamingPhaseComponent | WaitingPhaseComponent | DrawingPhaseComponent | RacingPhaseComponent | EndingPhaseComponent;
 
   private connection: Connection;
@@ -49,6 +51,7 @@ export class CarPartyComponent extends HTMLElement {
 
     this.dividerEl = this.shadow.getElementById('divider') as HTMLDivElement;
     this.outletSmallEl = this.shadow.getElementById('outletSmall') as HTMLDivElement;
+    this.splashEl = this.shadow.getElementById('splash') as AnimatedSplashComponent;
 
     this.root = this.shadow.getElementById('root');
     if (!this.root) {
@@ -66,7 +69,7 @@ export class CarPartyComponent extends HTMLElement {
     this.connection.subscribe('color_transmission', data => {
       this.carColor = data.color;
       if (this.root) {
-        this.root.style.backgroundColor = this.carColor;
+        // this.root.style.backgroundColor = this.carColor;
       }
     });
 
@@ -75,6 +78,8 @@ export class CarPartyComponent extends HTMLElement {
         window.navigator.vibrate(data.pattern);
       }
     });
+
+    this.splashEl.connection = this.connection;
 
     this.switchPhase('join');
   }
@@ -89,9 +94,11 @@ export class CarPartyComponent extends HTMLElement {
         break;
       case Phase.naming:
         this.currentPhaseView = document.createElement('naming-phase');
+        useLargeOutlet = false;
         break;
       case Phase.waiting:
         this.currentPhaseView = document.createElement('waiting-phase');
+        useLargeOutlet = false;
         break;
       case Phase.drawing:
         this.currentPhaseView = document.createElement('drawing-phase');
@@ -101,6 +108,7 @@ export class CarPartyComponent extends HTMLElement {
         break;
       case Phase.ending:
         this.currentPhaseView = document.createElement('ending-phase');
+        useLargeOutlet = false;
         break;
       default:
         console.log('unmatched phase');
