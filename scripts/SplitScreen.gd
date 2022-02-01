@@ -21,6 +21,26 @@ const layouts = {
 	14: [4, 4],
 	15: [4, 4],
 	16: [4, 4],
+	17: [5, 4],
+	18: [5, 4],
+	19: [5, 4],
+	20: [5, 4],
+	21: [5, 5],
+	22: [5, 5],
+	23: [5, 5],
+	24: [5, 5],
+	25: [5, 5],
+	26: [6, 5],
+	27: [6, 5],
+	28: [6, 5],
+	29: [6, 5],
+	30: [6, 6],
+	31: [6, 6],
+	32: [6, 6],
+	33: [6, 6],
+	34: [6, 6],
+	35: [6, 6],
+	36: [6, 6],
 }
 
 
@@ -355,6 +375,8 @@ func _on_timer_final_timeout():
 
 func exit_player(player_id):
 	var dynamic_font : DynamicFont = DynamicFont.new()
+	if not player_id in player_viewports:
+		return
 	dynamic_font.font_data = load("res://resources/fonts/Bungee-Regular.ttf")
 	dynamic_font.size = player_viewports[player_id].rect_size.x / 6
 	player_label[player_id].add_font_override("font", dynamic_font)

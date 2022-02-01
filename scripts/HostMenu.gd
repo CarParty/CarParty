@@ -126,7 +126,7 @@ func _kickButton_pressed(kickButton):
 	print("Client disconnected "+id)
 	
 func rmPlayerName(id):
-	if get_node("MarginContainer2/VBoxContainer/VBoxContainer/" +id) != null:
+	if has_node("MarginContainer2/VBoxContainer/VBoxContainer/" +id):
 		get_node("MarginContainer2/VBoxContainer/VBoxContainer/" +id).queue_free()
 
 

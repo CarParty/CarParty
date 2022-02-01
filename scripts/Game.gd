@@ -26,6 +26,8 @@ var draw_countdown = 60
 var draw_isCountdown = false
 var draw_isTimeout = false
 
+var final_countdown_started = false
+
 var track_was_sent = false
 var player_track_initialized = {}
 var finished_tracks = []
@@ -109,7 +111,7 @@ func _ready():
 		#set layer mask and cull mask!!!
 		#start from 5th layer 
 		car_visual_layer[client] = 4+index
-		car.set_path_visual_layer(4+index)
+		car.set_path_visual_layer(4+(index % 16))
 		index += 1
 		player_track_initialized[client] = false
 	Global.clients_ready_for_track_json = []
@@ -231,8 +233,11 @@ func build_racing_tracks():
 	$CountdownPlayer.play()
 	
 func _start_racing_game():
+	if race_started:
+		return
 	race_started = true
 	for client in Global.clients:
+		print("Setting path of ", client)
 		cars[client].set_path(car_paths[client])
 
 func generate_path_from_json(client, path):
@@ -296,6 +301,8 @@ func _show_scoreboard():
 	_change_camera()
 	var i = 0
 	for client in Global.player_finished:
+		if not client in Global.clients:
+			continue
 		i += 1
 		cars[client].get_node("MotorNoise").set_stream_paused(true)
 		cars[client].get_node("ThunkNoise").set_stream_paused(true)
@@ -314,8 +321,11 @@ func _show_scoreboard():
 	$TopCamera/FinishPhaseOverlay.visible = true
 
 func start_final_countdown():
+	if final_countdown_started:
+		return
+	final_countdown_started = true
 	var race_timer = Timer.new()
-	add_child((race_timer))
+	add_child(race_timer)
 	race_timer.one_shot = true
 	race_timer.wait_time = final_countdown
 	race_timer.connect("timeout",self,"_final_timeout")

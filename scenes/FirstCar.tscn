@@ -535,7 +535,7 @@ material/0 = null
 
 [node name="HonkNoise" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 12 )
-unit_db = 20.0
+unit_db = 15.0
 bus = "Thunk Sounds"
 doppler_tracking = 2
 
