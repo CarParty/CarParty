@@ -721,7 +721,7 @@ export class DrawingPhaseComponent extends HTMLElement {
         rotMatrix: goalTransform.matrix
       }, 1000)
         .onUpdate(upd => {
-          console.log('tween update');
+          // console.log('tween update');
           this.svgRoot.viewBox.baseVal.x = upd.x;
           this.svgRoot.viewBox.baseVal.y = upd.y;
           this.svgRoot.viewBox.baseVal.width = upd.width;

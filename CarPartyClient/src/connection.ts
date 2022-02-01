@@ -56,8 +56,8 @@ export class Connection {
   }
 
   public send(data: ClientMessage): void {
+    console.log(data.action);
     const json = JSON.stringify(data);
-    console.log(json);
     this.ws?.send(json);
   }
 }

@@ -177,7 +177,6 @@ export class AnimatedSplashComponent extends HTMLElement {
         this.currentTween = new Tween({ i: 0 }).to({ i: 50 }, 5000)
           .onUpdate(upd => {
             this.splatEls.forEach((el, index) => {
-              console.log(-400 + upd.i * velocities[index]);
               el.style.transform = `translateY(${Math.min(0, -400 + upd.i * velocities[index])}px)`;
             });
           }).delay(1000).start()

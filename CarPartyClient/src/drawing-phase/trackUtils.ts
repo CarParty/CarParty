@@ -348,7 +348,7 @@ export function chopSharpSpikes(polygon: Polygon): Polygon {
         && distanceSquared(chopped[i], chopped[next]) + distanceSquared(chopped[next], chopped[next2]) > 3 * (distanceSquared(chopped[i], lineIntersect) + distanceSquared(lineIntersect, chopped[next2]))
         && angle(chopped[i], chopped[next], chopped[next2]) < 0.05
       ) {
-        console.log('chop, chop1', angle(chopped[i], chopped[next], chopped[next2]));
+        // console.log('chop, chop1', angle(chopped[i], chopped[next], chopped[next2]));
         // chopped.splice(next, 1);
         if (Math.abs(lineIntersect.x - chopped[i].x) < 0.01 && Math.abs(lineIntersect.y - chopped[i].y) < 0.01) {
           chopped.splice(next, 1);
@@ -369,7 +369,7 @@ export function chopSharpSpikes(polygon: Polygon): Polygon {
         && angle(chopped[i], chopped[next], chopped[next2]) < 0.05
       ) {
         // chopped.splice(next, 1);
-        console.log('chop, chop2', angle(chopped[i], chopped[next], chopped[next2]));
+        // console.log('chop, chop2', angle(chopped[i], chopped[next], chopped[next2]));
         if (Math.abs(lineIntersect.x - chopped[next2].x) < 0.01 && Math.abs(lineIntersect.y - chopped[next2].y) < 0.01) {
           chopped.splice(next, 1);
         } else {
@@ -571,7 +571,6 @@ export function enlargeInlay(track: Track, chopped: Polygon, offseted: PolygonWi
 export function generateBorderPairs(inner: PolygonWithIndex, outer: Polygon): [Point, Point][][] {
   const TARGET_LENGTH = 50;
   let index = 0;
-  let currentLength = 0;
   const pairs: [Point, Point][][] = [];
   let currentSegment: [Point, Point][] | null = null;
   while (index < inner.length) {
@@ -600,7 +599,7 @@ export function generateBorderPairs(inner: PolygonWithIndex, outer: Polygon): [P
           progress += (distance - progress >= 1.5 * TARGET_LENGTH) || distance - progress < TARGET_LENGTH
             ? TARGET_LENGTH
             : Math.max((distance - progress) / 2, TARGET_LENGTH / 2)) { // complex update function get nicely spaced segments
-          console.log(progress, distance);
+          // console.log(progress, distance);
           if (progress === 0) {
             // just makes the math simpler
             continue;
@@ -628,7 +627,7 @@ export function generateBorderPairs(inner: PolygonWithIndex, outer: Polygon): [P
         progress += (distance - progress >= 1.5 * TARGET_LENGTH) || distance - progress < TARGET_LENGTH
           ? TARGET_LENGTH
           : Math.max((distance - progress) / 2, TARGET_LENGTH / 2)) { // complex update function get nicely spaced segments
-        console.log(progress, distance);
+        // console.log(progress, distance);
         if (progress === 0) {
           // just makes the math simpler
           continue;
