@@ -129,6 +129,11 @@ export class CarPartyComponent extends HTMLElement {
     if (this.carColor) {
       this.currentPhaseView.setAttribute('color', this.carColor);
     }
+    if (this.dividerEl.classList.contains('d-none') && !useLargeOutlet) {
+      this.splashEl.resume();
+    } else if (!this.dividerEl.classList.contains('d-none') && useLargeOutlet) {
+      this.splashEl.pause();
+    }
     if (useLargeOutlet) {
       this.dividerEl.classList.add('d-none');
       this.root?.appendChild(this.currentPhaseView);

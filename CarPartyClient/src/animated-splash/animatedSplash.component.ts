@@ -148,7 +148,7 @@ export class AnimatedSplashComponent extends HTMLElement {
     this.sceneEl.classList.remove('default-rotation');
     this.penEl.style.transform = 'translateX(-90px) translateZ(40px)';
     this.carEl.style.transform = 'translateX(-80px)';
-    new Tween({ x: 0, y: 0 }).to({ x: -520, y: -210 }, 3000)
+    this.currentTween = new Tween({ x: 0, y: 0 }).to({ x: -520, y: -210 }, 3000)
       .onUpdate(upd => {
         this.partyEl.style.transform = `translateY(${upd.y}px) translateZ(${upd.x}px)`;
       }).delay(3000).start()
@@ -201,6 +201,14 @@ export class AnimatedSplashComponent extends HTMLElement {
         this.rampEl.classList.add('d-none');
         this.sceneEl.classList.remove('enable-fast-transitions');
       });
+  }
+
+  public pause(): void {
+    this.currentTween?.pause();
+  }
+
+  public resume(): void {
+    this.currentTween?.resume();
   }
 
   public attributeChangedCallback(name: string, oldValue: string, newValue: string): void { }
