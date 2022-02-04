@@ -517,6 +517,8 @@ export class DrawingPhaseComponent extends HTMLElement {
     const additionalPoints = rewindSegment.map(point => `${point.x},${point.y}`);
 
     return new Promise<void>((resolve, reject) => {
+      const pathElement = this.pathEl;
+      const [posMarkerElementX, posMarkerElementY] = [this.currentPosMarkerEl.cx.baseVal, this.currentPosMarkerEl.cy.baseVal];
       new Tween({ i: additionalPoints.length }).to({ i: 0 }, 1000)
         .onUpdate(upd => {
           const progress = Math.round(upd.i);
@@ -529,9 +531,9 @@ export class DrawingPhaseComponent extends HTMLElement {
               fullPath[fullPath.length - 1]
             ];
 
-          this.pathEl.setAttribute('d', pathString);
-          this.currentPosMarkerEl.cx.baseVal.value = markerPos.x;
-          this.currentPosMarkerEl.cy.baseVal.value = markerPos.y;
+          pathElement.setAttribute('d', pathString);
+          posMarkerElementX.value = markerPos.x;
+          posMarkerElementY.value = markerPos.y;
         })
         .start()
         .onComplete(() => {
@@ -697,6 +699,7 @@ export class DrawingPhaseComponent extends HTMLElement {
     goalTransform.setRotate(box.rotation * 180 / Math.PI, box.x, box.y);
 
     return new Promise<void>((resolve, reject) => {
+      const viewBox = this.svgRoot.viewBox.baseVal;
       new Tween({
         x: this.svgRoot.viewBox.baseVal.x,
         y: this.svgRoot.viewBox.baseVal.y,
@@ -715,10 +718,10 @@ export class DrawingPhaseComponent extends HTMLElement {
       }, 1000)
         .onUpdate(upd => {
           // console.log('tween update');
-          this.svgRoot.viewBox.baseVal.x = upd.x;
-          this.svgRoot.viewBox.baseVal.y = upd.y;
-          this.svgRoot.viewBox.baseVal.width = upd.width;
-          this.svgRoot.viewBox.baseVal.height = upd.height;
+          viewBox.x = upd.x;
+          viewBox.y = upd.y;
+          viewBox.width = upd.width;
+          viewBox.height = upd.height;
           // transform.setRotate(upd.rotation, box.x, box.y);
           transform.setMatrix(upd.rotMatrix);
         })
