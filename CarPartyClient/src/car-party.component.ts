@@ -1,3 +1,4 @@
+import { update } from '@tweenjs/tween.js';
 import { AnimatedSplashComponent } from './animated-splash/animatedSplash.component';
 import template from './car-party.component.html';
 import css from './car-party.component.scss';
@@ -80,6 +81,14 @@ export class CarPartyComponent extends HTMLElement {
     });
 
     this.splashEl.connection = this.connection;
+
+    // get the current time point to our tweening library (animation loop)
+    // do this here to prevent duplicated loops
+    function animate(time: number): void {
+      requestAnimationFrame(animate);
+      update(time);
+    }
+    requestAnimationFrame(animate);
 
     this.switchPhase('join');
   }

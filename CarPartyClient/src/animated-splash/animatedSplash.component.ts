@@ -1,4 +1,4 @@
-import { Easing, Tween, update } from '@tweenjs/tween.js';
+import { Easing, Tween } from '@tweenjs/tween.js';
 import { HexColor, Phase } from '../messages';
 import { Connection } from './../connection';
 import template from './animatedSplash.component.html';
@@ -74,13 +74,6 @@ export class AnimatedSplashComponent extends HTMLElement {
       this.shadow.getElementById('splat7') as HTMLElement
     ];
     this.rampEl = this.shadow.getElementById('ramp') as HTMLElement;
-
-    // get the current time point to our tweening library (animation loop)
-    function animate(time: number): void {
-      requestAnimationFrame(animate);
-      update(time);
-    }
-    requestAnimationFrame(animate);
 
     setTimeout(() => {
       this.connection?.subscribe('color_transmission', data => {

@@ -1,4 +1,4 @@
-import { Tween, update } from '@tweenjs/tween.js';
+import { Tween } from '@tweenjs/tween.js';
 import { Connection } from '../connection';
 import { requestFullscreen } from '../fullscreenUtils';
 import { SendPathDataMessageI } from '../messages';
@@ -120,13 +120,6 @@ export class DrawingPhaseComponent extends HTMLElement {
       console.error('root not found');
       return;
     }
-
-    // get the current time point to our tweening library (animation loop)
-    function animate(time: number): void {
-      requestAnimationFrame(animate);
-      update(time);
-    }
-    requestAnimationFrame(animate);
 
     // request and handle track data
     setTimeout(() => {
