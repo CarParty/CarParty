@@ -13,6 +13,7 @@ cssContainer.textContent = css;
 export class EndingPhaseComponent extends HTMLElement {
   private shadow: ShadowRoot;
   private root: HTMLElement | null;
+  private riveAnimation: Rive;
 
   public connection?: Connection;
 
@@ -23,28 +24,24 @@ export class EndingPhaseComponent extends HTMLElement {
   constructor() {
     super();
 
-    const shadow = this.attachShadow({ mode: 'closed' });
-    this.shadow = shadow;
+    this.shadow = this.attachShadow({ mode: 'closed' });
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'assets/styles.css';
     this.shadow.appendChild(link);
-    shadow.appendChild(templateEl.content.cloneNode(true));
-    shadow.appendChild(cssContainer.cloneNode(true));
+    this.shadow.appendChild(templateEl.content.cloneNode(true));
+    this.shadow.appendChild(cssContainer.cloneNode(true));
 
-    this.root = shadow.getElementById('root');
-    if (!this.root) {
-      console.error('root not found');
-      return;
-    }
+    this.root = this.shadow.getElementById('root');
 
-    const riveAnimation = new Rive({
+    // setup animation
+    this.riveAnimation = new Rive({
       src: Animation,
       canvas: this.shadow.getElementById('canvas'),
       autoplay: true
     });
-    riveAnimation.layout = new Layout({ fit: Fit.Cover, alignment: Alignment.Center });
-    console.log(riveAnimation);
+    this.riveAnimation.layout = new Layout({ fit: Fit.Cover, alignment: Alignment.Center });
+    console.log(this.riveAnimation);
   }
 
   private appendTextNode(value: string): void {
@@ -66,7 +63,9 @@ export class EndingPhaseComponent extends HTMLElement {
 
   public connectedCallback(): void { }
 
-  public disconnectedCallback(): void { }
+  public disconnectedCallback(): void {
+    this.riveAnimation.stop();
+  }
 }
 
 window.customElements.define('ending-phase', EndingPhaseComponent);
