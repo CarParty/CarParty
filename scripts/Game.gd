@@ -89,12 +89,12 @@ func _ready():
 	
 	var index = 0
 	
-	var models = [preload("res://scenes/FirstCar.tscn"), preload("res://scenes/Transporter.tscn"), preload("res://scenes/Forklift.tscn")]
-	var material_indices = [1,3,3]
+	var models = [preload("res://scenes/FirstCar.tscn"), preload("res://scenes/Transporter.tscn"), preload("res://scenes/Forklift.tscn"), preload("res://scenes/CitiCar.tscn")]
+	var material_indices = [1,3,3,3]
 	
 	for client in Global.clients:
 		camera_counter = 1
-		var carIndex = randi() % 3
+		var carIndex = randi() % 4
 		var car = models[carIndex].instance()
 		car.color = Global.player_color[client]
 		car.material_index = material_indices[carIndex]
