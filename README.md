@@ -12,15 +12,19 @@ This branch keeps relevant files for the cars of the __CarParty__ game, which us
 
 ### Is the design history for the models available? If not, why not?
 
-While there exists partial design history for some model parts, the geometry moved through different software packages. Additionally, in many of the places where it exists, it has become so convoluted that it is (almost) unusable. If you requite the design history, it probably makes more sense to recreate the particular parts from scratch.
+While there exists partial design history for some model parts, the geometry moved through different software packages as the models and requirements evolved. Additionally, in many of the places where it exists, it has become so convoluted that it is (almost) unusable. If you require the design history, it probably makes more sense to recreate the particular parts from scratch.
 
 ## Car Models
 
 (The actually interesting section.)
 
+All car models have the same general dimensions to keep the race fair and the model similar enough. In general, every car is 1500 mm long (not counting addons as bumpers), 600 mm wide and 600 mm high (not including wheel height) while having a ground clearance of 100 mm with a wheel diameter of 200 mm. Some minor exceptions have been made for aesthetic reasons, these are limited to shortening the rear and/or front, and explicitly don't modify any of the details relevant for driving. Furthermore, all cars options use the same collision box in godot.
+
+The wheel model is shared between all cars for the same fairness reason. The light models are shared as well, exactly two headlights (left, right), three taillights (left, right, center) and two rear brake lights (left, right). While this arguably doesn't make much sense design-wise, it does unify the visual style and would have been simpler if we ever decided to finely control the lights during the race.
+
 ### FirstCar
 
-As the name suggests, this car was the first one. It even existed before any other part of the game was written as an exploration of whether we would be able to create 3D assets. Additionally, it was the only car for the longest time with the other car options being added rather late.
+As the name suggests, this car was the first one. It even existed before any other part of the game was written as an exploration of whether we would be able to create 3D assets. Additionally, it was for the longest time the only car with the other car options being added rather late.
 
 This car symbolizes a normal 4 to 5 person car. Please drive careful as to not endanger you or your fellow passengers.
 
