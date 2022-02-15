@@ -1,5 +1,7 @@
 # CarParty Repository
 
+Runnable downloads of the game can be found on [car-party.de](https://car-party.de).
+
 CarParty consists of these three programs:
 
 ## The Godot Game (branch `main`, [(here)](https://github.com/CarParty/CarParty/tree/main))
