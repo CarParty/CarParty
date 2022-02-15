@@ -2,7 +2,7 @@
 
 CarParty consists of these three programs:
 
-## The Godot Game (branch `main`, [(here)](https://git.rwth-aachen.de/gaminglab_ws20_21/group1/-/tree/main))
+## The Godot Game (branch `main`, [(here)](https://github.com/CarParty/CarParty/tree/main))
 
 The main game! Exciting, isn't it?
 
@@ -10,7 +10,7 @@ To start the Godot game, install Godot (last tested: 3.4.2-stable) and open it a
 
 Alternatively, go into the folder and type `godot start`.
 
-## The Phone Client (branches `phoneclient`, [(jump)](https://git.rwth-aachen.de/gaminglab_ws20_21/group1/-/tree/phoneclient) and `phoneclient-stable`, [(jump)](https://git.rwth-aachen.de/gaminglab_ws20_21/group1/-/tree/phoneclient-stable))
+## The Phone Client (branches `phoneclient`, [(jump)](https://github.com/CarParty/CarParty/tree/phoneclient) and `phoneclient-stable`, [(jump)](https://github.com/CarParty/CarParty/tree/phoneclient-stable))
 
 The _small_ html web thing on your phone.
 
@@ -18,13 +18,13 @@ To start the phoneclient, consult the README in that branch.
 
 `phoneclient-stable` is automatically deployed to [car-party.de](https://car-party.de) while the version from `phoneclient` is available at [staging.car-party.de](https://staging.car-party.de).
 
-## The Relay (branch `websocket-relay`, [(jump)](https://git.rwth-aachen.de/gaminglab_ws20_21/group1/-/tree/websocket-relay))
+## The Relay (branch `websocket-relay`, [(jump)](https://github.com/CarParty/CarParty/tree/websocket-relay))
 
 Makes the messages go fast (between godot and phoneclient(s)). Also a professional (NAT) puncher.
 
 To start the relay, consult its README.
 
-## Car Models (branch `models`, [(jump)](https://git.rwth-aachen.de/gaminglab_ws20_21/group1/-/tree/models))
+## Car Models (branch `models`, [(jump)](https://github.com/CarParty/CarParty/tree/models))
 
 Archive for the files related to the misshaped driving blobs.
 
